@@ -174,7 +174,7 @@
         fb.appendChild(el("div", "feedback", `Your BMI is <b>${S.bmi}</b> — ${bmiCategory(S.bmi)}. We'll use this to set a healthy, realistic pace.`));
       }
     }
-    const btn = ctaBar("Continue", () => { commit(); if (valid()) go(1); }, !valid());
+    const btn = inlineCta("Continue", () => { commit(); if (valid()) go(1); }, !valid());
     inp.oninput = () => { commit(); btn.disabled = !valid(); };
     inp.onkeydown = (e) => { if (e.key === "Enter" && valid()) { commit(); go(1); } };
     setTimeout(() => inp.focus(), 50);
@@ -243,7 +243,7 @@
     inp.value = S.email || ""; root.appendChild(inp);
     root.appendChild(el("p", "consent",
       "By continuing you agree to receive emails about your plan. You can unsubscribe anytime. See our Terms and Privacy Policy."));
-    ctaBar("See my plan", () => {
+    inlineCta("See my plan", () => {
       const v = inp.value.trim(); if (!/^\S+@\S+\.\S+$/.test(v)) { inp.focus(); inp.style.borderColor = "#ef6a6a"; return; }
       S.email = v; S.status = "email_captured"; window.CTC.saveSession();
       if (window.API) API.submitQuiz(S);   // save lead to Supabase (quiz_sessions)
@@ -256,7 +256,7 @@
     root.appendChild(el("h1", "q", scr.title));
     const inp = el("input", "text-field"); inp.type = "text"; inp.placeholder = "First name";
     inp.value = S.name || ""; root.appendChild(inp);
-    ctaBar("Continue", () => { const v = inp.value.trim(); if (!v) { inp.focus(); return; } S.name = v; save(); go(1); });
+    inlineCta("Continue", () => { const v = inp.value.trim(); if (!v) { inp.focus(); return; } S.name = v; save(); go(1); });
     setTimeout(() => inp.focus(), 50);
   }
 
@@ -281,6 +281,14 @@
     const inner = el("div", "cta-inner");
     const b = el("button", "btn", label); b.disabled = !!disabled; b.onclick = onClick;
     inner.appendChild(b); bar.appendChild(inner); $("#step").appendChild(bar);
+    return b;
+  }
+
+  // Inline CTA (in normal flow, right under the input) — stays visible above the mobile keyboard.
+  function inlineCta(label, onClick, disabled) {
+    const wrap = el("div", "inline-cta");
+    const b = el("button", "btn", label); b.disabled = !!disabled; b.onclick = onClick;
+    wrap.appendChild(b); $("#step").appendChild(wrap);
     return b;
   }
 

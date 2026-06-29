@@ -30,10 +30,11 @@
   <script src="assets/flow.js"></script>
   <script>
     const s = FLOW.get();
-    // FAKE PAID provisioning: create the account + active subscription (no real Stripe).
-    if (window.API && s.email && !s._provisioned) {
+    // FAKE PAID provisioning: create the account + active subscription (no real Stripe),
+    // and get a server-generated magic link so "Access my plan" logs the user in instantly.
+    if (window.API && s.email && !s.action_link) {
       API.completeOrder({ quiz_session_id: s.id, email: s.email, name: s.name, selected_plan: s.selected_plan, order: s.order || [] })
-        .then(r => { if (r && r.ok) { s._provisioned = true; FLOW.save(s); } });
+        .then(r => { if (r && r.ok) { s._provisioned = true; if (r.action_link) s.action_link = r.action_link; FLOW.save(s); } });
     }
     document.getElementById("stephdr").innerHTML = FLOW.stepHeader("plan");
     const order = (s.order || []);
@@ -46,7 +47,12 @@
     // mark complete + persist for the app gate
     s.status = "purchased"; s.has_access = true; FLOW.save(s);
     // TODO: confirmation handled server-side by Stripe webhook + Resend email
-    document.getElementById("access").onclick = () => { location.href = "https://app.taimotion.com/"; };
+    document.getElementById("access").onclick = () => {
+      const cur = FLOW.get();
+      // auto-login: redirect THROUGH the server-generated magic link -> lands signed in
+      if (cur.action_link) location.replace(cur.action_link);
+      else location.href = "https://app.taimotion.com/";
+    };
   </script>
 </body>
 </html>
