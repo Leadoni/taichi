@@ -38,7 +38,7 @@ window.FUNNEL = {
       title: "This could be a great fit",
       body: "For {genderPlural} in their {decade}, Chair Tai Chi is a gentle way to feel better with minimal effort — around 10–15 minutes a day to start seeing changes." },
 
-    { id: "body_now", type: "single", section: "My profile",
+    { id: "body_now", type: "single", section: "My profile", layout: "cards",
       q: "How would you describe your body?",
       options: [{ value: "thin", label: "Thin" }, { value: "mid", label: "Mid-sized" },
         { value: "plump", label: "Plump" }, { value: "plus", label: "Plus-sized" }] },
