@@ -128,7 +128,7 @@ window.FUNNEL = {
         { value: "hips", label: "Tight hips", img: "assets/23_hips.webp" }],
       noneValue: "none", noneLabel: "None of the above", noneImg: "assets/23_none.webp" },
 
-    { id: "intro_lowimpact", type: "info",
+    { id: "intro_lowimpact", type: "info", image: "assets/24.webp",
       title: "Easier on knees and back",
       body: "Because it's seated and low-impact, Chair Tai Chi keeps stress off your joints — a gentle choice if you're prone to aches or stiffness." },
 
@@ -137,7 +137,7 @@ window.FUNNEL = {
       options: [{ value: "home", label: "Home", emoji: "🏠" }, { value: "outside", label: "Outside", emoji: "🌳" },
         { value: "gym", label: "Gym", emoji: "🏋️" }, { value: "any", label: "No preference", emoji: "🤷" }] },
 
-    { id: "intro_home", type: "info",
+    { id: "intro_home", type: "info", image: "assets/26.webp",
       title: "Your home works perfectly",
       body: "All you need is a sturdy chair and a little space — no equipment, no commute. Practise whenever it suits you." },
 
@@ -148,25 +148,25 @@ window.FUNNEL = {
         { value: "hard", label: "Hard: >10K steps", emoji: "🏅" },
         { value: "unsure", label: "I'm not sure", emoji: "🤷" }] },
 
-    { id: "intro_lowdose", type: "info",
+    { id: "intro_lowdose", type: "info", image: "assets/28.webp",
       title: "You may need less than you think",
       body: "Short, gentle daily practice is easier to keep up than long, occasional workouts — and consistency is what moves the needle." },
 
     // like / dislike series (image card + 👎/😐/👍)
-    { id: "ld_mobility", type: "single", section: "Activity", layout: "ld",
+    { id: "ld_mobility", type: "single", section: "Activity", layout: "ld", cardImg: "assets/29.webp",
       q: "Like or dislike?", statement: "Stretching & Mobility",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
-    { id: "ld_breathing", type: "single", section: "Activity", layout: "ld",
+    { id: "ld_breathing", type: "single", section: "Activity", layout: "ld", cardImg: "assets/30.webp",
       q: "Like or dislike?", statement: "Mindful breathing",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
-    { id: "ld_balance", type: "single", section: "Activity", layout: "ld",
+    { id: "ld_balance", type: "single", section: "Activity", layout: "ld", cardImg: "assets/31.webp",
       q: "Like or dislike?", statement: "Balance",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
     { id: "ld_strength", type: "single", section: "Activity", layout: "ld",
       q: "Like or dislike?", statement: "Gentle seated strength",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
 
-    { id: "projection_2", type: "info", chart: true,
+    { id: "projection_2", type: "info", image: "assets/33.webp",
       title: "You'll reach your goal sooner than expected",
       body: "With a routine matched to your preferences, steady progress is realistic — and we'll keep adapting it as you go." },
 
@@ -177,7 +177,7 @@ window.FUNNEL = {
         { value: "some", label: "I have some ups and downs", emoji: "😐" },
         { value: "steady", label: "I feel mostly steady", emoji: "😌" }] },
 
-    { id: "intro_stress", type: "info",
+    { id: "intro_stress", type: "info", image: "assets/35.webp",
       title: "Movement and breath calm the mind",
       body: "Slow, mindful movement paired with steady breathing is a well-known way to ease tension and feel more grounded." },
 
@@ -194,7 +194,7 @@ window.FUNNEL = {
         { value: "mixed", label: "Up and down — it depends on the day", emoji: "🟡" },
         { value: "steady", label: "Steady — I usually feel okay", emoji: "🟢" }] },
 
-    { id: "intro_focus", type: "info",
+    { id: "intro_focus", type: "info", image: "assets/38.webp",
       title: "Feel calmer and more focused",
       body: "Regular gentle movement supports energy, focus and emotional steadiness — and it's easy to keep up when it's enjoyable." },
 
@@ -209,7 +209,7 @@ window.FUNNEL = {
         { value: "tired", label: "Waking up tired" }, { value: "night", label: "Waking up during the night" },
         { value: "flashes", label: "Hot flashes / Night sweats", femaleOnly: true }, { value: "schedule", label: "Lack of sleep schedule" }] },
 
-    { id: "intro_sleep", type: "info",
+    { id: "intro_sleep", type: "info", image: "assets/41.webp",
       title: "Gentle activity supports better sleep",
       body: "Light daytime movement and a calmer nervous system can help you fall asleep more easily and rest more deeply." },
 
