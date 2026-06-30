@@ -18,7 +18,7 @@ window.FUNNEL = {
       q: "Have you tried Chair Tai Chi before?", figure: "assets/2_tried.webp",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }] },
 
-    { id: "intro_encourage", type: "info",
+    { id: "intro_encourage", type: "info", image: "assets/3.webp",
       title: "You're in the right place",
       body: "Chair Tai Chi is gentle and beginner-friendly — practised at home using just a chair. Most people feel a difference sooner than they expect." },
 

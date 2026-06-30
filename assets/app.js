@@ -203,7 +203,15 @@
   }
 
   function rInfo(scr, root) {
-    if (!scr.chart) root.appendChild(imgEl("info-photo", "info-" + scr.id, 800, 500));
+    if (!scr.chart) {
+      if (scr.image) {
+        const w = el("div", "info-photo");
+        const img = document.createElement("img"); img.src = scr.image; img.alt = ""; img.loading = "lazy";
+        w.appendChild(img); root.appendChild(w);
+      } else {
+        root.appendChild(imgEl("info-photo", "info-" + scr.id, 800, 500));
+      }
+    }
     root.appendChild(el("h1", "q", personalize(scr.title)));
     if (scr.chart) root.appendChild(chartEl());
     root.appendChild(el("p", "info-body", personalize(scr.body)));
