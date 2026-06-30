@@ -48,6 +48,8 @@
     const bar = $("#progress > i"); if (bar) bar.style.width = pct + "%";
     const scr = F.screens[S.index];
     const sec = $("#section"); if (sec) sec.textContent = (scr && scr.section) || "";
+    // TEMP step indicator: matches the screenshot numbering (their #1 = age gate)
+    const sn = $("#stepno"); if (sn) sn.textContent = scr ? ("#" + (S.index + 2) + " " + scr.id) : "";
   }
 
   let _dir = 1;
@@ -97,13 +99,18 @@
     const g = document.createElement("img"); g.loading = "lazy"; g.alt = ""; g.src = picsum(seed, w, h);
     span.appendChild(g); return span;
   }
+  function imgSrcEl(cls, src) {
+    const span = el("span", cls);
+    const g = document.createElement("img"); g.loading = "lazy"; g.alt = ""; g.src = src;
+    span.appendChild(g); return span;
+  }
 
   function optRow(scr, o, selected, onClick) {
     const row = el("button", "opt" + (selected ? " sel" : ""));
     if (scr.layout === "cards") {
-      row.appendChild(imgEl("cimg", scr.id + "-" + o.value, 400, 300));
+      row.appendChild(o.img ? imgSrcEl("cimg", o.img) : imgEl("cimg", scr.id + "-" + o.value, 400, 300));
     } else if (scr.type === "multi" && scr.photos) {
-      row.appendChild(imgEl("thumb", scr.id + "-" + o.value, 160, 160));
+      row.appendChild(o.img ? imgSrcEl("thumb", o.img) : imgEl("thumb", scr.id + "-" + o.value, 160, 160));
     } else if (o.emoji) {
       row.appendChild(el("span", "emoji", o.emoji));
     }
@@ -367,6 +374,7 @@
     gateScreen("Chair Tai Chi Workouts", "Select your gender to get your free personalized plan",
       [["female", "Female"], ["male", "Male"]],
       (val) => { S.gender = val; save(); ageGate(); });
+    const sn = $("#stepno"); if (sn) sn.textContent = "#0 gender";
   }
 
   // ---- age gate (second screen of the quiz) ----
@@ -375,6 +383,7 @@
       [["40-49", "Age 40–49"], ["50-59", "Age 50–59"], ["60-69", "Age 60–69"], ["70-80", "Age 70–80"]],
       (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); },
       "assets/1_age.webp");
+    const sn = $("#stepno"); if (sn) sn.textContent = "#1 age";
   }
 
   // ---- QA shortcut: auto-answer everything and jump to checkout ----

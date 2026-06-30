@@ -25,10 +25,10 @@ window.FUNNEL = {
     { id: "focus_areas", type: "multi", section: "My profile", photos: true,
       q: "To start, tell us which areas you'd like to focus on:", sub: "Choose all that apply",
       options: [
-        { value: "lose_weight", label: "Lose weight", emoji: "⚖️" },
-        { value: "feel_healthier", label: "Feel healthier", emoji: "🌿" },
-        { value: "lower_stress", label: "Lower stress", emoji: "🧘" },
-        { value: "memory_focus", label: "Boost memory & focus", emoji: "🧠" },
+        { value: "lose_weight", label: "Lose weight", img: "assets/4a_wight.webp" },
+        { value: "feel_healthier", label: "Feel healthier", img: "assets/4b_health.webp" },
+        { value: "lower_stress", label: "Lower stress", img: "assets/4c_stress.webp" },
+        { value: "memory_focus", label: "Boost memory & focus", img: "assets/4d_focus.webp" },
       ] },
 
     { id: "intro_solution", type: "info", personalize: true,

@@ -20,6 +20,7 @@ img{max-width:100%}
 .topbar .back{border:none;background:none;font-size:22px;color:var(--muted);cursor:pointer;line-height:1;padding:4px 8px}
 .topbar .brand{font-weight:700;color:var(--primary-dark);font-size:18px;letter-spacing:.2px}
 .topbar .section{flex:1;text-align:center;font-size:14px;color:var(--muted);font-weight:600}
+.topbar .stepno{flex:none;font-size:11px;color:#b08a3a;background:#fbf3df;border:1px solid #ecd9a8;border-radius:6px;padding:2px 6px;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
 .progress{height:4px;background:var(--line);max-width:var(--maxw);margin:0 auto;border-radius:4px;overflow:hidden}
 .progress > i{display:block;height:100%;background:var(--primary);width:0;transition:width .35s ease}
 
