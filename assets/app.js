@@ -393,6 +393,10 @@
     go(-1);
   };
   const _qp = new URLSearchParams(location.search);
+  // Entry from the index/prelander always starts a brand-new quiz.
+  if (_qp.get("start") !== null || _qp.get("fresh") !== null || _qp.get("new") !== null) {
+    if (window.CTC) { window.CTC.reset(); S = window.CTC.get(); }
+  }
   if (_qp.get("autotest") !== null || _qp.get("test") !== null || _qp.get("funnel") === "test") autotestFill();
   else if (!S.gender) genderGate(); else if (!S.age_band) ageGate(); else render();
 })();
