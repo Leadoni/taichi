@@ -125,8 +125,11 @@
     const wrapCls = scr.layout === "cards" ? "grid" : scr.layout === "ld" ? "ld" : "opts";
     if (scr.layout === "ld" && scr.statement) {
       // image card carrying the statement, shown above the option cards
-      const card = el("div", "ld-card", scr.statement);
-      card.style.setProperty("--ld-img", `url(${scr.cardImg || picsum("ld-" + scr.id, 800, 420)})`);
+      const card = el("div", "ld-card");
+      const img = document.createElement("img"); img.alt = ""; img.loading = "lazy";
+      img.src = scr.cardImg || picsum("ld-" + scr.id, 800, 420);
+      card.appendChild(img);
+      card.appendChild(el("span", "ld-label", scr.statement));
       root.appendChild(card);
     }
     const box = el("div", wrapCls);

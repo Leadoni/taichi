@@ -93,10 +93,12 @@ h1.q{font-size:24px;line-height:1.3;margin:8px 0 6px;font-weight:700;text-align:
 .ld .opt{flex-direction:column;text-align:center;min-height:96px;gap:8px}
 .ld .opt .emoji{font-size:30px;width:auto}
 .ld .opt .check{display:none}
-.ld-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;
-  min-height:150px;display:grid;place-items:end start;padding:16px;font-weight:700;color:#fff;
-  background-image:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.45)),var(--ld-img,linear-gradient(135deg,#9fc6ac,#5a9e6f));
-  background-size:cover;background-position:center}
+.ld-card{position:relative;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;
+  min-height:190px;background:var(--line)}
+.ld-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ld-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.55))}
+.ld-card .ld-label{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;color:#fff;font-weight:700;font-size:17px;
+  text-shadow:0 1px 8px rgba(0,0,0,.6)}
 
 /* inputs */
 .inputwrap{margin:6px 0 0}
