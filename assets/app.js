@@ -112,6 +112,17 @@
     return row;
   }
 
+  // A plain single screen (yes/no, no emoji, no images) carries a decorative figure below the options.
+  function isPlainSingle(scr) {
+    return scr.type === "single" && !scr.layout && !scr.photos && !(scr.options || []).some(o => o.emoji);
+  }
+  // Shared decorative cut-out figure. TODO: swap picsum for the real transparent cut-out PNG.
+  function figureEl() {
+    const w = el("div", "quiz-figure");
+    const img = document.createElement("img"); img.src = picsum("figure", 520, 620); img.alt = ""; img.loading = "lazy";
+    w.appendChild(img); return w;
+  }
+
   function rSingle(scr, root) {
     head(scr, root);
     const wrapCls = scr.layout === "cards" ? "grid" : scr.layout === "ld" ? "ld" : "opts";
@@ -127,6 +138,7 @@
       else go(1);
     })));
     root.appendChild(box);
+    if (isPlainSingle(scr)) root.appendChild(figureEl());
   }
 
   function showSafety(scr, root) {
@@ -315,46 +327,40 @@
     return b;
   }
 
-  // ---- gender gate (very first screen of the quiz) ----
-  function genderGate() {
+  // Shared gate renderer: chevron rows + decorative figure (matches their age gate).
+  function gateScreen(title, subtitle, rows, onPick) {
     const root = $("#step"); root.innerHTML = "";
     const bar = $("#progress > i"); if (bar) bar.style.width = "0%";
     const sec = $("#section"); if (sec) sec.textContent = "";
-    root.appendChild(el("h1", "q", "Chair Tai Chi Workouts"));
-    root.appendChild(el("p", "sub", "Select your gender to get your free personalized plan"));
-    const grid = el("div", "grid grid-gender");
-    [["female", "Female", "gender-female"], ["male", "Male", "gender-male"]]
-      .forEach(([val, label, seed]) => {
-        const card = el("button", "opt");
-        card.appendChild(imgEl("cimg", seed, 400, 320));
-        card.appendChild(el("span", "lab", label));
-        card.onclick = () => { S.gender = val; save(); ageGate(); };
-        grid.appendChild(card);
-      });
-    root.appendChild(grid);
+    root.appendChild(el("div", "gate-pill", "🎁 Take the quiz — get your free plan"));
+    root.appendChild(el("h1", "q gate-title", title));
+    root.appendChild(el("p", "sub", subtitle));
+    const box = el("div", "opts");
+    rows.forEach(([val, label]) => {
+      const row = el("button", "opt gate-opt");
+      row.appendChild(el("span", "lab", label));
+      row.appendChild(el("span", "chev", "›"));
+      row.onclick = () => onPick(val);
+      box.appendChild(row);
+    });
+    root.appendChild(box);
+    root.appendChild(figureEl());
     root.appendChild(el("p", "consent",
-      "By choosing your gender and continuing you agree to our Terms of Service and Privacy Policy."));
+      "By continuing you agree to our Terms of Service and Privacy Policy."));
+  }
+
+  // ---- gender gate (very first screen of the quiz) ----
+  function genderGate() {
+    gateScreen("Chair Tai Chi Workouts", "Select your gender to get your free personalized plan",
+      [["female", "Female"], ["male", "Male"]],
+      (val) => { S.gender = val; save(); ageGate(); });
   }
 
   // ---- age gate (second screen of the quiz) ----
   function ageGate() {
-    const root = $("#step"); root.innerHTML = "";
-    const bar = $("#progress > i"); if (bar) bar.style.width = "0%";
-    const sec = $("#section"); if (sec) sec.textContent = "";
-    root.appendChild(el("h1", "q", "Chair Tai Chi Workouts"));
-    root.appendChild(el("p", "sub", "Select your age to get your free personalized plan"));
-    const grid = el("div", "grid");
-    [["40-49", "Age 40–49"], ["50-59", "Age 50–59"], ["60-69", "Age 60–69"], ["70-80", "Age 70–80"]]
-      .forEach(([val, label]) => {
-        const card = el("button", "opt");
-        card.appendChild(imgEl("cimg", "age-" + val, 400, 300));
-        card.appendChild(el("span", "lab", label));
-        card.onclick = () => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); };
-        grid.appendChild(card);
-      });
-    root.appendChild(grid);
-    root.appendChild(el("p", "consent",
-      "By choosing your age and continuing you agree to our Terms of Service and Privacy Policy."));
+    gateScreen("Chair Tai Chi Workouts", "Select your age to get your free personalized plan",
+      [["40-49", "Age 40–49"], ["50-59", "Age 50–59"], ["60-69", "Age 60–69"], ["70-80", "Age 70–80"]],
+      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); });
   }
 
   // ---- QA shortcut: auto-answer everything and jump to checkout ----
