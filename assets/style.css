@@ -54,6 +54,14 @@ h1.q{font-size:24px;line-height:1.3;margin:8px 0 6px;font-weight:700;text-align:
 .quiz-figure{margin:26px auto 0;max-width:280px}
 .quiz-figure img{width:100%;display:block;border-radius:var(--radius)}
 
+/* gate with figure beside the options (figure left, options right) — stays side-by-side on mobile */
+.gate-2col{display:flex;align-items:center;gap:14px;max-width:var(--maxw);margin:8px auto 0}
+.gate-2col .gate-fig{flex:0 0 42%;max-width:210px}
+.gate-2col .gate-fig img{width:100%;display:block}
+.gate-2col .opts{flex:1;min-width:0}
+.gate-2col .gate-opt{padding:14px 14px;font-size:16px}
+.gate-2col .gate-opt .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* card grid (e.g. goal, body type) — photo cards */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;margin:0 auto}
 .grid .opt{flex-direction:column;align-items:stretch;text-align:left;padding:0;gap:0;overflow:hidden}

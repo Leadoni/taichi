@@ -319,8 +319,8 @@
     return b;
   }
 
-  // Shared gate renderer: chevron rows + decorative figure (matches their age gate).
-  function gateScreen(title, subtitle, rows, onPick) {
+  // Shared gate renderer: chevron rows + optional figure beside the options (matches their age gate).
+  function gateScreen(title, subtitle, rows, onPick, figureSrc) {
     const root = $("#step"); root.innerHTML = "";
     const bar = $("#progress > i"); if (bar) bar.style.width = "0%";
     const sec = $("#section"); if (sec) sec.textContent = "";
@@ -335,7 +335,16 @@
       row.onclick = () => onPick(val);
       box.appendChild(row);
     });
-    root.appendChild(box);
+    if (figureSrc) {
+      // two-column: figure left, options right (stays side-by-side on mobile)
+      const cols = el("div", "gate-2col");
+      const fig = el("div", "gate-fig");
+      const img = document.createElement("img"); img.src = figureSrc; img.alt = ""; fig.appendChild(img);
+      cols.appendChild(fig); cols.appendChild(box);
+      root.appendChild(cols);
+    } else {
+      root.appendChild(box);
+    }
     root.appendChild(el("p", "consent",
       "By continuing you agree to our Terms of Service and Privacy Policy."));
   }
@@ -351,7 +360,8 @@
   function ageGate() {
     gateScreen("Chair Tai Chi Workouts", "Select your age to get your free personalized plan",
       [["40-49", "Age 40–49"], ["50-59", "Age 50–59"], ["60-69", "Age 60–69"], ["70-80", "Age 70–80"]],
-      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); });
+      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); },
+      "assets/1_age.webp");
   }
 
   // ---- QA shortcut: auto-answer everything and jump to checkout ----
