@@ -326,8 +326,18 @@ window.FUNNEL = {
       options: [{ value: "morning", label: "Morning" }, { value: "night", label: "Night" }, { value: "depends", label: "It depends" }] },
 
     // ============ Plan generation + capture ============
-    { id: "loader", type: "loader", title: "Just a moment…",
-      steps: ["Analyzing Body Parameters", "Activity Preferences", "Health & Safety", "Generating Your Action Plan"] },
+    { id: "loader", type: "loader", title: "Just a moment…", sub: "Getting things ready for you", per: 1600,
+      cards: [
+        { img: "assets/bodies_2b.jpg", text: "Built with care, for how you move" },
+        { img: "assets/3.webp", text: "We focus on how your body feels — not dieting" },
+        { img: "assets/5.webp", text: "Small, steady habits are what last" },
+        { img: "assets/29.webp", text: "A plan you can actually keep up with" },
+        { img: "assets/43b.jpg", text: "Just follow your plan, one short session at a time" },
+        { img: "assets/38.webp", text: "It only takes a few minutes a day" },
+        { img: "assets/57b.png", text: "Off days are completely okay" },
+        { img: "assets/41.webp", text: "No one's perfect — we'll help you keep going" },
+        { img: "assets/24.webp", text: "We'll help you get back on track" },
+      ] },
 
     { id: "email", type: "email", title: "Your action plan is ready",
       sub: "Enter your email to get your personal Chair Tai Chi plan." },

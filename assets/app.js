@@ -251,22 +251,44 @@
   }
 
   function rLoader(scr, root) {
+    // Card-carousel loader: one auto-advancing step that rotates image+caption cards while a spinner runs.
+    if (scr.cards) {
+      const head = el("div", "loader-head");
+      head.innerHTML = `<div class="spinner"></div>` +
+        `<div class="lh-title">${scr.title || "Just a moment…"}</div>` +
+        `<div class="lh-sub">${scr.sub || "Getting things ready for you"}</div>`;
+      root.appendChild(head);
+      const stage = el("div", "loader-stage"); root.appendChild(stage);
+      const cards = scr.cards, per = scr.per || 1600;
+      let i = 0, done = false;
+      function show(idx) {
+        stage.innerHTML = "";
+        const c = cards[idx];
+        const fig = el("div", "loader-fig");
+        const img = document.createElement("img"); img.alt = "";
+        img.src = c.img || picsum("load-" + idx, 640, 640); fig.appendChild(img);
+        stage.appendChild(fig);
+        stage.appendChild(el("p", "loader-cap", c.text || ""));
+        stage.classList.remove("in"); void stage.offsetWidth; stage.classList.add("in");
+      }
+      show(0);
+      const t = setInterval(() => {
+        i++;
+        if (i >= cards.length) { clearInterval(t); if (!done) { done = true; setTimeout(() => go(1), per); } return; }
+        show(i);
+      }, per);
+      return;
+    }
+    // Fallback: simple progress bars (short "Almost done" style)
     root.appendChild(el("h1", "q", scr.title));
     const list = el("div", "loader-list");
-    scr.steps.forEach((s, i) => {
+    (scr.steps || []).forEach((s, i) => {
       const row = el("div", "loader-row");
       row.innerHTML = `<div class="lr-top"><span>${s}</span><span id="p${i}">0%</span></div><div class="bar"><i id="b${i}"></i></div>`;
       list.appendChild(row);
     });
     root.appendChild(list);
-    const tlist = el("div", "testimonials");
-    ["“I didn't think a seated routine could do much — two weeks in, I felt steadier on my feet.”|Margaret, 64",
-     "“Ten minutes a day I can actually keep up with. That's the difference.”|Joan, 58",
-     "“My balance and my mood both improved. I look forward to it now.”|Patricia, 67"]
-      .forEach(t => { const [q, a] = t.split("|"); tlist.appendChild(el("div", "testi", `${q}<b>${a}</b>`)); });
-    root.appendChild(tlist);
-    // animate
-    scr.steps.forEach((s, i) => {
+    (scr.steps || []).forEach((s, i) => {
       let p = 0; const target = 100; const start = i * 500;
       setTimeout(() => { const t = setInterval(() => { p += 7; if (p >= target) { p = target; clearInterval(t);
         if (i === scr.steps.length - 1) setTimeout(() => go(1), 500); }
