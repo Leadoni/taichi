@@ -169,7 +169,7 @@ window.FUNNEL = {
     { id: "ld_balance", type: "single", section: "Activity", layout: "ld", cardImg: "assets/31.webp",
       q: "Like or dislike?", statement: "Balance",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
-    { id: "ld_strength", type: "single", section: "Activity", layout: "ld", cardImg: "assets/1_age.webp",
+    { id: "ld_strength", type: "single", section: "Activity", layout: "ld", cardImg: "assets/33a.webp",
       q: "Like or dislike?", statement: "Gentle seated strength",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
 

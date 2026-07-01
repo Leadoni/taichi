@@ -237,9 +237,9 @@
     // Metabolic age: age-group lower bound + 2 (illustrative). Always shows "Slow".
     (function(){
       const band = String(session.age_band || "");
-      const m = band.match(/\d+/);
-      const base = m ? parseInt(m[0], 10) : 45;
-      document.getElementById("metaVal").textContent = (base + 2) + " years";
+      const nums = (band.match(/\d+/g) || []).map(Number);
+      const upper = nums.length ? Math.max.apply(null, nums) : 47;
+      document.getElementById("metaVal").textContent = (upper + 2) + " years";
     })();
 
     function renderPlans() {
