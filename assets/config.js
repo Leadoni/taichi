@@ -222,7 +222,7 @@ window.FUNNEL = {
         { value: "fair", label: "A fair bit", emoji: "🍎" },
         { value: "lots", label: "I might be a rabbit", emoji: "🥕" }] },
 
-    { id: "intro_nutrition", type: "info",
+    { id: "intro_nutrition", type: "info", image: "assets/43b.jpg",
       title: "Simple nutrition support, no strict diets",
       body: "You'll get easy, optional nutrition tips that complement your routine — no calorie counting or food rules required." },
 
@@ -244,9 +244,9 @@ window.FUNNEL = {
       q: "Do you wear a smartwatch or fitness tracker?", sub: "Like: Apple Watch, Fitbit, Samsung Galaxy, etc.",
       options: [{ value: "yes", label: "Yes", emoji: "✔️" }, { value: "no", label: "No", emoji: "✖️" }] },
 
-    { id: "intro_brain", type: "info",
-      title: "Gentle movement supports a sharp mind",
-      body: "Staying gently active supports circulation, focus and memory as we age — another reason a steady routine is worth keeping." },
+    { id: "intro_brain", type: "info", image: "assets/47b.png",
+      title: "Look after your brain, not just your body",
+      body: "Staying gently active is associated with sharper memory and better brain health as we age. A short daily routine is one of the simplest ways to help protect your mind for the years ahead." },
 
     // ============ Health & Safety ============
     { id: "medications", type: "single", section: "Health & Safety",
@@ -258,10 +258,6 @@ window.FUNNEL = {
       sub: "Rest assured, this is just for your safety.",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "Prefer not to answer" }] },
 
-    { id: "intro_safe", type: "info",
-      title: "Prioritizing your health and safety",
-      body: "Because it's seated and low-impact, Chair Tai Chi is a gentle way to build steadiness and confidence in how you move." },
-
     { id: "menopause", type: "single", section: "Health & Safety", femaleOnly: true,
       q: "Have you gone through menopause?", sub: "Hormonal changes can impact your metabolism and nutritional needs.",
       options: [{ value: "no", label: "No" }, { value: "going", label: "Going through it" },
@@ -269,9 +265,8 @@ window.FUNNEL = {
         { value: "na", label: "Prefer not to answer" }] },
 
     // ============ Almost there ============
-    { id: "intro_almost", type: "info",
-      title: "Almost done!",
-      body: "You're moments away from your personalized plan. Let's finish with what keeps you going, so we can support you the right way." },
+    { id: "intro_almost", type: "loader", title: "Almost done…",
+      steps: ["Reviewing your answers", "Personalizing your plan"] },
 
     { id: "main_reason", type: "multi", section: "Almost there",
       q: "What's your main reason for wanting to get in shape?", sub: "Choose all that apply",
@@ -302,9 +297,9 @@ window.FUNNEL = {
         { value: "coaching", label: "Ineffective coaching" },
         { value: "none", label: "I didn't face any obstacles" }, { value: "other", label: "Other" }] },
 
-    { id: "intro_sustainable", type: "info",
-      title: "Why people give up — and how we avoid it",
-      body: "The most common reason people quit is starting too big, too fast. Our plan does the opposite: small, sustainable steps you can actually keep." },
+    { id: "intro_sustainable", type: "info", image: "assets/57b.png", femaleOnly: true,
+      title: "Support your body through midlife changes",
+      body: "Hormonal shifts around menopause can change how your body stores energy and make weight feel harder to manage. Gentle daily movement, paired with simple nutrition guidance, is a supportive way to feel more in control of your wellness goals." },
 
     { id: "explore", type: "multi", section: "Almost there",
       q: "While we customize your journey, what else do you want to explore?", sub: "Choose all that apply",
