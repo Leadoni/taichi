@@ -98,10 +98,20 @@ h1.q{font-size:24px;line-height:1.3;margin:8px 0 6px;font-weight:700;text-align:
 .ld .opt .check{display:none}
 /* like/dislike + relate card: sizes dynamically to the full image, label overlaid */
 .ld-card{position:relative;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;background:var(--line)}
-.ld-card img{display:block;width:100%;height:auto}
+.ld-card img{display:block;width:100%;height:auto;max-height:350px;object-fit:cover}
 .ld-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.55))}
 .ld-card .ld-label{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;color:#fff;font-weight:700;font-size:17px;
   text-shadow:0 1px 8px rgba(0,0,0,.6)}
+
+/* bordered info block card (projection diff, eligibility note, realistic goal) */
+.info-block{max-width:var(--maxw);margin:18px auto 0;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);text-align:left}
+.info-block .ib-title{font-weight:700;font-size:16px;margin-bottom:6px}
+.info-block .ib-body{color:var(--muted);font-size:15px;line-height:1.5}
+
+/* single-message auto-loader progress bar */
+.auto-bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;max-width:var(--maxw);margin:28px auto 0}
+.auto-bar > i{display:block;height:100%;width:0;background:var(--primary)}
 
 /* inputs */
 .inputwrap{margin:6px 0 0}

@@ -90,7 +90,18 @@
     const band = S.age_band ? S.age_band.replace(/-/, "–") : "";
     const decade = band ? band.split(/[-–]/)[0].replace(/.$/, "0") + "s" : "your age";
     const gp = S.gender === "male" ? "men" : S.gender === "female" ? "women" : "people";
-    return t.replace(/\{decade\}/g, decade).replace(/\{genderPlural\}/g, gp).replace(/\{name\}/g, S.name || "");
+    const now = S.weight_kg || 0, goal = S.goal_weight_kg || 0;
+    const lose = now && goal ? Math.max(0, Math.round(now - goal)) : 0;
+    const pct = now && lose ? Math.round((lose / now) * 100) : 0;
+    return t.replace(/\{decade\}/g, decade).replace(/\{genderPlural\}/g, gp).replace(/\{name\}/g, S.name || "")
+      .replace(/\{goal\}/g, goal || "your goal").replace(/\{now\}/g, now || "")
+      .replace(/\{lose\}/g, lose).replace(/\{pct\}/g, pct).replace(/\{projdate\}/g, projDate(lose));
+  }
+  // A plausible target date: ~1 kg every ~2 weeks, min ~4 weeks out.
+  function projDate(loseKg) {
+    const weeks = Math.max(4, (loseKg || 4) * 2);
+    const d = new Date(Date.now() + weeks * 7 * 86400000);
+    return d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
   }
 
   function picsum(seed, w, h) { return `https://picsum.photos/seed/${encodeURIComponent("ctc-" + seed)}/${w}/${h}`; }
@@ -203,6 +214,13 @@
         fb.innerHTML = "";
         fb.appendChild(el("div", "feedback", `Your BMI is <b>${S.bmi}</b> — ${bmiCategory(S.bmi)}. We'll use this to set a healthy, realistic pace.`));
       }
+      if (scr.note) {
+        fb.innerHTML = "";
+        const card = el("div", "info-block");
+        if (scr.noteTitle) card.appendChild(el("div", "ib-title", scr.noteTitle));
+        card.appendChild(el("div", "ib-body", scr.note));
+        fb.appendChild(card);
+      }
     }
     const btn = inlineCta("Continue", () => { commit(); if (valid()) go(1); }, !valid());
     inp.oninput = () => { commit(); btn.disabled = !valid(); };
@@ -212,20 +230,27 @@
   }
 
   function rInfo(scr, root) {
-    if (!scr.chart) {
-      if (scr.image) {
-        const w = el("div", "info-photo" + (scr.full ? " full" : ""));
-        const img = document.createElement("img"); img.src = scr.image; img.alt = ""; img.loading = "lazy";
-        w.appendChild(img); root.appendChild(w);
-      } else {
-        root.appendChild(imgEl("info-photo", "info-" + scr.id, 800, 500));
-      }
+    const addTitle = () => { if (scr.title) root.appendChild(el("h1", "q", personalize(scr.title))); };
+    if (scr.headerTop) addTitle();
+    if (scr.chart) { root.appendChild(chartEl()); }
+    else if (scr.image) {
+      const w = el("div", "info-photo" + (scr.full ? " full" : ""));
+      const img = document.createElement("img"); img.src = scr.image; img.alt = ""; img.loading = "lazy";
+      w.appendChild(img); root.appendChild(w);
+    } else {
+      root.appendChild(imgEl("info-photo", "info-" + scr.id, 800, 500));
     }
-    root.appendChild(el("h1", "q", personalize(scr.title)));
-    if (scr.chart) root.appendChild(chartEl());
-    root.appendChild(el("p", "info-body", personalize(scr.body)));
+    if (!scr.headerTop) addTitle();
+    if (scr.body) root.appendChild(el("p", "info-body", personalize(scr.body)));
     if (scr.bullets) {
       const ul = el("ul", "bullets"); scr.bullets.forEach(b => ul.appendChild(el("li", "", b))); root.appendChild(ul);
+    }
+    // bordered card block (like their "You only have to lose…" / eligibility note)
+    if (scr.blockTitle || scr.blockBody) {
+      const card = el("div", "info-block");
+      if (scr.blockTitle) card.appendChild(el("div", "ib-title", personalize(scr.blockTitle)));
+      if (scr.blockBody) card.appendChild(el("div", "ib-body", personalize(scr.blockBody)));
+      root.appendChild(card);
     }
     ctaBar("Continue", () => go(1));
   }
@@ -277,6 +302,20 @@
         if (i >= cards.length) { clearInterval(t); if (!done) { done = true; setTimeout(() => go(1), per); } return; }
         show(i);
       }, per);
+      return;
+    }
+    // Single-message auto loader: image + title + body + progress bar, auto-advances after `per` ms.
+    if (scr.body) {
+      const per = scr.per || 3000;
+      if (scr.image) {
+        const w = el("div", "info-photo" + (scr.full ? " full" : ""));
+        const im = document.createElement("img"); im.src = scr.image; im.alt = ""; w.appendChild(im); root.appendChild(w);
+      }
+      root.appendChild(el("h1", "q", personalize(scr.title || "")));
+      root.appendChild(el("p", "info-body", personalize(scr.body)));
+      const barWrap = el("div", "auto-bar"); const bar = el("i"); barWrap.appendChild(bar); root.appendChild(barWrap);
+      requestAnimationFrame(() => { bar.style.transition = "width " + per + "ms linear"; bar.style.width = "100%"; });
+      setTimeout(() => go(1), per);
       return;
     }
     // Fallback: simple progress bars (short "Almost done" style)

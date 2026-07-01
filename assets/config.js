@@ -61,15 +61,18 @@ window.FUNNEL = {
     { id: "goal_weight", type: "input", section: "My profile",
       q: "Got it! And what's your goal weight?",
       sub: "An estimate will do - you can easily change this later.",
-      units: ["kg", "lb"], field: "goal_weight" },
+      units: ["kg", "lb"], field: "goal_weight",
+      noteTitle: "Realistic goal!",
+      note: "A gentle, gradual target is easier to reach and to keep. Small, steady change is the kind that lasts." },
 
-    { id: "intro_smallchange", type: "info", image: "assets/bodies_2b.jpg",
+    { id: "intro_smallchange", type: "loader", per: 3000, image: "assets/bodies_2b.jpg",
       title: "Small steps, real results",
       body: "Even small, steady changes in how you move can add up over time. Gentle daily practice is the kind of habit that actually sticks." },
 
-    { id: "projection_1", type: "info", image: "assets/13.webp",
-      title: "You'll get there sooner than you think",
-      body: "With a routine matched to you, steady progress is realistic — and we'll keep adapting it as you go." },
+    { id: "projection_1", type: "info", image: "assets/13.webp", headerTop: true,
+      title: "We predict you'll reach {goal}kg by {projdate}",
+      blockTitle: "You only need to lose {lose} kg",
+      blockBody: "That's around {pct}% of your body weight — a realistic, steady target you can actually reach." },
 
     { id: "intro_plan", type: "info", personalize: true, image: "assets/14.webp",
       title: "A goal without a plan is just a wish",
@@ -123,7 +126,7 @@ window.FUNNEL = {
 
     { id: "intro_eligible", type: "info", chart: true,
       title: "Good news — you're eligible!",
-      body: "Your answers line up well with a gentle, seated routine. Here's how progress could build over your first weeks." },
+      blockBody: "Your answers line up well with a gentle, seated routine. Here's how progress could build over your first weeks." },
 
     { id: "pain_points", type: "multi", section: "Activity", layout: "cards",
       q: "Are any of the following an issue for you?", sub: "Your plan will address these to ensure your comfort and safety",
@@ -171,7 +174,7 @@ window.FUNNEL = {
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
 
     { id: "projection_2", type: "info", image: "assets/33.webp", full: true,
-      title: "You'll reach your goal sooner than expected",
+      title: "You'll reach your goal of {goal}kg sooner than expected",
       body: "With a routine matched to your preferences, steady progress is realistic — and we'll keep adapting it as you go." },
 
     // ===================== Lifestyle =====================
