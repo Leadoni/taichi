@@ -285,18 +285,18 @@ window.FUNNEL = {
     // ===================== Plan generation (mid-funnel loader) =====================
     { id: "loader", type: "loader", title: "Just a moment...", sub: "Getting things ready for you", per: 1600,
       cards: [
-        { img: "assets/55_1.jpg", text: "Built with care, for how you move" },
+        { img: "assets/55_1b.jpg", text: "Built with care, for how you move" },
         { img: "assets/55_2.jpg", text: "We focus on how your body feels — not dieting" },
         { img: "assets/55_3.jpg", text: "Small, steady habits are what last" },
         { img: "assets/55_4.jpg", text: "A plan you can actually keep up with" },
-        { img: "assets/55_5.jpg", text: "Just follow your plan, one short session at a time" },
-        { img: "assets/55_6.jpg", text: "It only takes a few minutes a day" },
-        { img: "assets/55_7.jpg", text: "Off days are completely okay" },
-        { img: "assets/41.webp", text: "No one's perfect — we'll help you keep going" },
-        { img: "assets/24.webp", text: "We'll help you get back on track" },
+        { img: "assets/55_5b.jpg", text: "Just follow your plan, one short session at a time" },
+        { img: "assets/55_6b.jpg", text: "It only takes a few minutes a day" },
+        { img: "assets/55_7b.jpg", text: "Off days are completely okay" },
+        { img: "assets/55_8b.jpg", text: "No one's perfect — we'll help you keep going" },
+        { img: "assets/55_9b.jpg", text: "We'll help you get back on track" },
       ] },
 
-    { id: "intro_goodhands", type: "info", image: "assets/bodies_2b.jpg",
+    { id: "intro_goodhands", type: "info", image: "assets/seniors_02.jpg",
       title: "You're in good hands",
       body: "Let us take care of you while you take care of yourself. We're here for you all along the way." },
 
@@ -355,7 +355,7 @@ window.FUNNEL = {
       title: "Perfect — we've matched your pace",
       body: "And it doesn't stop here: we'll adapt your plan as your body and activity level change throughout your journey." },
 
-    { id: "intro_focus20", type: "info", image: "assets/66.webp",
+    { id: "intro_focus20", type: "info", image: "assets/seniors_03.jpg",
       title: "Just 20 minutes of Chair Tai Chi boosts focus and brainpower",
       body: "It increases blood flow to your brain and helps sharpen memory, improve focus, and support clearer thinking." },
 
