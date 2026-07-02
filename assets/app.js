@@ -455,7 +455,8 @@
     const qp = new URLSearchParams(location.search);
     const ages = ["40-49", "50-59", "60-69", "70-80"];
     S = window.CTC ? (window.CTC.reset(), window.CTC.get()) : S;
-    S.gender = Math.random() < 0.5 ? "female" : "male";
+    const gq = (qp.get("gender") || "").toLowerCase();
+    S.gender = (gq === "male" || gq === "female") ? gq : (Math.random() < 0.5 ? "female" : "male");
     S.age_band = ages[Math.floor(Math.random() * ages.length)];
     S.funnel = "chair-taichi"; S.status = "checkout";
     S.height_cm = 158 + Math.floor(Math.random() * 22);
@@ -471,9 +472,16 @@
       else if (scr.type === "multi") { const opts = scr.options.filter(o => !(o.femaleOnly && S.gender === "male")); const n = 1 + Math.floor(Math.random() * Math.min(2, opts.length)); S.answers[scr.id] = [...opts].sort(() => Math.random() - 0.5).slice(0, n).map(o => o.value); }
       else if (scr.type === "input") S.answers[scr.id] = String(scr.field === "height" ? S.height_cm : scr.field === "weight" ? S.weight_kg : S.goal_weight_kg);
     });
-    // jump straight to the email capture step (then name -> goals -> checkout work as normal)
-    const emailIdx = FUNNEL.screens.findIndex(s => s.type === "email");
-    S.index = emailIdx >= 0 ? emailIdx : 0; S.status = "in_progress"; save();
+    // Target: ?step=N (matches the header step tag, N = index+2). Default = email capture step.
+    const stepParam = qp.get("step") || qp.get("goto");
+    let target;
+    if (stepParam != null && stepParam !== "") {
+      target = Math.max(0, Math.min(FUNNEL.screens.length - 1, parseInt(stepParam, 10) - 2));
+    } else {
+      const emailIdx = FUNNEL.screens.findIndex(s => s.type === "email");
+      target = emailIdx >= 0 ? emailIdx : 0;
+    }
+    S.index = target; S.status = "in_progress"; save();
     render();
   }
 
@@ -489,6 +497,7 @@
   if (_qp.get("start") !== null || _qp.get("fresh") !== null || _qp.get("new") !== null) {
     if (window.CTC) { window.CTC.reset(); S = window.CTC.get(); }
   }
-  if (_qp.get("autotest") !== null || _qp.get("test") !== null || _qp.get("funnel") === "test") autotestFill();
+  if (_qp.get("autotest") !== null || _qp.get("test") !== null || _qp.get("funnel") === "test"
+      || _qp.get("step") !== null || _qp.get("goto") !== null) autotestFill();
   else if (!S.gender) genderGate(); else if (!S.age_band) ageGate(); else render();
 })();
