@@ -310,8 +310,11 @@
     // (large before → ~30% smaller after).
     (function(){
       const rnd = (a, b) => Math.round(a + Math.random() * (b - a));
-      const eB = rnd(20, 32), eA = rnd(84, 93);
-      const sB = rnd(18, 30), sA = rnd(82, 92);
+      const eB = rnd(24, 34), eA = rnd(86, 94);
+      // Steadiness: independent value, kept clearly different from Energy so the bars don't match.
+      let sB, sA;
+      do { sB = rnd(12, 30); } while (Math.abs(sB - eB) < 7);
+      do { sA = rnd(76, 90); } while (Math.abs(sA - eA) < 6);
       const wB = rnd(86, 95), wA = Math.round(wB * 0.7);   // weight ~30% smaller after
       const vals = { "energy-b": eB, "energy-a": eA, "steady-b": sB, "steady-a": sA, "weight-b": wB, "weight-a": wA };
       requestAnimationFrame(() => Object.keys(vals).forEach(k => {
