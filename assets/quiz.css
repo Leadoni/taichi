@@ -19,6 +19,7 @@ img{max-width:100%}
 /* ── top bar + progress ── */
 .topbar{display:flex;align-items:center;gap:12px;padding:18px 24px 0;max-width:var(--maxw);margin:0 auto}
 .topbar .back{border:none;background:none;font-size:22px;color:var(--q-muted);cursor:pointer;line-height:1;padding:4px 8px}
+.topbar .qlogo{height:24px;width:auto;display:block;flex:none}
 .topbar .section{flex:1;text-align:center;font-size:12.5px;color:var(--q-muted);font-weight:500;letter-spacing:.02em}
 .topbar .stepno{flex:none;font-size:11px;color:var(--q-terracotta);background:oklch(94% 0.03 40);border:1px solid oklch(88% 0.04 40);border-radius:6px;padding:2px 7px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .progress{height:2px;background:var(--q-track);max-width:var(--maxw);margin:14px auto 0;border-radius:2px;overflow:hidden}
@@ -67,15 +68,16 @@ h1.q{font-family:var(--serif);font-size:23px;line-height:1.25;margin:6px 0 8px;f
 .gate-2col .gate-opt .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ── card grid (photo cards) ── */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:440px;margin:0 auto}
+/* compact photo cards — identical heights, sized to fit the viewport */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:420px;margin:0 auto}
 .grid .opt{flex-direction:column;align-items:stretch;text-align:left;padding:0;gap:0;overflow:hidden}
-.grid .opt .emoji{font-size:32px;width:auto;padding:18px 0 0;text-align:center}
-.grid .opt .cimg{display:block;width:100%;aspect-ratio:1/1;background:var(--q-track)}
+.grid .opt .emoji{font-size:30px;width:auto;padding:14px 0 0;text-align:center}
+.grid .opt .cimg{display:block;width:100%;aspect-ratio:auto;height:clamp(94px,22vw,150px);background:var(--q-track)}
 .grid .opt .cimg img{width:100%;height:100%;object-fit:cover;display:block}
-.grid .opt .lab{flex:none;padding:12px 14px;font-weight:600}
+.grid .opt .lab{flex:none;height:48px;padding:0 12px;font-size:13.5px;font-weight:600;line-height:1.25;display:flex;align-items:center;overflow:hidden}
 .grid .opt .check{display:none}
 .grid.cards-multi .opt{position:relative}
-.grid.cards-multi .opt .lab{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.grid.cards-multi .opt .lab{display:flex;justify-content:space-between;align-items:center;gap:8px;height:48px}
 .grid.cards-multi .opt .check{display:grid;position:absolute;top:10px;right:10px;background:#fff;border:2px solid var(--q-indicator)}
 .grid.cards-multi .opt.sel .check{background:var(--q-rose);border-color:var(--q-rose)}
 
@@ -172,20 +174,21 @@ h1.q{font-family:var(--serif);font-size:23px;line-height:1.25;margin:6px 0 8px;f
 @keyframes lfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .goals-bullets{max-width:400px;margin:18px auto 0}
 
-/* ── DARK info slides (scr-info toggles on <body>) ── */
-body.scr-info{background:oklch(14% 0.028 50);color:oklch(88% 0.018 70)}
-body.scr-info .topbar .section,body.scr-info .topbar .back{color:oklch(62% 0.02 60)}
-body.scr-info .progress{background:oklch(26% 0.03 55)}
-body.scr-info h1.q{color:oklch(90% 0.018 70)}
-body.scr-info .info-body{color:oklch(72% 0.015 60)}
-body.scr-info .info-block{background:oklch(18% 0.028 50);border-color:oklch(28% 0.04 55);border-left-color:var(--q-amber)}
-body.scr-info .info-block .ib-title{color:oklch(88% 0.018 70)}
-body.scr-info .info-block .ib-body{color:oklch(70% 0.015 60)}
-body.scr-info .info-photo{box-shadow:0 10px 34px rgba(0,0,0,.4)}
-body.scr-info .cta-bar{background:linear-gradient(to bottom,oklch(14% 0.028 50 / 0),oklch(14% 0.028 50) 45%)}
-body.scr-info .btn{background:oklch(88% 0.018 70);color:oklch(14% 0.028 50);box-shadow:0 4px 24px rgba(0,0,0,.4)}
-body.scr-info .chartbox{background:oklch(18% 0.028 50);border-color:oklch(28% 0.04 55)}
-body.scr-info .chartlabels{color:oklch(62% 0.015 60)}
+/* ── Interim / info slides: warm "mocha" — deeper than the cream pages, but not harsh ── */
+body.scr-info{background:linear-gradient(165deg,oklch(35% 0.035 48),oklch(30% 0.035 42));color:oklch(91% 0.02 78)}
+body.scr-info .topbar .section,body.scr-info .topbar .back{color:oklch(76% 0.02 65)}
+body.scr-info .progress{background:oklch(48% 0.03 48)}
+body.scr-info h1.q{color:oklch(94% 0.02 80)}
+body.scr-info .sub{color:oklch(80% 0.02 68)}
+body.scr-info .info-body{color:oklch(84% 0.015 70)}
+body.scr-info .info-block{background:oklch(40% 0.035 46);border-color:oklch(52% 0.04 46);border-left-color:var(--q-amber)}
+body.scr-info .info-block .ib-title{color:oklch(93% 0.02 80)}
+body.scr-info .info-block .ib-body{color:oklch(82% 0.015 70)}
+body.scr-info .info-photo{box-shadow:0 12px 34px oklch(20% 0.03 45 / .5)}
+body.scr-info .cta-bar{background:linear-gradient(to bottom,oklch(31% 0.035 44 / 0),oklch(31% 0.035 44) 46%)}
+body.scr-info .btn{background:oklch(92% 0.02 80);color:oklch(30% 0.035 45);box-shadow:0 6px 24px oklch(20% 0.03 45 / .45)}
+body.scr-info .chartbox{background:oklch(40% 0.035 46);border-color:oklch(52% 0.04 46)}
+body.scr-info .chartlabels{color:oklch(78% 0.015 66)}
 
 /* test-mode reset pill (dev) */
 .testbar{position:fixed;left:12px;bottom:12px;z-index:140;background:oklch(20% 0.02 50 / .9);color:#fff;border:none;
