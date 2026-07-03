@@ -446,8 +446,7 @@
   function ageGate() {
     gateScreen("Chair Tai Chi Workouts", "Select your age to get your free personalized plan",
       [["40-49", "Age 40–49"], ["50-59", "Age 50–59"], ["60-69", "Age 60–69"], ["70-80", "Age 70–80"]],
-      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); },
-      "assets/1_age.webp");
+      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); });
     const sn = $("#stepno"); if (sn) sn.textContent = "#1 age";
   }
 

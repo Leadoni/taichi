@@ -55,8 +55,8 @@ h1.q{font-family:var(--serif);font-size:23px;line-height:1.25;margin:6px 0 8px;f
 .gate-title{font-family:var(--serif);text-transform:none;letter-spacing:-.4px;font-weight:500}
 .gate-opt{justify-content:space-between}
 
-/* decorative figure below options */
-.quiz-figure{margin:28px auto 0;max-width:340px}
+/* decorative figure below options (tried_before) — sized down ~30% */
+.quiz-figure{margin:22px auto 0;max-width:238px}
 .quiz-figure img{width:100%;display:block}
 
 /* gate with figure beside options */
