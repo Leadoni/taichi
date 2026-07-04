@@ -41,15 +41,22 @@
   function bmi() { if (!S.height_cm || !S.weight_kg) return null; const m = S.height_cm / 100; return +(S.weight_kg / (m * m)).toFixed(1); }
   function bmiCategory(b) { return b < 18.5 ? "underweight" : b < 25 ? "a healthy weight" : b < 30 ? "in the overweight range" : "in the obese range"; }
 
-  // screens excluding the capture trio for progress math
-  const total = F.screens.length;
+  // Segmented, per-section loader (Digesti-style): 3 sections, each its own segment.
+  const SECS = ["My profile", "Activity", "Lifestyle"];
+  const _secOf = (() => { let cur = 0; return F.screens.map(s => { const i = SECS.indexOf(s.section); if (i >= 0) cur = i; return cur; }); })();
+  const _secLen = SECS.map((_, i) => _secOf.filter(x => x === i).length);
+  const _secStart = SECS.map((_, i) => _secOf.indexOf(i));
   function setProgress() {
-    const pct = Math.min(100, Math.round((S.index) / total * 100));
-    const bar = $("#progress > i"); if (bar) bar.style.width = pct + "%";
-    const scr = F.screens[S.index];
-    const sec = $("#section"); if (sec) sec.textContent = (scr && scr.section) || "";
-    // TEMP step indicator: matches the screenshot numbering (their #1 = age gate)
-    const sn = $("#stepno"); if (sn) sn.textContent = scr ? ("#" + (S.index + 2) + " " + scr.id) : "";
+    const idx = Math.min(S.index, F.screens.length - 1);
+    const scr = F.screens[idx];
+    const si = _secOf[idx] || 0;
+    const within = _secLen[si] ? Math.min(1, (idx - _secStart[si] + 1) / _secLen[si]) : 0;
+    document.querySelectorAll("#progress .seg > i").forEach((bar, i) => {
+      bar.style.width = (i < si ? 100 : i === si ? Math.round(within * 100) : 0) + "%";
+    });
+    const sec = $("#section"); if (sec) { sec.textContent = SECS[si] || ""; sec.style.display = "block"; }
+    const qb = $(".qbrand"); if (qb) qb.style.display = "none";
+    const sn = $("#stepno"); if (sn) sn.textContent = scr ? ("#" + (idx + 2) + " " + scr.id) : "";
   }
 
   let _dir = 1;
@@ -404,12 +411,17 @@
   }
 
   // Shared gate renderer: chevron rows + optional figure beside the options (matches their age gate).
-  function gateScreen(title, subtitle, rows, onPick, figureSrc, showConsent) {
+  function gateScreen(title, subtitle, rows, onPick, figureSrc, showConsent, showPill) {
     const root = $("#step"); root.innerHTML = "";
     document.body.classList.remove("scr-info");
-    const bar = $("#progress > i"); if (bar) bar.style.width = "0%";
-    const sec = $("#section"); if (sec) sec.textContent = "";
-    root.appendChild(el("div", "gate-pill", "🎁 Take the quiz — get your free plan"));
+    document.querySelectorAll("#progress .seg > i").forEach(i => i.style.width = "0%");
+    const sec = $("#section"); if (sec) { sec.textContent = ""; sec.style.display = "none"; }
+    const qb = $(".qbrand"); if (qb) qb.style.display = "";
+    if (showPill) {
+      const pill = el("div", "gate-pill");
+      pill.innerHTML = '<span class="gp-ic">🎁</span><span class="gp-tx">Take the quiz — get your <b>PDF Guide!</b></span>';
+      root.appendChild(pill);
+    }
     root.appendChild(el("h1", "q gate-title", title));
     root.appendChild(el("p", "sub", subtitle));
     const box = el("div", "opts");
@@ -438,7 +450,7 @@
   function genderGate() {
     gateScreen("Chair Tai Chi Workouts", "Select your gender to get your free personalized plan",
       [["female", "Female"], ["male", "Male"]],
-      (val) => { S.gender = val; save(); ageGate(); }, null, true);
+      (val) => { S.gender = val; save(); ageGate(); }, "assets/wm.jpg", true, true);
     const sn = $("#stepno"); if (sn) sn.textContent = "#0 gender";
   }
 
@@ -446,7 +458,7 @@
   function ageGate() {
     gateScreen("Chair Tai Chi Workouts", "Select your age to get your free personalized plan",
       [["40-49", "Age 40–49"], ["50-59", "Age 50–59"], ["60-69", "Age 60–69"], ["70-80", "Age 70–80"]],
-      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); });
+      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); }, "assets/1_age.webp", false, false);
     const sn = $("#stepno"); if (sn) sn.textContent = "#1 age";
   }
 

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=14">
+<link rel="stylesheet" href="assets/style.css?v=15">
 <style>
   /* ── Warm "Her Phase Map" theme override for checkout ── */
   :root{
@@ -20,17 +20,19 @@
     --serif:'Playfair Display',Georgia,'Times New Roman',serif;
     --sans:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
     --grad:linear-gradient(135deg,#bf7350,#c4806a);
+    --co-top:oklch(97% 0.012 72 / 0.92); --btn-glow:rgba(191,115,80,.3);
   }
   :root[data-theme="green"]{
-    --bg:#eef3ea; --ink:#1f2a24; --muted:#8a9585;
-    --primary:#4f9d63; --primary-dark:#377a49; --primary-soft:#e6f1e6;
-    --line:#dde7dc; --accent:#6f9e7a; --sage:#5f9e78; --gold:#9aa84f;
-    --grad:linear-gradient(135deg,#4f9d63,#6bb37e);
+    --bg:#f6f9f6; --ink:#233e20; --muted:#7c8d79;
+    --primary:#45b577; --primary-dark:#2f9d61; --primary-soft:#eef6f1;
+    --line:#dee7e2; --accent:#45b577; --sage:#45b577; --gold:#9aa84f;
+    --grad:linear-gradient(135deg,#3aa76a,#45b577);
+    --co-top:rgba(246,249,246,.92); --btn-glow:rgba(69,181,119,.3);
   }
   body{font-family:var(--sans);background:var(--bg);color:var(--ink);padding-top:66px}
 
   /* shared component overrides (from style.css) */
-  .btn{background:var(--grad);border-radius:14px;font-family:var(--sans);font-weight:500;letter-spacing:.3px;box-shadow:0 6px 24px rgba(191,115,80,.3)}
+  .btn{background:var(--grad);border-radius:14px;font-family:var(--sans);font-weight:500;letter-spacing:.3px;box-shadow:0 6px 24px var(--btn-glow)}
   .btn:hover{background:var(--grad);filter:brightness(1.05)}
   .plan{border:1.5px solid var(--line);border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
   .plan.sel{border-color:var(--primary);background:var(--primary-soft)}
@@ -41,7 +43,7 @@
   .popular{background:var(--grad);border-radius:20px}
 
   /* sticky top bar with timer + CTA */
-  .co-top{position:fixed;top:0;left:0;right:0;z-index:60;background:oklch(97% 0.012 72 / 0.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .co-top{position:fixed;top:0;left:0;right:0;z-index:60;background:var(--co-top);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
   .co-top-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 16px}
   .co-clock{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;font-weight:600;color:var(--ink)}
   .co-clock .t{background:var(--primary-soft);color:var(--primary-dark);border-radius:8px;padding:3px 9px;font-variant-numeric:tabular-nums;font-size:16px}
@@ -49,7 +51,7 @@
   .co-top-brand{display:inline-flex;align-items:center;gap:7px;font-family:var(--serif);font-weight:500;font-size:17px;color:var(--ink);white-space:nowrap}
   .co-top-brand img{height:22px;width:auto;display:block}
   @media (max-width:400px){ .co-top-brand{font-size:0;gap:0} .co-top-brand img{height:26px} }  /* logo-only on very small screens */
-  .co-top .btn-sm{background:var(--grad);color:#fff;border:none;border-radius:20px;padding:10px 18px;font-weight:500;font-size:14px;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px rgba(191,115,80,.28)}
+  .co-top .btn-sm{background:var(--grad);color:#fff;border:none;border-radius:20px;padding:10px 18px;font-weight:500;font-size:14px;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px var(--btn-glow)}
 
   .co{max-width:var(--maxw);margin:0 auto;padding:12px 20px 40px}
   .co h2.sec-t{font-family:var(--serif);font-size:27px;font-weight:500;letter-spacing:-.5px;text-align:center;margin:36px 0 16px}
@@ -82,7 +84,7 @@
   .bmi-track .mk{position:absolute;top:-5px;width:3px;height:20px;background:var(--ink);border-radius:2px;transform:translateX(-50%)}
   .bmi-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:0 2px}
   .sum .item .v.red{color:#c0603f}
-  .meta-alert{margin-top:10px;background:#f7ede8;border-radius:10px;padding:10px 12px;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:8px}
+  .meta-alert{margin-top:10px;background:var(--primary-soft);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--ink);display:flex;align-items:center;gap:8px}
   .meta-alert .mi{color:var(--primary);font-weight:600}
   .glasses{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:22px}
   .note{color:var(--muted)}

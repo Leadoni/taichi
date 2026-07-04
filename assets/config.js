@@ -259,11 +259,11 @@ window.FUNNEL = {
       body: "Staying gently active is associated with sharper memory and better brain health as we age. A short daily routine is one of the simplest ways to help protect your mind for the years ahead." },
 
     // ===================== Health & Safety =====================
-    { id: "medications", type: "single", section: "Health & Safety",
+    { id: "medications", type: "single", section: "Lifestyle",
       q: "Are you taking any medications?", sub: "Rest assured this information is for your safety.",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }] },
 
-    { id: "mobility", type: "single", section: "Health & Safety",
+    { id: "mobility", type: "single", section: "Lifestyle",
       q: "Do you have any physical or mobility restrictions we should know about?",
       sub: "Rest assured this information is for your safety.",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "Prefer not to answer" }] },
@@ -272,7 +272,7 @@ window.FUNNEL = {
       title: "Your safety comes first",
       body: "Always adapt movements to suit your body. If anything gives you concern, check with your doctor or physical therapist before starting a new activity." },
 
-    { id: "menopause", type: "single", section: "Health & Safety", femaleOnly: true,
+    { id: "menopause", type: "single", section: "Lifestyle", femaleOnly: true,
       q: "Have you gone through menopause?", sub: "Hormonal changes can impact your metabolism and nutritional needs.",
       options: [{ value: "no", label: "No" }, { value: "going", label: "Going through it" },
         { value: "passed", label: "Already passed it" }, { value: "unsure", label: "Not sure" },
@@ -305,26 +305,26 @@ window.FUNNEL = {
       body: "You're moments away from your personalized plan. Let's finish with what keeps you motivated." },
 
     // ===================== Almost there =====================
-    { id: "main_reason", type: "multi", section: "Almost there",
+    { id: "main_reason", type: "multi", section: "Lifestyle",
       q: "What's your main reason for wanting to get in shape?", sub: "Choose all that apply",
       options: [{ value: "confident", label: "Feel more confident in my body" },
         { value: "energetic", label: "Feel healthier and more energetic" },
         { value: "look", label: "Change how I look" }, { value: "clothes", label: "Fit in my clothes better" },
         { value: "other", label: "Other" }] },
 
-    { id: "motivates", type: "multi", section: "Almost there",
+    { id: "motivates", type: "multi", section: "Lifestyle",
       q: "What motivates you to exercise?", sub: "Choose all that apply",
       options: [{ value: "health", label: "Improving health" }, { value: "immune", label: "Boosting immune system" },
         { value: "look", label: "Looking better" }, { value: "strength", label: "Building strength and endurance" },
         { value: "mood", label: "Managing stress / improving mood" },
         { value: "example", label: "Setting a positive example for others" }, { value: "other", label: "Other" }] },
 
-    { id: "motivation_level", type: "single", section: "Almost there",
+    { id: "motivation_level", type: "single", section: "Lifestyle",
       q: "Right now, how motivated are you to reach your happy weight?",
       options: [{ value: "ready", label: "I'm 100% ready" }, { value: "hopeful", label: "I'm pretty hopeful about it" },
         { value: "unsure", label: "I'm a bit unsure" }, { value: "easy", label: "I'm kinda taking it easy" }] },
 
-    { id: "obstacles", type: "multi", section: "Almost there",
+    { id: "obstacles", type: "multi", section: "Lifestyle",
       q: "What made it hard for you to stay motivated to exercise in the past?", sub: "Choose all that apply",
       options: [{ value: "results", label: "Didn't see noticeable results" },
         { value: "regain", label: "I'd lose weight, but gain it back" },
@@ -338,7 +338,7 @@ window.FUNNEL = {
       title: "Why people give up — and how we avoid it",
       body: "Most people quit because they start too big, too fast. Our plan does the opposite — small, sustainable steps you can keep for good." },
 
-    { id: "explore", type: "multi", section: "Almost there",
+    { id: "explore", type: "multi", section: "Lifestyle",
       q: "While we're customizing your journey, what else do you want to explore?",
       sub: "Our holistic approach goes beyond weight loss to improve your well-being, mood, and health.",
       options: [{ value: "energy", label: "Upping my energy levels" }, { value: "habits", label: "Cultivating healthy behaviors" },
@@ -346,7 +346,7 @@ window.FUNNEL = {
         { value: "flex", label: "Improving flexibility" }, { value: "posture", label: "Getting better posture" },
         { value: "endurance", label: "Improving endurance" }, { value: "immune", label: "Boosting my immune system" }] },
 
-    { id: "pace", type: "single", section: "Almost there",
+    { id: "pace", type: "single", section: "Lifestyle",
       q: "Your Chair Tai Chi plan is ready! How quickly do you want to get in shape?",
       options: [{ value: "fast", label: "As quickly as possible" }, { value: "slow", label: "Slow and steady does it" },
         { value: "between", label: "Somewhere between the two" }] },
@@ -359,7 +359,7 @@ window.FUNNEL = {
       title: "Just 20 minutes of Chair Tai Chi boosts focus and brainpower",
       body: "It increases blood flow to your brain and helps sharpen memory, improve focus, and support clearer thinking." },
 
-    { id: "daypart", type: "single", section: "Almost there",
+    { id: "daypart", type: "single", section: "Lifestyle",
       q: "When do you feel most “on” — morning or night?",
       options: [{ value: "morning", label: "Morning" }, { value: "night", label: "Night" }, { value: "depends", label: "It depends" }] },
 
