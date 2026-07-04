@@ -22,6 +22,7 @@
   --q-info-track:oklch(48% 0.03 48); --q-info-card:oklch(40% 0.035 46); --q-info-border:oklch(52% 0.04 46);
   --q-info-btn-bg:oklch(92% 0.02 80); --q-info-btn-fg:oklch(30% 0.035 45);
   --q-info-brand:oklch(93% 0.02 80); --q-info-sub:oklch(76% 0.02 65);
+  --q-info-shadow:0 12px 34px rgba(0,0,0,.5); --q-info-btn-shadow:0 6px 24px rgba(0,0,0,.45);
 }
 :root[data-theme="green"]{
   --q-bg:#f6f9f6; --q-ink:#233e20; --q-ink-light:#3c5140;
@@ -35,11 +36,12 @@
   --q-sel-a:#eef6f1; --q-sel-b:#e6f2ea; --q-sel-glow:rgba(69,181,119,.18);
   --q-chip-bg:#e8f3ec; --q-chip-border:#cfe4d6;
   --q-btn-glow:rgba(69,181,119,.32);
-  --q-info-bg1:#1f4230; --q-info-bg2:#163524;
-  --q-info-fg:#e7f1ea; --q-info-fg2:#bccdc1; --q-info-fg3:#cdddd2;
-  --q-info-track:#2f5a3f; --q-info-card:#244a33; --q-info-border:#356043;
-  --q-info-btn-bg:#e7f1ea; --q-info-btn-fg:#1f4230;
-  --q-info-brand:#e7f1ea; --q-info-sub:#a9c0b0;
+  --q-info-bg1:#f6f9f6; --q-info-bg2:#f6f9f6;
+  --q-info-fg:#0f281b; --q-info-fg2:#3c5140; --q-info-fg3:#3c5140;
+  --q-info-track:#dee7e2; --q-info-card:#ffffff; --q-info-border:#dee7e2;
+  --q-info-btn-bg:linear-gradient(135deg,#3aa76a,#45b577); --q-info-btn-fg:#ffffff;
+  --q-info-brand:#233e20; --q-info-sub:#7c8d79;
+  --q-info-shadow:0 8px 30px rgba(30,55,40,.12); --q-info-btn-shadow:0 6px 24px var(--q-btn-glow);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -52,7 +54,7 @@ img{max-width:100%}
 .topbar .qbrand{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--serif);font-size:18px;font-weight:500;color:var(--q-ink);white-space:nowrap;letter-spacing:.01em}
 .topbar .qbrand .qlogo{height:22px;width:auto;display:block}
 .topbar .section{display:none;flex:1;text-align:center;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--q-ink);letter-spacing:.01em}
-.topbar .stepno{flex:none;font-size:11px;color:var(--q-terracotta);background:var(--q-chip-bg);border:1px solid var(--q-chip-border);border-radius:6px;padding:2px 7px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.topbar .stepno{display:none;flex:none;font-size:11px;color:var(--q-terracotta);background:var(--q-chip-bg);border:1px solid var(--q-chip-border);border-radius:6px;padding:2px 7px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .progress{display:flex;gap:6px;height:5px;max-width:var(--maxw);margin:12px auto 0;padding:0 4px}
 .progress .seg{flex:1;height:5px;background:var(--q-track);border-radius:10px;overflow:hidden}
 .progress .seg > i{display:block;height:100%;width:0;background:var(--grad-bar);transition:width .5s cubic-bezier(.4,0,.2,1)}
@@ -72,9 +74,8 @@ h1.q{font-family:var(--serif);font-size:25px;line-height:1.28;margin:6px 0 8px;f
   color:var(--q-ink);-webkit-tap-highlight-color:transparent;outline:none}
 .opt:hover{background:var(--q-hover-bg);border-color:var(--q-hover-border)}
 .opt:active{transform:scale(.985)}
-.opt.sel{background:linear-gradient(135deg,var(--q-sel-a),var(--q-sel-b));border-color:var(--q-rose);
-  box-shadow:0 4px 20px var(--q-sel-glow)}
-.opt.sel .lab{color:var(--q-terracotta)}
+.opt.sel{background:linear-gradient(135deg,var(--q-sel-a),var(--q-sel-b));border-color:var(--q-rose);box-shadow:none}
+.opt.sel .lab{color:var(--q-ink)}
 .opt .emoji{font-size:23px;width:28px;text-align:center;flex:none}
 .opt .lab{flex:1;line-height:1.35}
 .opt .check{width:24px;height:24px;border-radius:7px;border:2px solid var(--q-indicator);flex:none;display:grid;place-items:center;color:#fff;font-size:13px;transition:background .16s,border-color .16s}
@@ -92,8 +93,8 @@ h1.q{font-family:var(--serif);font-size:25px;line-height:1.28;margin:6px 0 8px;f
 .gate-opt{justify-content:space-between}
 
 /* decorative figure below options (tried_before) — sized down ~30% */
-.quiz-figure{margin:22px auto 0;max-width:238px}
-.quiz-figure img{width:100%;display:block}
+.quiz-figure{margin:16px auto 0;max-width:168px}
+.quiz-figure img{width:100%;display:block;max-height:200px;object-fit:contain}
 
 /* gate with figure beside options */
 .gate-2col{display:flex;align-items:center;gap:14px;max-width:var(--maxw);margin:8px auto 0}
@@ -220,11 +221,12 @@ body.scr-info .info-body{color:var(--q-info-fg3)}
 body.scr-info .info-block{background:var(--q-info-card);border-color:var(--q-info-border);border-left-color:var(--q-amber)}
 body.scr-info .info-block .ib-title{color:var(--q-info-fg)}
 body.scr-info .info-block .ib-body{color:var(--q-info-fg3)}
-body.scr-info .info-photo{box-shadow:0 12px 34px rgba(0,0,0,.5)}
+body.scr-info .info-photo{box-shadow:var(--q-info-shadow)}
 body.scr-info .cta-bar{background:linear-gradient(to bottom,transparent,var(--q-info-bg2) 46%)}
-body.scr-info .btn{background:var(--q-info-btn-bg);color:var(--q-info-btn-fg);box-shadow:0 6px 24px rgba(0,0,0,.45)}
+body.scr-info .btn{background:var(--q-info-btn-bg);color:var(--q-info-btn-fg);box-shadow:var(--q-info-btn-shadow)}
 body.scr-info .chartbox{background:var(--q-info-card);border-color:var(--q-info-border)}
 body.scr-info .chartlabels{color:var(--q-info-fg2)}
+body.debug .topbar .stepno{display:inline-block}
 
 /* test-mode reset pill (dev) */
 .testbar{position:fixed;left:12px;bottom:12px;z-index:140;background:oklch(20% 0.02 50 / .9);color:#fff;border:none;

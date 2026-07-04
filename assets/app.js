@@ -46,6 +46,8 @@
   const _secOf = (() => { let cur = 0; return F.screens.map(s => { const i = SECS.indexOf(s.section); if (i >= 0) cur = i; return cur; }); })();
   const _secLen = SECS.map((_, i) => _secOf.filter(x => x === i).length);
   const _secStart = SECS.map((_, i) => _secOf.indexOf(i));
+  // Dev: ?debug=1 reveals the step-id chip (also: run `document.body.classList.toggle('debug')` in console).
+  if (new URLSearchParams(location.search).has("debug")) { try { document.body.classList.add("debug"); } catch (e) {} }
   function setProgress() {
     const idx = Math.min(S.index, F.screens.length - 1);
     const scr = F.screens[idx];
@@ -415,8 +417,8 @@
     const root = $("#step"); root.innerHTML = "";
     document.body.classList.remove("scr-info");
     document.querySelectorAll("#progress .seg > i").forEach(i => i.style.width = "0%");
-    const sec = $("#section"); if (sec) { sec.textContent = ""; sec.style.display = "none"; }
-    const qb = $(".qbrand"); if (qb) qb.style.display = "";
+    const sec = $("#section"); if (sec) { sec.textContent = "My profile"; sec.style.display = "block"; }
+    const qb = $(".qbrand"); if (qb) qb.style.display = "none";
     if (showPill) {
       const pill = el("div", "gate-pill");
       pill.innerHTML = '<span class="gp-ic">🎁</span><span class="gp-tx">Take the quiz — get your <b>PDF Guide!</b></span>';
