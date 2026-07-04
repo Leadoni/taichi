@@ -425,7 +425,7 @@
       root.appendChild(pill);
     }
     root.appendChild(el("h1", "q gate-title", title));
-    root.appendChild(el("p", "sub", subtitle));
+    if (subtitle) root.appendChild(el("p", "sub", subtitle));
     const box = el("div", "opts");
     rows.forEach(([val, label]) => {
       const row = el("button", "opt gate-opt");
@@ -458,7 +458,7 @@
 
   // ---- age gate (second screen of the quiz) ----
   function ageGate() {
-    gateScreen("Chair Tai Chi Workouts", "Select your age to get your free personalized plan",
+    gateScreen("Select Your Age", "",
       [["40-49", "Age 40–49"], ["50-59", "Age 50–59"], ["60-69", "Age 60–69"], ["70-80", "Age 70–80"]],
       (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); }, "assets/1_age.webp", false, false);
     const sn = $("#stepno"); if (sn) sn.textContent = "#1 age";
