@@ -460,3 +460,28 @@ git commit -am "feat(db): RLS audit sweep — every public table has an explicit
 **Placeholder scan:** `REPLACE_WITH_REAL_USER_UUID` / `USER_A_UUID` / `USER_B_UUID` are intentional test fixtures the executor fills from Task 1's real data — not plan placeholders. Migration numbers `NN` are assigned at apply time.
 
 **Execution prerequisite:** target project `pixtozeghxwiidpnloih` must be reachable (MCP connection or SQL editor). The MCP is currently on a different account.
+
+---
+
+## Execution Log — 2026-07-05 (live DB `pixtozeghxwiidpnloih` / TaiMotion_Astronaut)
+
+**Reality check changed the plan.** Introspection showed the DB was already far more locked-down than `db.js` implied:
+
+- **RLS already enabled on every table.** Content tables = SELECT `is_published` (public read); all per-user tables = `ALL using(user_id = auth.uid())` (own-row). `exercises`/`session_exercises` = public read (`true`) — acceptable (static, non-sensitive).
+- **Stripe data model already scaffolded:** `users.stripe_customer_id` exists; `subscriptions` (id=stripe sub id, price_id, periods, cancel_at_period_end), `payments` (the entitlement/charge ledger — replaces the planned `purchases`), and `stripe_events` (idempotency; RLS-on/no-policy = correct deny-all) all present.
+- `subscriptions`/`payments` = select-own, **no client write** ✅. `quiz_sessions.user_id` exists → `quiz_select_own` covers the app's read.
+
+**Therefore Tasks 2, 4, 5, 6, 7 were already satisfied.** The only live vulnerability was **Task 3**.
+
+**Task 3 — DONE & verified:**
+- Exploit proven first: simulated `authenticated` user `update users set subscription_status=…` → **"self-grant SUCCEEDED — VULNERABLE"**.
+- Applied migration `users_billing_write_guard`: `BEFORE UPDATE` trigger `trg_users_billing_guard` + `public.users_billing_guard()`. Blocks changes to `subscription_status`, `subscription_plan`, `current_period_start/end`, `cancel_at_period_end`, `stripe_customer_id` unless `auth.role()` ∉ {authenticated, anon} (i.e., service_role / no-JWT admin).
+- Re-verified: self-grant **BLOCKED**; profile `name` edit **allowed**; service_role billing write **allowed**. (All test writes rolled back.)
+
+**Open items for later plans (confirmed against real schema):**
+- `db.js` `setAutoRenew` writes `subscriptions` (no client write policy → already fails) **and** `users.cancel_at_period_end` (now guard-blocked) → **Plan 3 must route cancel/auto-renew through an edge function / service role.**
+- `db.js` `profile()` read of `quiz_sessions` — **works** (`quiz_select_own` own-row policy exists). No change needed.
+
+**Minor advisor findings (out of scope, note for later):** `recipe-images` public bucket allows file listing (cosmetic); Auth leaked-password protection disabled (toggle in Auth settings).
+
+**Status: Plan 1 COMPLETE** — DB is safe for money (no client can self-grant or read others' data).
