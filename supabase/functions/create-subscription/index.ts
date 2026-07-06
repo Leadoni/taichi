@@ -71,7 +71,9 @@ Deno.serve(async (req) => {
     if (promo_code) {
       const found = await stripe.promotionCodes.list({ code: String(promo_code).trim(), active: true, limit: 1 });
       if (!found.data.length) return json({ error: 'invalid promo code' }, 400);
-      discounts = [{ promotion_code: found.data[0].id }];
+      // Apply the promo's underlying coupon (same path as the intro coupon; reliable PI creation).
+      const c = found.data[0].coupon as Stripe.Coupon;
+      discounts = [{ coupon: c.id }];
     }
 
     const checkoutToken = crypto.randomUUID();

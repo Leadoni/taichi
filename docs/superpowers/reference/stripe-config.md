@@ -39,3 +39,7 @@ Upsell recurring: essential_guides `price_1TqChU3x0B891G8VCfW94Ywx` ($9.99/mo), 
 Webhook: `we_1TqCiK3x0B891G8Vp5SN1kG8` → stripe-webhook (5 events).
 Publishable (live): pk_live_51TpRX5…ckMJziF1 (in assets/stripe.js).
 Secrets to set in Supabase for go-live: STRIPE_SECRET_KEY=sk_live_…, STRIPE_WEBHOOK_SECRET=whsec_2gKW1g… (live endpoint).
+
+### Promo codes (live)
+- `TMTEST50` → coupon `YrTxIPDR` (amount_off $20.99, once) = **1-week plan at $1.00** for testing. (Note: $0.50 was below the EUR-account minimum charge, so it's $1.00.) max_redemptions 50.
+- create-subscription accepts `promo_code`; resolves the active Stripe promotion code to its coupon and applies it (replaces the intro coupon). Returns `amount` (cents) for the UI.
