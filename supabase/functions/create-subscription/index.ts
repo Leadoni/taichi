@@ -31,7 +31,7 @@ async function resolveUser(db: ReturnType<typeof createClient>, email: string): 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const { plan_id, quiz_session_id } = await req.json();
+    const { plan_id, quiz_session_id, promo_code } = await req.json();
     const plan = PLANS[plan_id];
     if (!plan) return json({ error: 'unknown plan' }, 400);
     if (!quiz_session_id) return json({ error: 'missing quiz_session_id' }, 400);
@@ -66,18 +66,26 @@ Deno.serve(async (req) => {
     await db.from('users').update(updates).eq('id', userId); // service role -> past billing guard
     await db.from('quiz_sessions').update({ user_id: userId, selected_plan: plan_id }).eq('id', quiz_session_id);
 
+    // Discount: default = plan's intro coupon. A valid promo code REPLACES it.
+    let discounts: Stripe.SubscriptionCreateParams.Discount[] = [{ coupon: plan.coupon }];
+    if (promo_code) {
+      const found = await stripe.promotionCodes.list({ code: String(promo_code).trim(), active: true, limit: 1 });
+      if (!found.data.length) return json({ error: 'invalid promo code' }, 400);
+      discounts = [{ promotion_code: found.data[0].id }];
+    }
+
     const checkoutToken = crypto.randomUUID();
     const sub = await stripe.subscriptions.create({
       customer: customerId,
       items: [{ price: plan.price }],
-      discounts: [{ coupon: plan.coupon }],
+      discounts,
       payment_behavior: 'default_incomplete',
       payment_settings: { save_default_payment_method: 'on_subscription', payment_method_types: ['card'] },
       expand: ['latest_invoice.payment_intent'],
       metadata: { user_id: userId, plan_id, checkout_token: checkoutToken },
     });
     const pi = (sub.latest_invoice as Stripe.Invoice).payment_intent as Stripe.PaymentIntent;
-    return json({ clientSecret: pi.client_secret, subscriptionId: sub.id, checkoutToken });
+    return json({ clientSecret: pi.client_secret, subscriptionId: sub.id, checkoutToken, amount: pi.amount });
   } catch (e) {
     return json({ error: String((e as Error)?.message || e) }, 500);
   }

@@ -17,7 +17,7 @@
   <div id="stephdr"></div>
 
   <main>
-    <div class="test-banner">🔒 Stripe test mode — use card <b>4242 4242 4242 4242</b>, any future expiry &amp; CVC. No real charge.</div>
+    <div class="test-banner">🔒 Secure checkout — your card is processed by Stripe. Cancel anytime.</div>
 
     <h1 class="q">Secure checkout</h1>
 
@@ -26,7 +26,12 @@
       <div class="order-row tot"><span>Total today</span><span id="total">$0.00</span></div>
 
       <p class="sub" style="margin:10px 0 4px">Billing email: <b id="emailShow"></b></p>
-      <div id="payment-element" style="margin-top:10px"></div>
+      <div style="display:flex;gap:8px;margin:8px 0 2px">
+        <input id="promo" placeholder="Promo code (optional)" style="flex:1;border:1.5px solid var(--line,#e8e0d5);border-radius:10px;padding:10px;font-size:15px">
+        <button class="btn-ghost" id="applyPromo" type="button" style="padding:10px 16px">Apply</button>
+      </div>
+      <p class="fineprint" id="promoMsg" style="min-height:1em;margin:0 0 6px"></p>
+      <div id="payment-element" style="margin-top:6px"></div>
       <p class="fineprint" id="payMsg" style="color:#c0392b;min-height:1.2em"></p>
     </div>
 
@@ -37,7 +42,7 @@
   </main>
 
   <script src="assets/api.js?v=5"></script>
-  <script src="assets/stripe.js?v=1"></script>
+  <script src="assets/stripe.js?v=2"></script>
   <script src="assets/flow.js?v=2"></script>
   <script>
     const PLANS = { "1w":{name:"1-week plan",intro:5.19,renew:21.99,weeks:1},
@@ -57,23 +62,36 @@
       `Introductory ${plan.name} at ${FLOW.money(plan.intro)} today. Renews at ${FLOW.money(plan.renew)} every ${plan.weeks} week(s) unless cancelled. Cancel anytime in your account.`;
 
     let stripe, elements;
-    (async function init() {
+    const promoMsg = document.getElementById("promoMsg");
+    // Creates (or re-creates, when a promo is applied) the subscription + mounts Elements.
+    async function initSub(promo) {
+      payBtn.disabled = true; msg.textContent = "";
+      document.getElementById("payment-element").innerHTML = "";
       if (!s.email || !s.id) { msg.textContent = "Missing your details — please restart the quiz."; return; }
       try {
         await API.submitQuiz(s);                       // ensure the quiz row carries the email server-side
-        const r = await API.createSubscription({ plan_id: planId, quiz_session_id: s.id });
+        const r = await API.createSubscription({ plan_id: planId, quiz_session_id: s.id, promo_code: promo || undefined });
         if (r && r.error === "already subscribed") {
           msg.textContent = "You already have an active plan. Redirecting to the app…";
           setTimeout(() => location.href = "https://app.taimotion.com/", 1500); return;
         }
+        if (r && r.error === "invalid promo code") { promoMsg.textContent = "Invalid promo code"; return initSub(""); }
         if (!r || !r.clientSecret) { msg.textContent = "Could not start checkout. Please refresh and retry."; return; }
         s.subscriptionId = r.subscriptionId; s.checkoutToken = r.checkoutToken; FLOW.save(s);
+        if (typeof r.amount === "number") document.getElementById("total").textContent = FLOW.money(r.amount / 100);
+        if (promo) promoMsg.textContent = "Promo applied ✓";
         stripe = window.stripeClient();
         elements = stripe.elements({ clientSecret: r.clientSecret, appearance: { theme: "flat" } });
         elements.create("payment").mount("#payment-element");
         payBtn.disabled = false;
       } catch (e) { msg.textContent = "Could not start checkout. Please refresh and retry."; }
-    })();
+    }
+    initSub("");
+    document.getElementById("applyPromo").onclick = () => {
+      const code = document.getElementById("promo").value.trim();
+      promoMsg.textContent = code ? "Applying…" : "";
+      initSub(code);
+    };
 
     payBtn.onclick = async () => {
       if (!stripe || !elements) return;
