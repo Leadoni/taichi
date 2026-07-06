@@ -30,17 +30,13 @@
     <p class="fineprint" id="emailNote"></p>
   </main>
 
-  <script src="assets/api.js"></script>
+  <script src="assets/api.js?v=5"></script>
   <script src="assets/flow.js?v=2"></script>
   <script>
     const s = FLOW.get();
-    // FAKE PAID provisioning: create the account + active subscription (no real Stripe).
-    // Run once per session; the login link itself is fetched FRESH at click time (below).
-    let provisionP = Promise.resolve();
-    if (window.API && s.email && !s._provisioned) {
-      provisionP = API.completeOrder({ quiz_session_id: s.id, email: s.email, name: s.name, selected_plan: s.selected_plan, order: s.order || [] })
-        .then(r => { if (r && r.ok) { s._provisioned = true; FLOW.save(s); } });
-    }
+    // Provisioning is handled server-side by the Stripe webhook (only after real payment).
+    // Here we just show the summary and hand the member into the app via a magic link that
+    // is gated on their paid checkout token (login-link verifies the token + active sub).
     document.getElementById("stephdr").innerHTML = FLOW.stepHeader("plan");
     const order = (s.order || []);
     document.getElementById("orderList").innerHTML = order.length
@@ -48,19 +44,21 @@
       : '<div class="order-row"><span>Your plan</span><span>—</span></div>';
     document.getElementById("total").textContent = FLOW.money(FLOW.total());
     document.getElementById("emailNote").innerHTML =
-      `We'll email your plan link to <b>${s.email || "your address"}</b>. If it doesn't arrive, save the link from this page or contact support.`;
-    // mark complete + persist for the app gate
-    s.status = "purchased"; s.has_access = true; FLOW.save(s);
-    // TODO: confirmation handled server-side by Stripe webhook + Resend email
+      `We'll email your plan link to <b>${s.email || "your address"}</b>. If it doesn't arrive, use the button above or contact support.`;
+    s.status = "purchased"; FLOW.save(s);
     const accessBtn = document.getElementById("access");
     accessBtn.onclick = async () => {
       accessBtn.textContent = "Setting up…"; accessBtn.disabled = true;
       try {
-        await provisionP;                         // make sure the account exists
-        const r = await API.loginLink(s.email);   // FRESH single-use magic link
-        if (r && r.action_link) { location.replace(r.action_link); return; }
+        // login-link requires proof of the paid checkout; the webhook may still be finalizing,
+        // so retry briefly until the subscription reads as active.
+        for (let i = 0; i < 8; i++) {
+          const r = await API.loginLink({ subscriptionId: s.subscriptionId, checkoutToken: s.checkoutToken });
+          if (r && r.action_link) { location.replace(r.action_link); return; }
+          await new Promise(res => setTimeout(res, 1500));
+        }
       } catch (e) { /* fall through */ }
-      location.href = (window.TM_URL ? TM_URL("https://app.taimotion.com/") : "https://app.taimotion.com/"); // fallback
+      location.href = (window.TM_URL ? TM_URL("https://app.taimotion.com/") : "https://app.taimotion.com/"); // fallback: app email sign-in
     };
   </script>
   <script src="assets/testbar.js?v=1"></script>

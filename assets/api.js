@@ -16,7 +16,8 @@ window.API = (function () {
   }
   return {
     submitQuiz: (session) => call("submit-quiz", { session }),
-    completeOrder: (p) => call("complete-order", p),
-    loginLink: (email) => call("login-link", { email }),
+    createSubscription: (p) => call("create-subscription", p), // { plan_id, quiz_session_id }
+    chargeUpsell: (p) => call("charge-upsell", p),             // { subscriptionId, checkoutToken, upsell_id }
+    loginLink: (p) => call("login-link", p),                   // { subscriptionId, checkoutToken }
   };
 })();

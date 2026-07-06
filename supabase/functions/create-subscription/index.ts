@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
       items: [{ price: plan.price }],
       discounts: [{ coupon: plan.coupon }],
       payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
+      payment_settings: { save_default_payment_method: 'on_subscription', payment_method_types: ['card'] },
       expand: ['latest_invoice.payment_intent'],
       metadata: { user_id: userId, plan_id, checkout_token: checkoutToken },
     });

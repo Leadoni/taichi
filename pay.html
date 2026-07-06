@@ -9,13 +9,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css?v=15">
+<!-- Stripe.js must load live from Stripe's domain (no SRI — Stripe self-updates it). -->
+<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
   <header class="topbar"><span class="brand" style="margin:0 auto"><img class="logo" src="assets/logo2.webp" alt="">Tai&nbsp;Motion</span></header>
   <div id="stephdr"></div>
 
   <main>
-    <div class="test-banner">🔒 TEST MODE — this is an imitation checkout. No card is charged. Stripe wires in here later.</div>
+    <div class="test-banner">🔒 Stripe test mode — use card <b>4242 4242 4242 4242</b>, any future expiry &amp; CVC. No real charge.</div>
 
     <h1 class="q">Secure checkout</h1>
 
@@ -23,47 +25,65 @@
       <div class="order-row"><span id="planName">Plan</span><span id="planPrice">$0.00</span></div>
       <div class="order-row tot"><span>Total today</span><span id="total">$0.00</span></div>
 
-      <label>Email</label>
-      <input id="email" type="email" placeholder="you@example.com">
-      <label>Card number</label>
-      <input id="card" inputmode="numeric" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242">
-      <div class="pay-row">
-        <div><label>Expiry</label><input id="exp" placeholder="12 / 28" value="12 / 28"></div>
-        <div><label>CVC</label><input id="cvc" inputmode="numeric" placeholder="123" value="123"></div>
-      </div>
+      <p class="sub" style="margin:10px 0 4px">Billing email: <b id="emailShow"></b></p>
+      <div id="payment-element" style="margin-top:10px"></div>
+      <p class="fineprint" id="payMsg" style="color:#c0392b;min-height:1.2em"></p>
     </div>
 
     <div class="cta-bar" style="position:static;background:none">
-      <div class="cta-inner"><button class="btn" id="pay">Pay &amp; continue</button></div>
+      <div class="cta-inner"><button class="btn" id="pay" disabled>Pay &amp; continue</button></div>
     </div>
     <p class="fineprint" id="renew"></p>
   </main>
 
+  <script src="assets/api.js?v=5"></script>
+  <script src="assets/stripe.js?v=1"></script>
   <script src="assets/flow.js?v=2"></script>
   <script>
     const PLANS = { "1w":{name:"1-week plan",intro:5.19,renew:21.99,weeks:1},
       "4w":{name:"4-week plan",intro:9.99,renew:49.95,weeks:4},
       "12w":{name:"12-week plan",intro:19.99,renew:84.95,weeks:12} };
     const s = FLOW.get();
-    const plan = PLANS[s.selected_plan] || PLANS["4w"];
+    const planId = s.selected_plan || "4w";
+    const plan = PLANS[planId] || PLANS["4w"];
+    const payBtn = document.getElementById("pay");
+    const msg = document.getElementById("payMsg");
     document.getElementById("stephdr").innerHTML = FLOW.stepHeader("setup");
     document.getElementById("planName").textContent = plan.name + " (introductory)";
     document.getElementById("planPrice").textContent = FLOW.money(plan.intro);
     document.getElementById("total").textContent = FLOW.money(plan.intro);
-    document.getElementById("email").value = s.email || "";
+    document.getElementById("emailShow").textContent = s.email || "(missing — please restart)";
     document.getElementById("renew").textContent =
       `Introductory ${plan.name} at ${FLOW.money(plan.intro)} today. Renews at ${FLOW.money(plan.renew)} every ${plan.weeks} week(s) unless cancelled. Cancel anytime in your account.`;
 
-    document.getElementById("pay").onclick = () => {
-      const s2 = FLOW.get();
-      s2.email = document.getElementById("email").value || s2.email;
+    let stripe, elements;
+    (async function init() {
+      if (!s.email || !s.id) { msg.textContent = "Missing your details — please restart the quiz."; return; }
+      try {
+        await API.submitQuiz(s);                       // ensure the quiz row carries the email server-side
+        const r = await API.createSubscription({ plan_id: planId, quiz_session_id: s.id });
+        if (r && r.error === "already subscribed") {
+          msg.textContent = "You already have an active plan. Redirecting to the app…";
+          setTimeout(() => location.href = "https://app.taimotion.com/", 1500); return;
+        }
+        if (!r || !r.clientSecret) { msg.textContent = "Could not start checkout. Please refresh and retry."; return; }
+        s.subscriptionId = r.subscriptionId; s.checkoutToken = r.checkoutToken; FLOW.save(s);
+        stripe = window.stripeClient();
+        elements = stripe.elements({ clientSecret: r.clientSecret, appearance: { theme: "flat" } });
+        elements.create("payment").mount("#payment-element");
+        payBtn.disabled = false;
+      } catch (e) { msg.textContent = "Could not start checkout. Please refresh and retry."; }
+    })();
+
+    payBtn.onclick = async () => {
+      if (!stripe || !elements) return;
+      payBtn.disabled = true; msg.textContent = "";
+      const { error } = await stripe.confirmPayment({ elements, redirect: "if_required", confirmParams: { return_url: location.origin + "/thankyou.html" } });
+      if (error) { msg.textContent = error.message || "Payment failed. Please check your card and retry."; payBtn.disabled = false; return; }
+      const s2 = FLOW.get(); s2.paid = true; s2.status = "paid";
       s2.order = [{ id:"base_plan", label: plan.name, amount: plan.intro, recurring:true }];
-      s2.paid = true; s2.status = "paid"; FLOW.save(s2);
-      // imitate Stripe processing
-      document.getElementById("payArea").innerHTML = '<div class="spinner"></div><p class="sub">Processing your payment…</p>';
-      document.getElementById("pay").disabled = true;
-      // TODO: replace with real Stripe Checkout / PaymentIntent confirm
-      setTimeout(() => { location.href = "upsell1.html"; }, 1400);
+      FLOW.save(s2);
+      location.href = "upsell1.html";           // webhook provisions access during the upsell steps
     };
   </script>
   <script src="assets/testbar.js?v=1"></script>

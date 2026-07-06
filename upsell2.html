@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css?v=15">
+<script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
   <header class="topbar"><span class="brand" style="margin:0 auto"><img class="logo" src="assets/logo2.webp" alt="">Tai&nbsp;Motion</span></header>
@@ -27,7 +28,10 @@
     <p class="fineprint">Selected add-ons are charged once to your account. Refundable per our refund policy.</p>
   </main>
 
+  <script src="assets/api.js?v=5"></script>
+  <script src="assets/stripe.js?v=1"></script>
   <script src="assets/flow.js?v=2"></script>
+  <script src="assets/upsell.js?v=1"></script>
   <script>
     const GUIDES = [
       { id:"sleep", icon:"🛏️", gt:"Better sleep", gd:"Gentle routines for deeper, more restful nights", price:18.99 },
@@ -50,10 +54,11 @@
     render();
     document.getElementById("stephdr").innerHTML = FLOW.stepHeader("offer");
 
-    document.getElementById("add").onclick = () => {
+    document.getElementById("add").onclick = (e) => {
       const all = [...GUIDES, BUNDLE]; const g = all.find(x => x.id === selected);
-      FLOW.addItem({ id:"guide_"+g.id, label:g.gt, amount:g.price, recurring:false });
-      location.href = "upsell3.html";
+      // bundle -> "all_guides" (recurring); individual -> "guide_<id>" (one-time)
+      const upsellId = g.id === "all_guides" ? "all_guides" : "guide_" + g.id;
+      UPSELL.accept(upsellId, { id: upsellId, label: g.gt, amount: g.price, recurring: !!g.rec }, "upsell3.html", e.currentTarget);
     };
     document.getElementById("skip").onclick = () => { location.href = "upsell3.html"; };
   </script>
