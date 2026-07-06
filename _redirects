@@ -1,0 +1,3 @@
+# Never serve source/docs even if accidentally included in a deploy.
+/supabase/*  /404.html  404
+/docs/*      /404.html  404
