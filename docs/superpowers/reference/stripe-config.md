@@ -24,3 +24,18 @@ Created 2026-07-06 via Stripe API (test mode). Secrets (`sk_test`, `whsec`) are 
 ## Upsells
 - One-time (no Stripe object needed; ad-hoc PaymentIntent): essential_guides_onetime $9.99, guide_sleep/eating/aging $18.99, vip $4.99
 - Recurring (needs decision — see plan): essential_guides ("$1.25/day"), all_guides ($38.99)
+
+---
+
+## LIVE mode (acct_1TpRX53x0B891G8V — Lithuania/EUR, charges in USD) — 2026-07-06
+
+| Plan | Price (regular) | Coupon (intro once) |
+|------|-----------------|---------------------|
+| 1w  | price_1TqChQ3x0B891G8VXfVhEwZ3 | fLsSa51J ($5.19) |
+| 4w  | price_1TqChS3x0B891G8VAnNFfhdA | RKIibGD8 ($9.99) |
+| 12w | price_1TqChT3x0B891G8V0FNT81If | 3sUP0i8K ($19.99) |
+
+Upsell recurring: essential_guides `price_1TqChU3x0B891G8VCfW94Ywx` ($9.99/mo), all_guides `price_1TqChV3x0B891G8VV8xoImBl` ($19.99/mo).
+Webhook: `we_1TqCiK3x0B891G8Vp5SN1kG8` → stripe-webhook (5 events).
+Publishable (live): pk_live_51TpRX5…ckMJziF1 (in assets/stripe.js).
+Secrets to set in Supabase for go-live: STRIPE_SECRET_KEY=sk_live_…, STRIPE_WEBHOOK_SECRET=whsec_2gKW1g… (live endpoint).

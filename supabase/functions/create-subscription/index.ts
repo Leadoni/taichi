@@ -9,9 +9,9 @@ const cors = {
 };
 // plan_id -> { price (recurring, regular amount), coupon (one-time intro discount) }
 const PLANS: Record<string, { price: string; coupon: string }> = {
-  '1w':  { price: 'price_1Tq6jrEKxtNHIkyECsS78Flp', coupon: 'pkEtKPXU' },
-  '4w':  { price: 'price_1Tq6jsEKxtNHIkyEephY6ycG', coupon: 'BBjhT92G' },
-  '12w': { price: 'price_1Tq6jtEKxtNHIkyE2LbKbfuk', coupon: 'vgeoGVPv' },
+  '1w':  { price: 'price_1TqChQ3x0B891G8VXfVhEwZ3', coupon: 'fLsSa51J' }, // $5.19 -> $21.99/wk
+  '4w':  { price: 'price_1TqChS3x0B891G8VAnNFfhdA', coupon: 'RKIibGD8' }, // $9.99 -> $49.95/4wk
+  '12w': { price: 'price_1TqChT3x0B891G8V0FNT81If', coupon: '3sUP0i8K' }, // $19.99 -> $84.95/12wk
 };
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });

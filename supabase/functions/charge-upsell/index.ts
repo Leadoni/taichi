@@ -8,8 +8,8 @@ const cors = {
 };
 type Offer = { type: 'one_time'; amount: number } | { type: 'recurring'; price: string };
 const UPSELLS: Record<string, Offer> = {
-  essential_guides:         { type: 'recurring', price: 'price_1Tq7L7EKxtNHIkyEi3VZYxCJ' }, // $9.99/mo
-  all_guides:               { type: 'recurring', price: 'price_1Tq7L7EKxtNHIkyE7kbWBgwe' }, // $19.99/mo
+  essential_guides:         { type: 'recurring', price: 'price_1TqChU3x0B891G8VCfW94Ywx' }, // $9.99/mo
+  all_guides:               { type: 'recurring', price: 'price_1TqChV3x0B891G8VV8xoImBl' }, // $19.99/mo
   essential_guides_onetime: { type: 'one_time',  amount: 999  },
   guide_sleep:              { type: 'one_time',  amount: 1899 },
   guide_eating:             { type: 'one_time',  amount: 1899 },
