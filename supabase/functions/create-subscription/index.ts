@@ -31,25 +31,39 @@ async function resolveUser(db: ReturnType<typeof createClient>, email: string): 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const { email, plan_id, quiz_session_id } = await req.json();
-    const clean = (email || '').trim().toLowerCase();
+    const { email: bodyEmail, plan_id, quiz_session_id } = await req.json();
     const plan = PLANS[plan_id];
-    if (!clean) return json({ error: 'missing email' }, 400);
     if (!plan) return json({ error: 'unknown plan' }, 400);
+    if (!quiz_session_id) return json({ error: 'missing quiz_session_id' }, 400);
 
     const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+
+    // Gate: must reference a real quiz-session lead. Email is taken from the server-side
+    // quiz row when present (not trusted from the body), which prevents targeting arbitrary accounts.
+    const { data: quiz } = await db.from('quiz_sessions').select('id,email').eq('id', quiz_session_id).maybeSingle();
+    if (!quiz) return json({ error: 'unknown quiz session' }, 400);
+    const clean = (quiz.email || bodyEmail || '').trim().toLowerCase();
+    if (!clean) return json({ error: 'missing email' }, 400);
+
     const userId = await resolveUser(db, clean);
 
-    const { data: row } = await db.from('users').select('stripe_customer_id').eq('id', userId).maybeSingle();
-    let customerId = row?.stripe_customer_id as string | null;
+    // Never start a fresh checkout for an account that already has access.
+    const { data: urow } = await db.from('users')
+      .select('stripe_customer_id,email,subscription_status').eq('id', userId).maybeSingle();
+    if (urow?.subscription_status === 'active' || urow?.subscription_status === 'trialing')
+      return json({ error: 'already subscribed' }, 409);
+
+    // Reuse an existing customer; only create + link if absent (no overwrite of existing billing link).
+    let customerId = urow?.stripe_customer_id as string | null;
     if (!customerId) {
       const c = await stripe.customers.create({ email: clean, metadata: { user_id: userId } });
       customerId = c.id;
     }
-    const updates: Record<string, unknown> = { stripe_customer_id: customerId, email: clean };
-    if (quiz_session_id) updates.linked_quiz_session_id = quiz_session_id;
+    const updates: Record<string, unknown> = { linked_quiz_session_id: quiz_session_id };
+    if (!urow?.stripe_customer_id) updates.stripe_customer_id = customerId;
+    if (!urow?.email) updates.email = clean;                 // don't overwrite an existing user's email
     await db.from('users').update(updates).eq('id', userId); // service role -> past billing guard
-    if (quiz_session_id) await db.from('quiz_sessions').update({ user_id: userId, selected_plan: plan_id }).eq('id', quiz_session_id);
+    await db.from('quiz_sessions').update({ user_id: userId, selected_plan: plan_id }).eq('id', quiz_session_id);
 
     const checkoutToken = crypto.randomUUID();
     const sub = await stripe.subscriptions.create({
