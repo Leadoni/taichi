@@ -16,30 +16,42 @@ const PLANS: Record<string, { price: string; coupon: string }> = {
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
 
+// Resolve (create if needed) the auth user id for an email. Mirrors complete-order.
+async function resolveUser(db: ReturnType<typeof createClient>, email: string): Promise<string> {
+  const created = await db.auth.admin.createUser({ email, email_confirm: true });
+  if (created.data?.user) return created.data.user.id;
+  const { data: u } = await db.from('users').select('id').eq('email', email).maybeSingle();
+  if (u?.id) return u.id;
+  const { data: list } = await db.auth.admin.listUsers();
+  const found = list?.users?.find((x) => (x.email || '').toLowerCase() === email.toLowerCase());
+  if (found) return found.id;
+  throw new Error('could not resolve user');
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const authHeader = req.headers.get('Authorization') || '';
-    const anon = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } });
-    const { data: { user } } = await anon.auth.getUser();
-    if (!user) return json({ error: 'unauthenticated' }, 401);
-
-    const { plan_id } = await req.json();
+    const { email, plan_id, quiz_session_id } = await req.json();
+    const clean = (email || '').trim().toLowerCase();
     const plan = PLANS[plan_id];
+    if (!clean) return json({ error: 'missing email' }, 400);
     if (!plan) return json({ error: 'unknown plan' }, 400);
 
-    const svc = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-      { auth: { persistSession: false } });
-    const { data: row } = await svc.from('users').select('stripe_customer_id,email').eq('id', user.id).maybeSingle();
+    const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
+    const userId = await resolveUser(db, clean);
 
+    const { data: row } = await db.from('users').select('stripe_customer_id').eq('id', userId).maybeSingle();
     let customerId = row?.stripe_customer_id as string | null;
     if (!customerId) {
-      const c = await stripe.customers.create({ email: user.email ?? row?.email ?? undefined, metadata: { user_id: user.id } });
+      const c = await stripe.customers.create({ email: clean, metadata: { user_id: userId } });
       customerId = c.id;
-      await svc.from('users').update({ stripe_customer_id: customerId }).eq('id', user.id);
     }
+    const updates: Record<string, unknown> = { stripe_customer_id: customerId, email: clean };
+    if (quiz_session_id) updates.linked_quiz_session_id = quiz_session_id;
+    await db.from('users').update(updates).eq('id', userId); // service role -> past billing guard
+    if (quiz_session_id) await db.from('quiz_sessions').update({ user_id: userId, selected_plan: plan_id }).eq('id', quiz_session_id);
 
+    const checkoutToken = crypto.randomUUID();
     const sub = await stripe.subscriptions.create({
       customer: customerId,
       items: [{ price: plan.price }],
@@ -47,10 +59,10 @@ Deno.serve(async (req) => {
       payment_behavior: 'default_incomplete',
       payment_settings: { save_default_payment_method: 'on_subscription' },
       expand: ['latest_invoice.payment_intent'],
-      metadata: { user_id: user.id, plan_id },
+      metadata: { user_id: userId, plan_id, checkout_token: checkoutToken },
     });
     const pi = (sub.latest_invoice as Stripe.Invoice).payment_intent as Stripe.PaymentIntent;
-    return json({ clientSecret: pi.client_secret, subscriptionId: sub.id });
+    return json({ clientSecret: pi.client_secret, subscriptionId: sub.id, checkoutToken });
   } catch (e) {
     return json({ error: String((e as Error)?.message || e) }, 500);
   }
