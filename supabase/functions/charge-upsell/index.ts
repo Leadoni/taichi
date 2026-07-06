@@ -30,6 +30,8 @@ Deno.serve(async (req) => {
     // authorize: token must match the base subscription's metadata
     const base = await stripe.subscriptions.retrieve(subscriptionId);
     if (base.metadata?.checkout_token !== checkoutToken) return json({ error: 'bad token' }, 403);
+    // Capability token is only valid briefly after checkout (bounds token-exfil misuse).
+    if (Date.now() / 1000 - base.created > 1800) return json({ error: 'checkout expired' }, 403);
     const customerId = base.customer as string;
     const userId = base.metadata?.user_id as string;
 

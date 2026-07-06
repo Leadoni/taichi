@@ -31,7 +31,7 @@ async function resolveUser(db: ReturnType<typeof createClient>, email: string): 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const { email: bodyEmail, plan_id, quiz_session_id } = await req.json();
+    const { plan_id, quiz_session_id } = await req.json();
     const plan = PLANS[plan_id];
     if (!plan) return json({ error: 'unknown plan' }, 400);
     if (!quiz_session_id) return json({ error: 'missing quiz_session_id' }, 400);
@@ -42,8 +42,9 @@ Deno.serve(async (req) => {
     // quiz row when present (not trusted from the body), which prevents targeting arbitrary accounts.
     const { data: quiz } = await db.from('quiz_sessions').select('id,email').eq('id', quiz_session_id).maybeSingle();
     if (!quiz) return json({ error: 'unknown quiz session' }, 400);
-    const clean = (quiz.email || bodyEmail || '').trim().toLowerCase();
-    if (!clean) return json({ error: 'missing email' }, 400);
+    // Email must exist server-side on the quiz row; never trust a body-supplied email.
+    if (!quiz.email) return json({ error: 'quiz session has no email' }, 400);
+    const clean = quiz.email.trim().toLowerCase();
 
     const userId = await resolveUser(db, clean);
 
