@@ -1,0 +1,31 @@
+name: Deploy funnel to Cloudflare Pages
+
+# Auto-deploys the funnel to production (taimotion.com) on every push to main.
+# Requires repo secrets: CLOUDFLARE_API_TOKEN (Account > Cloudflare Pages > Edit), CLOUDFLARE_ACCOUNT_ID.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage site (serve only the funnel; never expose source/docs)
+        run: |
+          mkdir -p _site
+          rsync -a \
+            --exclude='.git' --exclude='.github' \
+            --exclude='docs' --exclude='supabase' \
+            --exclude='node_modules' --exclude='.wrangler' \
+            --exclude='_site' \
+            ./ _site/
+
+      - name: Deploy to Cloudflare Pages (production)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy _site --project-name=taimotion --branch=main
