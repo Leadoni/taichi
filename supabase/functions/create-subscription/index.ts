@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
 
     // Gate: must reference a real quiz-session lead. Email is taken from the server-side
     // quiz row when present (not trusted from the body), which prevents targeting arbitrary accounts.
-    const { data: quiz } = await db.from('quiz_sessions').select('id,email').eq('id', quiz_session_id).maybeSingle();
+    const { data: quiz } = await db.from('quiz_sessions').select('id,email,name,gender,age_band,height_cm,goal_weight_kg').eq('id', quiz_session_id).maybeSingle();
     if (!quiz) return json({ error: 'unknown quiz session' }, 400);
     // Email must exist server-side on the quiz row; never trust a body-supplied email.
     if (!quiz.email) return json({ error: 'quiz session has no email' }, 400);
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
 
     // Never start a fresh checkout for an account that already has access.
     const { data: urow } = await db.from('users')
-      .select('stripe_customer_id,email,subscription_status').eq('id', userId).maybeSingle();
+      .select('stripe_customer_id,email,subscription_status,name,gender,age_band,height_cm,target_weight_kg').eq('id', userId).maybeSingle();
     if (urow?.subscription_status === 'active' || urow?.subscription_status === 'trialing')
       return json({ error: 'already subscribed' }, 409);
 
@@ -63,6 +63,12 @@ Deno.serve(async (req) => {
     const updates: Record<string, unknown> = { linked_quiz_session_id: quiz_session_id };
     if (!urow?.stripe_customer_id) updates.stripe_customer_id = customerId;
     if (!urow?.email) updates.email = clean;                 // don't overwrite an existing user's email
+    // Populate profile from the quiz answers (only fill blanks — never clobber edited data).
+    if (!urow?.name && quiz.name) updates.name = quiz.name;
+    if (!urow?.gender && quiz.gender) updates.gender = quiz.gender;
+    if (!urow?.age_band && quiz.age_band) updates.age_band = quiz.age_band;
+    if (urow?.height_cm == null && quiz.height_cm != null) updates.height_cm = quiz.height_cm;
+    if (urow?.target_weight_kg == null && quiz.goal_weight_kg != null) updates.target_weight_kg = quiz.goal_weight_kg;
     await db.from('users').update(updates).eq('id', userId); // service role -> past billing guard
     await db.from('quiz_sessions').update({ user_id: userId, selected_plan: plan_id }).eq('id', quiz_session_id);
 
@@ -75,6 +81,14 @@ Deno.serve(async (req) => {
       const c = found.data[0].coupon as Stripe.Coupon;
       discounts = [{ coupon: c.id }];
     }
+
+    // Guard against duplicate subscriptions: a reload/back of the pay page (or a promo retry)
+    // calls this again and would spawn another sub. Cancel any prior UNPAID (incomplete) subs
+    // for this customer first, so at most one live checkout exists.
+    try {
+      const stale = await stripe.subscriptions.list({ customer: customerId, status: 'incomplete', limit: 100 });
+      for (const old of stale.data) { try { await stripe.subscriptions.cancel(old.id); } catch (_) { /* ignore */ } }
+    } catch (_) { /* best-effort cleanup */ }
 
     const checkoutToken = crypto.randomUUID();
     const sub = await stripe.subscriptions.create({
