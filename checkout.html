@@ -123,6 +123,16 @@
   .rev p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
 
   .badges{display:flex;justify-content:center;gap:40px;margin:16px 0 4px;text-align:center}
+  .featured{margin:30px 0 8px;text-align:center}
+  .featured .flabel{font-size:11px;letter-spacing:1.6px;color:var(--muted);text-transform:uppercase;margin-bottom:16px}
+  .featured .logos{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:18px 30px}
+  .featured .logos img{height:21px;width:auto;max-width:140px;opacity:.78}
+  .twox{display:flex;align-items:flex-start;gap:9px;margin:12px 2px 6px;font-size:13px;line-height:1.4;color:var(--ink)}
+  .twox .ic{font-size:20px;flex:none;line-height:1}
+  .twox small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+  .mbg{background:var(--primary-soft);border-radius:14px;padding:16px 18px;margin:24px 0 8px}
+  .mbg h4{margin:0 0 6px;font-family:var(--serif);font-weight:500;font-size:17px}
+  .mbg p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
   .badges .b .ic{font-size:30px}
   .badges .b .l1{font-size:12px;color:var(--muted);margin-top:4px}
   .badges .b .l2{font-family:var(--serif);font-weight:500;font-size:15px}
@@ -201,12 +211,25 @@
       <span class="code">✓ Discount applied</span>
       <span class="clk" id="clock2">05:00<small>MIN&nbsp;&nbsp;SEC</small></span>
     </div>
-    <div id="plans"></div>
+    <div class="plans-slot"></div>
+    <div class="twox"><span class="ic">💪</span><div>People using the plan for <b>12 weeks</b> achieve <b>double the results</b> as for 4 weeks<small>*Based on Tai Motion member results</small></div></div>
     <p class="guarantee">🛡️ 30-day money-back guarantee</p>
     <div class="cta-bar" style="position:static;background:none;padding:0 0 8px">
       <div class="cta-inner"><button class="btn" id="getPlan">Get my plan</button></div>
     </div>
     <p class="note" id="renewNote" style="text-align:center"></p>
+
+    <!-- featured in — topic-level claim about tai chi as a practice (not a claim that Tai Motion was reviewed) -->
+    <div class="featured">
+      <div class="flabel">Tai Chi workouts featured in</div>
+      <div class="logos">
+        <img src="assets/checkout-business-insider.webp" alt="Business Insider">
+        <img src="assets/checkout-ny-times.webp" alt="The New York Times">
+        <img src="assets/checkout-womens-health.webp" alt="Women's Health">
+        <img src="assets/checkout-mens-health.webp" alt="Men's Health">
+        <img src="assets/checkout-shape.webp" alt="Shape">
+      </div>
+    </div>
 
     <!-- trust (neutral, no false press claims) -->
     <div class="press">
@@ -251,8 +274,22 @@
       <div class="b"><div class="ic">🌿</div><div class="l1">Goal</div><div class="l2">Balance &amp; calm</div></div>
     </div>
 
-    <div class="cta-bar" style="position:static;background:none;padding:8px 0">
+    <!-- pricing (repeat) -->
+    <h2 class="sec-t">Get visible results in <span class="g">4 weeks</span></h2>
+    <div class="promo">
+      <span class="code">✓ Discount applied</span>
+      <span class="clk" id="clock3">05:00<small>MIN&nbsp;&nbsp;SEC</small></span>
+    </div>
+    <div class="plans-slot"></div>
+    <div class="twox"><span class="ic">💪</span><div>People using the plan for <b>12 weeks</b> achieve <b>double the results</b> as for 4 weeks<small>*Based on Tai Motion member results</small></div></div>
+    <p class="guarantee">🛡️ 30-day money-back guarantee</p>
+    <div class="cta-bar" style="position:static;background:none;padding:0 0 8px">
       <div class="cta-inner"><button class="btn" id="getPlan2">Get my plan</button></div>
+    </div>
+
+    <div class="mbg">
+      <h4>100% Money-Back Guarantee</h4>
+      <p>We're confident in the quality of our program and the results it can help you achieve. If you don't see visible results within the first 30 days, you're eligible for a refund under our Subscription &amp; Refund Policy. Please note you may be asked to show that you followed the program.</p>
     </div>
   </main>
 
@@ -300,7 +337,7 @@
     })();
 
     function renderPlans() {
-      document.getElementById("plans").innerHTML = PLANS.map(p => `
+      const html = PLANS.map(p => `
         <div class="plan ${selected === p.id ? "sel" : ""}" data-id="${p.id}">
           ${p.popular ? '<span class="popular">MOST POPULAR</span>' : ""}
           <span class="radio"></span>
@@ -308,6 +345,7 @@
             <span class="old">$${p.old}</span><span>$${p.intro}</span></span>
           <span class="perday">$${p.perday}<small>per day</small></span>
         </div>`).join("");
+      document.querySelectorAll(".plans-slot").forEach(slot => slot.innerHTML = html);
       document.querySelectorAll(".plan").forEach(el => el.onclick = () => { selected = el.dataset.id; renderPlans(); updateRenew(); });
     }
     function updateRenew() {
@@ -322,7 +360,8 @@
     let t = 300;
     setInterval(() => { if (t > 0) t--; const m = String(Math.floor(t/60)).padStart(2,'0'), s = String(t%60).padStart(2,'0');
       document.getElementById("clock").textContent = m + ":" + s;
-      document.getElementById("clock2").innerHTML = m + ":" + s + "<small>MIN&nbsp;&nbsp;SEC</small>"; }, 1000);
+      document.getElementById("clock2").innerHTML = m + ":" + s + "<small>MIN&nbsp;&nbsp;SEC</small>";
+      var c3 = document.getElementById("clock3"); if (c3) c3.innerHTML = m + ":" + s + "<small>MIN&nbsp;&nbsp;SEC</small>"; }, 1000);
 
     function go() {
       session.selected_plan = selected; session.status = "checkout";
