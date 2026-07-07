@@ -107,7 +107,7 @@ window.FUNNEL = {
 
     { id: "intro_effective", type: "info", image: "assets/18.webp",
       title: "Chair Tai Chi: as effective as it is gentle",
-      body: "Slow, mindful movement makes a real difference. Chair Tai Chi helps you **feel healthier, build steady strength, and support your balance and mobility** — with none of the strain of high-impact workouts." },
+      body: 'Slow, mindful movement makes a real difference. Chair Tai Chi helps you **feel healthier, build steady strength, and support your balance and mobility** — with none of the strain of high-impact workouts.\n\nSource: "Walking for Exercise", Harvard Nutrition Source' },
 
     { id: "relate_breath", type: "single", section: "Activity", layout: "ld", cardImg: "assets/19_stairs.webp",
       q: "Do you relate to the following statement?",
@@ -124,9 +124,11 @@ window.FUNNEL = {
       statement: "I'm not sure how to choose workouts that are suitable for me",
       options: [{ value: "no", label: "No", emoji: "🚫" }, { value: "yes", label: "Yes", emoji: "✅" }] },
 
-    { id: "intro_eligible", type: "info", chart: true,
-      title: "Great news — you're eligible!",
-      blockBody: "Looks like you're a perfect fit for Chair Tai Chi. Here's how your progress could build over your first weeks on the path to your goal." },
+    { id: "intro_eligible", type: "info", chart: true, headerTop: true,
+      title: "Great news, you're eligible!",
+      lead: "Looks like you're a perfect fit for Chair Tai Chi — time to crush your goals.",
+      blockTitle: "Based on data from members like you",
+      blockBody: "Start seeing results in just one week and keep losing weight steadily on the path to your **{goal} kg** goal!" },
 
     { id: "pain_points", type: "multi", section: "Activity", layout: "cards",
       q: "Are any of the following an issue for you?", sub: "Your plan will address these to ensure your comfort and safety",
@@ -173,9 +175,10 @@ window.FUNNEL = {
       q: "Like or dislike?", statement: "Core strength",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
 
-    { id: "projection_2", type: "info", image: "assets/33.webp", full: true,
+    { id: "projection_2", type: "info", chart: true, headerTop: true,
       title: "You'll achieve your dream body even sooner than expected!",
-      body: "We predict you'll be {goal}kg by {projdate}.\n\nNext, tell us more about your lifestyle so we can help you hit your goal even more effectively." },
+      lead: "We predict you'll be **{goal}kg by {projdate}**.",
+      body: "Next, tell us more about your lifestyle so we can help you hit your goal even more effectively." },
 
     // ===================== Lifestyle =====================
     { id: "tension", type: "single", section: "Lifestyle",
@@ -184,9 +187,9 @@ window.FUNNEL = {
         { value: "some", label: "I have some ups and downs", emoji: "😐" },
         { value: "steady", label: "I feel mostly steady", emoji: "😌" }] },
 
-    { id: "intro_stress", type: "info", image: "assets/35.webp", full: true,
-      title: "Reduce stress and feel calmer with Chair Tai Chi",
-      body: "Just a short daily practice of mindful movement and steady breathing can ease tension — improving your **mood, focus, and emotional resilience.**" },
+    { id: "intro_stress", type: "info", image: "assets/35.webp", full: true, headerTop: true,
+      title: "Reduce stress and cut anxiety by 42% just by doing Chair Tai Chi",
+      body: "Just 20 minutes of Chair Tai Chi can lower cortisol and boost serotonin, improving **mood, focus, and emotional resilience.**\n\nSource: British Journal of Sports Medicine" },
 
     { id: "water", type: "single", section: "Lifestyle",
       q: "What is your daily water intake?", sub: "It's important to consume enough fluid when exercising",
@@ -201,9 +204,9 @@ window.FUNNEL = {
         { value: "mixed", label: "Up and down—it depends on the day", emoji: "🟡" },
         { value: "steady", label: "Steady—I usually feel okay", emoji: "🟢" }] },
 
-    { id: "intro_focus", type: "info", image: "assets/38.webp", full: true,
-      title: "Feel calmer and more focused in a few short weeks",
-      body: "Chair Tai Chi boosts brain circulation and improves energy balance — helping you feel **sharper, more motivated, and emotionally steady.**" },
+    { id: "intro_focus", type: "info", image: "assets/38.webp", full: true, headerTop: true,
+      title: "Feel calmer and more focused in just 2 weeks",
+      body: "Chair Tai Chi boosts brain circulation and improves energy balance — helping you feel **sharper, more motivated, and emotionally steady.**\n\nSource: Harvard Health Publishing" },
 
     { id: "rested", type: "single", section: "Lifestyle",
       q: "How often do you wake up feeling rested?",
@@ -298,7 +301,7 @@ window.FUNNEL = {
 
     { id: "intro_goodhands", type: "info", image: "assets/seniors_02.jpg",
       title: "You're in good hands",
-      body: "Let us take care of you while you take care of yourself.\n\nWe're here for you all along the way." },
+      body: "Let us take care of you while you take care of yourself. We're here for you all along the way." },
 
     { id: "intro_almost", type: "info", image: "assets/57c.jpg",
       title: "Almost done!",

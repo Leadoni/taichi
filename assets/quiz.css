@@ -178,6 +178,13 @@ h1.q{font-family:var(--sans);font-size:23px;line-height:1.3;margin:6px 0 8px;fon
 .chartlabels{display:flex;justify-content:space-between;font-size:13px;color:var(--q-muted);margin-top:6px;font-weight:500}
 
 /* ── sticky CTA ── */
+
+/* goals summary — tinted "table" block + inline CTA under it (Digesti) */
+.goal-block{max-width:var(--maxw);margin:18px auto 0;background:var(--q-soft-bg);border:1px solid var(--q-soft-border);border-radius:18px;padding:14px 16px}
+.goal-row{display:flex;align-items:center;gap:12px;padding:8px 2px}
+.goal-row .gr-ic{font-size:20px;flex:none;width:26px;text-align:center}
+.goal-row .gr-tx{font-size:15px;font-weight:500;color:var(--q-ink);line-height:1.4}
+.goal-cta{max-width:var(--maxw);margin:16px auto 0}
 .cta-bar{position:fixed;left:0;right:0;bottom:0;background:linear-gradient(to bottom,transparent,var(--q-bg) 42%);padding:16px 24px calc(24px + env(safe-area-inset-bottom,0px));z-index:20}
 .cta-inner{max-width:var(--maxw);margin:0 auto}
 .btn{display:block;width:100%;border:none;border-radius:14px;background:var(--grad);color:#fff;

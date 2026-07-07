@@ -262,6 +262,7 @@
   function rInfo(scr, root) {
     const addTitle = () => { if (scr.title) root.appendChild(el("h1", "q", personalize(scr.title))); };
     if (scr.headerTop) addTitle();
+    if (scr.lead) root.appendChild(richBody(scr.lead));
     if (scr.chart) { root.appendChild(chartEl()); }
     else if (scr.image) {
       const w = el("div", "info-photo" + (scr.full ? " full" : ""));
@@ -386,7 +387,9 @@
       go(1);
     });
     root.appendChild(el("p", "consent",
-      "By continuing you agree to receive emails about your plan. You can unsubscribe anytime. See our Terms and Privacy Policy."));
+      'By continuing you agree to receive emails about your plan. You can unsubscribe anytime. See our ' +
+      '<a href="terms-of-services.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
+      '<a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>.'));
     keepVisible(inp, btn);
     setTimeout(() => inp.focus(), 50);
   }
@@ -401,18 +404,27 @@
   }
 
   function rGoals(scr, root) {
-    const goal = S.goal_weight_kg || "—", now = S.weight_kg || "—";
-    root.appendChild(el("h1", "q", `${S.name ? S.name + ", reach" : "Reach"} your goal of ${goal}kg`));
+    const pr = $("#progress"); if (pr) pr.style.display = "none";     // full-bleed like Digesti — no loader/topbar
+    const sc = $("#section"); if (sc) sc.style.display = "none";
+    const bk = $("#back"); if (bk) bk.style.display = "none";
+    root.appendChild(el("h1", "q", personalize(`${S.name ? S.name + ", reach" : "Reach"} your goal of {goal}kg by {projdate}`)));
     root.appendChild(el("p", "sub", "And build a body you feel good living in"));
     root.appendChild(chartEl());
-    const ul = el("ul", "bullets goals-bullets");
-    ["Slim down and tone up with gentle but effective workouts",
-     "Gentle seated workouts — no equipment needed",
-     "Customized nutrition suggestions for better results",
-     "24/7 personalized wellness assistant"].forEach(b => ul.appendChild(el("li", "", b)));
-    root.appendChild(ul);
+    const block = el("div", "goal-block");
+    [["\uD83C\uDFCB\uFE0F", "Slim down and tone up with gentle but effective workouts"],
+     ["\uD83E\uDE91", "Gentle seated workouts — no equipment needed"],
+     ["\uD83E\uDD57", "Customized nutrition suggestions for better results"],
+     ["\uD83D\uDCAC", "24/7 personalized wellness assistant"]].forEach(([ic, t]) => {
+       const row = el("div", "goal-row");
+       row.appendChild(el("span", "gr-ic", ic));
+       row.appendChild(el("span", "gr-tx", t));
+       block.appendChild(row);
+     });
+    root.appendChild(block);
     S.status = "completed"; window.CTC.saveSession();
-    ctaBar("Get My Plan", () => { window.location.href = "checkout.html"; });
+    const cta = el("div", "goal-cta");
+    const b = el("button", "btn", "Get My Plan"); b.onclick = () => { window.location.href = "checkout.html"; };
+    cta.appendChild(b); root.appendChild(cta);
   }
 
   // ---- sticky CTA ----
