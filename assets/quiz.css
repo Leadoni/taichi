@@ -62,7 +62,7 @@ img{max-width:100%}
 /* ── page / step ── */
 #step{max-width:var(--maxw);margin:0 auto;padding:34px 28px 150px;animation:qfade .34s cubic-bezier(.22,1,.36,1)}
 @keyframes qfade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-h1.q{font-family:var(--serif);font-size:25px;line-height:1.28;margin:6px 0 8px;font-weight:500;text-align:center;letter-spacing:-.4px;color:var(--q-ink)}
+h1.q{font-family:var(--sans);font-size:23px;line-height:1.3;margin:6px 0 8px;font-weight:700;text-align:center;letter-spacing:-.01em;color:var(--q-ink)}
 .sub{color:var(--q-ink-light);text-align:center;margin:0 0 20px;font-size:15px;font-style:italic;line-height:1.5}
 .statement{background:var(--q-soft-bg);border:1px solid var(--q-soft-border);border-radius:12px;padding:14px 16px;text-align:center;font-weight:500;margin:0 0 18px;color:var(--q-ink)}
 
