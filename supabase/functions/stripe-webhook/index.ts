@@ -21,31 +21,45 @@ async function emailForUser(db: ReturnType<typeof svc>, userId: string | null): 
   return data?.email ?? 'unknown';
 }
 
-// Mirror a subscription into public.subscriptions; only the BASE subscription (no upsell_id) drives users access.
+// Mirror a subscription into public.subscriptions, then recompute the member's access from the
+// FULL set of their base subscriptions (source of truth) — never from just the event that arrived.
 async function syncSubscription(db: ReturnType<typeof svc>, subId: string) {
   const sub = await stripe.subscriptions.retrieve(subId);
   const userId = await userForCustomer(db, sub.customer as string);
   if (!userId) return;
-  const start = new Date(sub.current_period_start * 1000).toISOString();
-  const end = new Date(sub.current_period_end * 1000).toISOString();
-  const active = sub.status === 'active' || sub.status === 'trialing';
-  const isUpsell = !!sub.metadata?.upsell_id;
+  const iso = (t: number) => new Date(t * 1000).toISOString();
+  // Audit trail: mirror THIS subscription into public.subscriptions.
   await db.from('subscriptions').upsert({
     id: sub.id, user_id: userId, status: sub.status,
     price_id: sub.items.data[0]?.price?.id ?? null,
-    current_period_start: start, current_period_end: end,
+    current_period_start: iso(sub.current_period_start), current_period_end: iso(sub.current_period_end),
     cancel_at_period_end: sub.cancel_at_period_end,
-    canceled_at: sub.canceled_at ? new Date(sub.canceled_at * 1000).toISOString() : null,
+    canceled_at: sub.canceled_at ? iso(sub.canceled_at) : null,
     updated_at: new Date().toISOString(),
   });
-  if (!isUpsell) {
-    await db.from('users').update({
-      subscription_status: active ? 'active' : sub.status,
-      subscription_plan: (sub.metadata?.plan_id as string) ?? undefined,
-      current_period_start: start, current_period_end: end,
-      cancel_at_period_end: sub.cancel_at_period_end,
-    }).eq('id', userId);
-  }
+  // Upsell subscriptions (tagged with upsell_id) never drive base access.
+  if (sub.metadata?.upsell_id) return;
+
+  // SOURCE OF TRUTH: look at ALL of the customer's base (non-upsell) subscriptions and let the
+  // healthiest one govern access. An active/trialing sub always wins, so a stale or duplicate
+  // subscription expiring can never clobber a paying member (the bug that locked members out).
+  // If no active sub remains (a genuine cancellation/expiry), the latest status governs — so
+  // cancellations reliably remove access. hasAccess() also enforces current_period_end as a backstop.
+  const all = await stripe.subscriptions.list({ customer: sub.customer as string, status: 'all', limit: 100 });
+  const base = all.data.filter((s) => !s.metadata?.upsell_id);
+  const rank = (s: Stripe.Subscription) =>
+    (s.status === 'active' || s.status === 'trialing') ? 3 :
+    (s.status === 'past_due') ? 2 :
+    (s.status === 'unpaid' || s.status === 'incomplete') ? 1 : 0;
+  base.sort((a, b) => (rank(b) - rank(a)) || (b.created - a.created));
+  const gov = base[0] ?? sub; // governing subscription
+  await db.from('users').update({
+    subscription_status: gov.status,
+    subscription_plan: (gov.metadata?.plan_id as string) ?? undefined,
+    current_period_start: iso(gov.current_period_start),
+    current_period_end: iso(gov.current_period_end),
+    cancel_at_period_end: gov.cancel_at_period_end,
+  }).eq('id', userId);
 }
 
 Deno.serve(async (req) => {
