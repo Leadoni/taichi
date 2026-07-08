@@ -16,18 +16,33 @@ const cors = {
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
 
-// one-time bundle prices (cents) + the entitlement id granted
-const BUNDLES: Record<string, { amount: number; grant: string }> = {
-  essential_guides: { amount: 999,  grant: 'essential_guides' },
-  all_guides:       { amount: 1999, grant: 'all_guides' },
+// one-time in-app prices (cents) + the entitlement id granted.
+// App pricing: single guide $18.99, group bundle $38.99 (independent of the funnel upsell prices).
+const OFFERS: Record<string, { amount: number; grant: string }> = {
+  essential_guides:        { amount: 3899, grant: 'essential_guides' },
+  all_guides:              { amount: 3899, grant: 'all_guides' },
+  'guide_joint-mobility':  { amount: 1899, grant: 'guide_joint-mobility' },
+  'guide_breathing':       { amount: 1899, grant: 'guide_breathing' },
+  'guide_nutrition':       { amount: 1899, grant: 'guide_nutrition' },
+  'guide_desserts':        { amount: 1899, grant: 'guide_desserts' },
+  'guide_sleep':           { amount: 1899, grant: 'guide_sleep' },
+  'guide_eating':          { amount: 1899, grant: 'guide_eating' },
+  'guide_aging':           { amount: 1899, grant: 'guide_aging' },
+};
+// which group bundle covers a single guide (so bundle owners aren't charged for singles)
+const GROUP_OF: Record<string, string> = {
+  'guide_joint-mobility': 'essential_guides', 'guide_breathing': 'essential_guides',
+  'guide_nutrition': 'essential_guides', 'guide_desserts': 'essential_guides',
+  'guide_sleep': 'all_guides', 'guide_eating': 'all_guides', 'guide_aging': 'all_guides',
 };
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const { bundle } = await req.json();
-    const cfg = BUNDLES[bundle];
-    if (!cfg) return json({ status: 'error', error: 'unknown bundle' }, 400);
+    const body = await req.json();
+    const key = (body.item || body.bundle) as string;
+    const cfg = OFFERS[key];
+    if (!cfg) return json({ status: 'error', error: 'unknown item' }, 400);
 
     // verify the member's session
     const authHeader = req.headers.get('Authorization') || '';
@@ -39,10 +54,12 @@ Deno.serve(async (req) => {
 
     const svc = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
 
-    // already owns it? never double-charge
+    // already owns it? never double-charge (owns the item directly, OR owns the group bundle that includes it)
     const { data: pays } = await svc.from('payments').select('kind,amount').eq('user_id', user.id);
-    const owned = (pays || []).some((p) => p.kind === 'upsell:' + cfg.grant);
-    if (owned) return json({ status: 'already_owned', upsell_id: cfg.grant });
+    const kinds = new Set((pays || []).map((p) => p.kind));
+    const groupBundle = GROUP_OF[key];
+    if (kinds.has('upsell:' + cfg.grant) || (groupBundle && kinds.has('upsell:' + groupBundle)))
+      return json({ status: 'already_owned', upsell_id: cfg.grant });
 
     const { data: urow } = await svc.from('users').select('stripe_customer_id').eq('id', user.id).maybeSingle();
     const customerId = urow?.stripe_customer_id as string | undefined;
