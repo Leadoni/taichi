@@ -95,9 +95,15 @@ Deno.serve(async (req) => {
     });
 
     if (pi.status === 'succeeded') {
+      // Capture the charge's receipt_url so the app can link a receipt (the PI object alone doesn't carry it).
+      let receipt_url: string | null = null;
+      try {
+        const chId = (pi.latest_charge as string) || null;
+        if (chId) receipt_url = (await stripe.charges.retrieve(chId)).receipt_url ?? null;
+      } catch (_) { /* receipt optional */ }
       await svc.from('payments').upsert({
         id: pi.id, user_id: user.id, amount: amount / 100, currency: 'usd',
-        kind: 'upsell:' + cfg.grant, status: 'succeeded', raw: pi as unknown as Record<string, unknown>,
+        kind: 'upsell:' + cfg.grant, status: 'succeeded', raw: { ...(pi as unknown as Record<string, unknown>), receipt_url },
       }, { onConflict: 'id', ignoreDuplicates: true });
       return json({ status: 'accepted', upsell_id: cfg.grant });
     }
