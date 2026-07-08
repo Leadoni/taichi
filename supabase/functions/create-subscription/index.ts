@@ -90,6 +90,16 @@ Deno.serve(async (req) => {
       for (const old of stale.data) { try { await stripe.subscriptions.cancel(old.id); } catch (_) { /* ignore */ } }
     } catch (_) { /* best-effort cleanup */ }
 
+    // Root-cause dedup: if the customer already has a LIVE (active/trialing) base subscription, do not
+    // create a second one — a page reload or a test-mode re-pay must never double-subscribe/double-bill.
+    // The pay page handles this { error: 'already subscribed' } signal by sending the member to the app.
+    try {
+      const live = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 });
+      if (live.data.some((s) => (s.status === 'active' || s.status === 'trialing') && !s.metadata?.upsell_id)) {
+        return json({ error: 'already subscribed' });
+      }
+    } catch (_) { /* best-effort; fall through to normal creation */ }
+
     const checkoutToken = crypto.randomUUID();
     const sub = await stripe.subscriptions.create({
       customer: customerId,

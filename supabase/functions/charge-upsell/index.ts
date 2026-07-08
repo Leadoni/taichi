@@ -8,9 +8,9 @@ const cors = {
 };
 type Offer = { type: 'one_time'; amount: number } | { type: 'recurring'; price: string };
 const UPSELLS: Record<string, Offer> = {
-  essential_guides:         { type: 'recurring', price: 'price_1TqChU3x0B891G8VCfW94Ywx' }, // $9.99/mo
-  all_guides:               { type: 'recurring', price: 'price_1TqChV3x0B891G8VV8xoImBl' }, // $19.99/mo
-  essential_guides_onetime: { type: 'one_time',  amount: 999  },
+  essential_guides:         { type: 'one_time',  amount: 2599 }, // 4 Essential guides bulk (upsell1 primary)
+  all_guides:               { type: 'one_time',  amount: 3899 }, // 3 Premium guides bulk (upsell2 bundle)
+  essential_guides_onetime: { type: 'one_time',  amount: 1899 }, // upsell1 downsell (4 guides)
   guide_sleep:              { type: 'one_time',  amount: 1899 },
   guide_eating:             { type: 'one_time',  amount: 1899 },
   guide_aging:              { type: 'one_time',  amount: 1899 },
