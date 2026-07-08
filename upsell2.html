@@ -38,7 +38,7 @@
       { id:"eating", icon:"🍎", gt:"Eating Without Guilt", gd:"A calm, kind relationship with food", price:18.99 },
       { id:"aging", icon:"🌿", gt:"Aging Gracefully", gd:"7 pillars for a strong, calm, joyful later life", price:18.99 },
     ];
-    const BUNDLE = { id:"all_guides", icon:"🧩", gt:"All of the above", gd:"Every guide, one discounted bundle", old:54.99, price:38.99, off:"29% OFF", rec:true };
+    const BUNDLE = { id:"all_guides", icon:"🧩", gt:"All 3 guides", gd:"Better Sleep, Eating Without Guilt & Aging Gracefully", old:56.97, price:38.99, off:"32% OFF", best:true };
     let selected = "all_guides";
 
     function render() {
@@ -47,7 +47,7 @@
         <span class="ic">${g.icon}</span>
         <span class="gtext"><span class="gt">${g.gt}</span><span class="gd">${g.gd}</span></span>
         <span class="gprice">${g.old?`<span class="old">$${g.old}</span>`:""}$${g.price.toFixed(2)}${g.off?`<span class="tag-off">${g.off}</span>`:""}</span>
-        ${g.rec?'<span class="tag-rec">RECOMMENDED</span>':""}</div>`;
+        ${g.best?'<span class="tag-rec">BEST VALUE</span>':""}</div>`;
       box.innerHTML = GUIDES.map(rowG).join("") + rowG(BUNDLE);
       box.querySelectorAll(".guide").forEach(el => el.onclick = () => { selected = el.dataset.id; render(); });
     }
@@ -56,11 +56,11 @@
 
     document.getElementById("add").onclick = (e) => {
       const all = [...GUIDES, BUNDLE]; const g = all.find(x => x.id === selected);
-      // bundle -> "all_guides" (recurring); individual -> "guide_<id>" (one-time)
+      // every option is one-time: bundle -> "all_guides", individual -> "guide_<id>"
       const upsellId = g.id === "all_guides" ? "all_guides" : "guide_" + g.id;
-      UPSELL.accept(upsellId, { id: upsellId, label: g.gt, amount: g.price, recurring: !!g.rec }, "upsell3.html", e.currentTarget);
+      UPSELL.accept(upsellId, { id: upsellId, label: g.gt, amount: g.price, recurring: false }, "thankyou.html", e.currentTarget);
     };
-    document.getElementById("skip").onclick = () => { location.href = "upsell3.html"; };
+    document.getElementById("skip").onclick = () => { location.href = "thankyou.html"; };
   </script>
   <script src="assets/testbar.js?v=1"></script>
 </body>

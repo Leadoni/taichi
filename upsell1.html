@@ -23,10 +23,10 @@
       <div class="offer-line"><span class="ic">🌿</span> <b>Joint &amp; Mobility guide</b></div>
       <div class="offer-line"><span class="ic">🧘</span> Stress-Relief Breathing guide</div>
       <div class="offer-line"><span class="ic">🍽️</span> Weekly Gentle Nutrition guide</div>
-      <div class="offer-line"><span class="ic">🍰</span> Sweet &amp; Gentle: 25 lighter desserts</div>
+      <div class="offer-line"><span class="ic">🍰</span> Sweet &amp; Gentle: 25 Lighter Desserts</div>
       <div class="offer-foot">
-        <div class="ttl">Special offer<small>Added to your subscription</small></div>
-        <div class="price-tag"><span class="pill-disc">-56%</span><span class="old">$2.92</span><span>$1.25/day</span></div>
+        <div class="ttl">Special offer<small>One-time — yours to keep</small></div>
+        <div class="price-tag"><span class="pill-disc">-66%</span><span class="old">$75.96</span><span>$25.99</span></div>
       </div>
     </div>
 
@@ -40,15 +40,15 @@
       <li>Created with movement and wellness input</li>
       <li>Keep the guides even if Chair Tai Chi isn't for you</li>
     </ul>
-    <p class="fineprint">Adding the Essential guides bundle adds $1.25/day to your recurring subscription. Cancel anytime in your account.</p>
+    <p class="fineprint">One-time charge of $25.99 added to your order — all 4 guides are yours to keep. No subscription, no recurring fees.</p>
   </main>
 
   <!-- downsell modal -->
   <div class="overlay" id="modal" style="display:none">
     <div class="modal-card">
       <div class="badge">✓</div>
-      <h3>An extra 70% off, applied</h3>
-      <p>With this additional <b>70% off</b>, keep the Essential guides as a one-time add to support your progress.</p>
+      <h3>A final discount, applied</h3>
+      <p>Keep all <b>4 Essential guides</b> for a one-time <b>$18.99</b> — less than the price of a single guide.</p>
       <button class="btn" id="claim">Claim now</button>
       <button class="decline" id="reallyDecline" style="margin-bottom:0">No thanks, continue</button>
     </div>
@@ -62,10 +62,10 @@
     document.getElementById("stephdr").innerHTML = FLOW.stepHeader("offer");
     const NEXT = "upsell2.html";
     document.getElementById("add").onclick = (e) =>
-      UPSELL.accept("essential_guides", { id:"essential_guides", label:"Essential guides bundle", amount:1.25, recurring:true, unit:"day" }, NEXT, e.currentTarget);
+      UPSELL.accept("essential_guides", { id:"essential_guides", label:"Essential Guides (4 PDFs)", amount:25.99, recurring:false }, NEXT, e.currentTarget);
     document.getElementById("decline").onclick = () => { document.getElementById("modal").style.display = "grid"; };
     document.getElementById("claim").onclick = (e) =>
-      UPSELL.accept("essential_guides_onetime", { id:"essential_guides", label:"Essential guides (one-time, 70% off)", amount:9.99, recurring:false }, NEXT, e.currentTarget);
+      UPSELL.accept("essential_guides_onetime", { id:"essential_guides", label:"Essential Guides (one-time)", amount:18.99, recurring:false }, NEXT, e.currentTarget);
     document.getElementById("reallyDecline").onclick = () => { location.href = NEXT; };
   </script>
   <script src="assets/testbar.js?v=1"></script>
