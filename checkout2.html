@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<script src="assets/theme.js?v=1"></script>
+<title>Chair Tai Chi — Your plan (v2) | Tai Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css?v=15">
+<style>
+  /* ── Warm "Her Phase Map" theme override for checkout ── */
+  :root{
+    --bg:#f7f3ee; --card:#fff; --ink:#2a2319; --muted:#9a8f84;
+    --primary:#bf7350; --primary-dark:#a85f42; --primary-soft:#f7ede8;
+    --line:#e8e0d5; --accent:#c4806a; --radius:16px;
+    --shadow:0 8px 30px oklch(40% 0.03 55 / 0.10);
+    --sage:#6f9e7a; --gold:#c8944f;
+    --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+    --sans:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+    --grad:linear-gradient(135deg,#bf7350,#c4806a);
+    --co-top:oklch(97% 0.012 72 / 0.92); --btn-glow:rgba(191,115,80,.3);
+  }
+  :root[data-theme="green"]{
+    --bg:#f6f9f6; --ink:#233e20; --muted:#7c8d79;
+    --primary:#45b577; --primary-dark:#2f9d61; --primary-soft:#eef6f1;
+    --line:#dee7e2; --accent:#45b577; --sage:#45b577; --gold:#9aa84f;
+    --grad:linear-gradient(135deg,#3aa76a,#45b577);
+    --co-top:rgba(246,249,246,.92); --btn-glow:rgba(69,181,119,.3);
+  }
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);padding-top:66px}
+
+  /* shared component overrides (from style.css) */
+  .btn{background:var(--grad);border-radius:14px;font-family:var(--sans);font-weight:500;letter-spacing:.3px;box-shadow:0 6px 24px var(--btn-glow)}
+  .btn:hover{background:var(--grad);filter:brightness(1.05)}
+  .plan{border:1.5px solid var(--line);border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .plan.sel{border-color:var(--primary);background:var(--primary-soft)}
+  .plan .radio{border:2px solid var(--line)}
+  .plan.sel .radio{border-color:var(--primary);background:radial-gradient(circle at center,#fff 0 4px,var(--primary) 5px)}
+  .plan .name{font-family:var(--sans);font-weight:700;font-size:16.5px;letter-spacing:-.01em}
+  .plan .perday{font-family:var(--sans);font-weight:700;font-variant-numeric:tabular-nums;font-size:15.5px}
+  .plan .pn{font-variant-numeric:tabular-nums}
+  .plan .old{color:var(--muted);text-decoration:line-through;font-size:13px;margin-right:6px}
+  .plan .now{font-weight:700;font-size:15px}
+  .popular{background:#e8622a;border-radius:20px}
+
+  /* sticky top bar with timer + CTA */
+  .co-top{position:fixed;top:0;left:0;right:0;z-index:60;background:var(--co-top);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .co-top-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 16px}
+  .co-clock{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;font-weight:600;color:var(--ink)}
+  .co-clock .t{background:var(--primary-soft);color:var(--primary-dark);border-radius:8px;padding:3px 9px;font-variant-numeric:tabular-nums;font-size:16px}
+  .co-clock small{font-size:9.5px;font-weight:500;color:var(--muted);letter-spacing:.7px}
+  .co-top-brand{display:inline-flex;align-items:center;gap:7px;font-family:var(--serif);font-weight:500;font-size:17px;color:var(--ink);white-space:nowrap}
+  .co-top-brand img{height:22px;width:auto;display:block}
+  @media (max-width:400px){ .co-top-brand{font-size:0;gap:0} .co-top-brand img{height:26px} }  /* logo-only on very small screens */
+  .co-top .btn-sm{background:var(--grad);color:#fff;border:none;border-radius:20px;padding:10px 18px;font-weight:500;font-size:14px;cursor:pointer;text-decoration:none;box-shadow:0 4px 14px var(--btn-glow)}
+
+  .co{max-width:var(--maxw);margin:0 auto;padding:12px 20px 40px}
+  .co h2.sec-t{font-family:var(--serif);font-size:27px;font-weight:500;letter-spacing:-.5px;text-align:center;margin:36px 0 16px}
+  .co h2.sec-t#headline{margin-top:6px}   /* first heading sits close to the header now that the logo moved up */
+  .co h2.sec-t .g{color:var(--primary)}
+
+  /* before / after */
+  .ba2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  .ba2 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .ba2 .tag{display:block;text-align:center;font-weight:600;font-size:11px;letter-spacing:1px;padding:9px;color:#fff}
+  .ba2 .before .tag{background:#b57a63}.ba2 .after .tag{background:var(--sage)}
+  .ba2 .ph{width:100%;aspect-ratio:1/1.05;display:block;background:linear-gradient(135deg,#e8dccb,#d3c0aa);background-size:cover;background-position:center}
+  .ba2 .rows{padding:12px 12px 14px}
+  .ba2 .r{font-size:13px;margin-bottom:8px}
+  .ba2 .r b{display:block;font-size:13px;margin-bottom:4px;color:var(--muted);font-weight:500}
+  .bar{height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;transition:width .9s cubic-bezier(.4,0,.2,1)}
+  .bar.lo i{width:30%}.bar.mid i{width:55%}.bar.hi i{width:90%}
+  .bar.red i{background:#cf7a5f}.bar.green i{background:var(--sage)}
+
+  /* summary card — Digesti-style stressed status cards */
+  .sum{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 18px;margin-top:8px;box-shadow:var(--shadow)}
+  .sum h3{font-family:var(--serif);font-weight:500;margin:0 0 8px;font-size:22px;text-align:center}
+  .sum .lead{color:var(--ink);font-size:14.5px;line-height:1.5;text-align:center;margin:0 auto 14px;max-width:340px}
+  .sum-card{border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-top:12px;background:var(--card)}
+  .sc-head{display:flex;align-items:center;gap:9px;font-weight:600;font-size:15.5px}
+  .sc-head .sc-ic{font-size:19px;line-height:1}
+  .sc-head .sc-t{flex:1}
+  .sc-big{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1;white-space:nowrap}
+  .sc-big.red{color:#d0453a}
+  .sc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+  .rec-tag{background:var(--primary-soft);color:var(--primary-dark);font-size:10px;font-weight:700;letter-spacing:.5px;padding:5px 9px;border-radius:8px;text-transform:uppercase;white-space:nowrap}
+  .stress-alert{display:flex;align-items:center;gap:8px;margin-top:12px;background:#fdecec;color:#c0392b;border-radius:10px;padding:10px 12px;font-size:14px}
+  .stress-alert b{color:#c0392b}
+  .stress-alert .sa-ic{color:#d0453a;font-weight:700}
+  .bmi-track{position:relative;height:10px;border-radius:6px;margin:36px 8px 8px;
+    background:linear-gradient(90deg,#4a90d9,#5bbf6a 35%,#e8c14a 65%,#e0603a)}
+  .bmi-track .mk{position:absolute;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;background:#fff;border:3px solid #e8622a;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .bmi-bub{position:absolute;top:-28px;transform:translateX(-50%);background:#e8622a;color:#fff;font-size:12.5px;font-weight:600;padding:4px 9px;border-radius:8px;white-space:nowrap}
+  .bmi-bub:after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);border:5px solid transparent;border-top-color:#e8622a;border-bottom:0}
+  .bmi-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:0 2px}
+  .bmi-scale .on{color:var(--ink);font-weight:700}
+  .glasses{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+  .wg{width:15px;height:21px;border:1.5px solid #a9cbe6;border-top-width:1px;border-radius:2px 2px 6px 6px;background:linear-gradient(to top,#6cbcf0 0,#8fcdf3 60%,#eaf5fd 60%,#eaf5fd 100%)}
+  .note{color:var(--muted)}
+
+  /* pricing */
+  .promo{background:var(--primary-soft);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .promo .code{flex:1;background:#fff;border-radius:8px;padding:10px 12px;font-weight:500;color:var(--primary-dark);font-size:14px}
+  .promo .clk{background:var(--grad);color:#fff;border-radius:8px;padding:8px 12px;font-weight:600;text-align:center;font-variant-numeric:tabular-nums}
+  .promo .clk small{display:block;font-size:9px;font-weight:500}
+  .guarantee{text-align:center;color:var(--primary-dark);font-weight:600;font-size:14px;margin:14px 0}
+  .press{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;color:var(--muted);font-size:13px;font-weight:500;
+    padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:8px 0}
+
+  /* stories + reviews */
+  .story{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)}
+  .story .imgs{display:grid;grid-template-columns:1fr 1fr}
+  .story .imgs img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--line)}
+  .story .ba-img{width:100%;display:block;background:var(--line)}
+  .story .body{padding:16px}
+  .story .who{display:flex;justify-content:space-between;align-items:center;font-family:var(--serif);font-weight:500;font-size:16px}
+  .story .stars{color:var(--gold);letter-spacing:1px;font-size:13px}
+  .story p{margin:8px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+  .rev{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .rev .top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .rev .top img{width:36px;height:36px;border-radius:50%;object-fit:cover}
+  .rev .top .n{font-weight:600;font-size:14px;flex:1}
+  .rev .stars{color:var(--gold);font-size:12px;letter-spacing:1px}
+  .rev p{margin:0;color:var(--muted);font-size:14px;line-height:1.6}
+
+  .badges{display:flex;justify-content:center;gap:40px;margin:16px 0 4px;text-align:center}
+  .featured{margin:30px 0 8px;text-align:center}
+  .featured .flabel{font-size:11px;letter-spacing:1.6px;color:var(--muted);text-transform:uppercase;margin-bottom:16px}
+  .featured .logos{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:18px 30px}
+  .featured .logos img{height:21px;width:auto;max-width:140px;opacity:.78}
+  .twox{display:flex;align-items:flex-start;gap:9px;margin:12px 2px 6px;font-size:13px;line-height:1.4;color:var(--ink)}
+  .twox .ic{font-size:20px;flex:none;line-height:1}
+  .twox small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+  .mbg{background:var(--primary-soft);border-radius:14px;padding:16px 18px;margin:24px 0 8px}
+  .mbg h4{margin:0 0 6px;font-family:var(--serif);font-weight:500;font-size:17px}
+  .mbg p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
+  .badges .b .ic{font-size:30px}
+  .badges .b .l1{font-size:12px;color:var(--muted);margin-top:4px}
+  .badges .b .l2{font-family:var(--serif);font-weight:500;font-size:15px}
+
+  .trustline{display:flex;justify-content:center;gap:8px 22px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-top:16px}
+  .disclaimer{color:var(--muted)}
+
+  /* checkout2 — transparent pricing card layout */
+  .plan{display:flex;align-items:center;gap:13px;padding:16px 16px;margin-bottom:11px;cursor:pointer;position:relative}
+  .plan .radio{width:20px;height:20px;border-radius:50%;flex:none}
+  .plan .pinfo{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+  .plan .renew{font-size:12.5px;color:var(--muted);font-weight:500;line-height:1.3}
+  .plan .today{flex:none;text-align:right;font-variant-numeric:tabular-nums;line-height:1.05}
+  .plan .today b{display:block;font-size:22px;font-weight:800;color:var(--primary-dark)}
+  .plan .today small{display:block;font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+  .plan.sel .today b{color:var(--primary-dark)}
+  .popular{position:absolute;top:-10px;left:16px;color:#fff;font-size:10px;font-weight:800;padding:3px 9px;letter-spacing:.05em;text-transform:uppercase}
+</style>
+</head>
+<body>
+  <!-- sticky top -->
+  <div class="co-top">
+    <div class="co-top-in">
+      <span class="co-clock"><small>OFFER ENDS</small><span class="t" id="clock">05:00</span></span>
+      <span class="co-top-brand"><img src="assets/logo2.webp" alt="">Tai&nbsp;Motion</span>
+      <a class="btn-sm" href="#pricing">Get my plan</a>
+    </div>
+  </div>
+
+  <main class="co">
+    <h2 class="sec-t" id="headline">Your plan is ready</h2>
+
+    <!-- before / after -->
+    <div class="ba2">
+      <div class="card before">
+        <span class="tag">BEFORE</span>
+        <div class="ph" style="background-image:url(assets/checkout_before.jpg)"></div>
+        <div class="rows">
+          <div class="r"><b>Energy levels</b><div class="bar red" data-w="energy-b"><i></i></div></div>
+          <div class="r"><b>Steadiness</b><div class="bar red" data-w="steady-b"><i></i></div></div>
+          <div class="r"><b>Weight</b><div class="bar red" data-w="weight-b"><i></i></div></div>
+        </div>
+      </div>
+      <div class="card after">
+        <span class="tag">AFTER</span>
+        <div class="ph" style="background-image:url(assets/checkout_after.jpg)"></div>
+        <div class="rows">
+          <div class="r"><b>Energy levels</b><div class="bar green" data-w="energy-a"><i></i></div></div>
+          <div class="r"><b>Steadiness</b><div class="bar green" data-w="steady-a"><i></i></div></div>
+          <div class="r"><b>Weight</b><div class="bar green" data-w="weight-a"><i></i></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- personal summary -->
+    <div class="sum">
+      <h3>Your personal summary</h3>
+      <p class="lead">Based on your quiz answers, it looks like you might have an <b>increased metabolic age</b>, which can lead to <b>excess body weight</b>.</p>
+
+      <div class="sum-card" id="bmiItem">
+        <div class="sc-head"><span class="sc-ic">⚖️</span><span class="sc-t">Current BMI</span></div>
+        <div class="bmi-track"><span class="bmi-bub" id="bmiBub" style="left:50%">You — <b id="bmiVal">—</b></span><span class="mk" id="bmiMk" style="left:50%"></span></div>
+        <div class="bmi-scale"><span>Underweight</span><span>Healthy</span><span>Overweight</span><span>Obese</span></div>
+        <div class="stress-alert"><span class="sa-ic">ⓘ</span> Your weight category: <b id="bmiCat">—</b></div>
+      </div>
+
+      <div class="sum-card">
+        <div class="sc-head"><span class="sc-ic">⏳</span><span class="sc-t">Metabolic age</span><span class="sc-big red" id="metaVal">—</span></div>
+        <div class="stress-alert"><span class="sa-ic">ⓘ</span> Your metabolism is: <b>Slow</b></div>
+      </div>
+
+      <div class="sum-card">
+        <div class="sc-head"><span class="sc-ic">⏰</span><span class="sc-t">Personalized Chair Tai Chi plan</span></div>
+        <div class="sc-row"><span class="sc-big">7 min</span><span class="rec-tag">Recommended duration</span></div>
+      </div>
+
+      <div class="sum-card">
+        <div class="sc-head"><span class="sc-ic">💧</span><span class="sc-t">Water intake</span></div>
+        <div class="glasses"><span class="wg"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span><span class="wg"></span></div>
+        <div class="sc-row"><span class="sc-big">6–8 glasses</span><span class="rec-tag">Recommended daily intake</span></div>
+      </div>
+    </div>
+
+    <!-- pricing -->
+    <h2 class="sec-t" id="pricing">Get visible results in <span class="g">4 weeks</span></h2>
+    <div class="promo">
+      <span class="code">✓ Discount applied</span>
+      <span class="clk" id="clock2">05:00<small>MIN&nbsp;&nbsp;SEC</small></span>
+    </div>
+    <div class="plans-slot"></div>
+    <div class="twox"><span class="ic">💪</span><div>People using the plan for <b>12 weeks</b> achieve <b>double the results</b> as for 4 weeks<small>*Based on Tai Motion member results</small></div></div>
+    <p class="guarantee">🔒 Secure checkout · Cancel anytime in your account</p>
+    <div class="cta-bar" style="position:static;background:none;padding:0 0 8px">
+      <div class="cta-inner"><button class="btn" id="getPlan">Get my plan</button></div>
+    </div>
+    <p class="note" id="renewNote" style="text-align:center"></p>
+
+    <!-- featured in — topic-level claim about tai chi as a practice (not a claim that Tai Motion was reviewed) -->
+    <div class="featured">
+      <div class="flabel">Tai Chi workouts featured in</div>
+      <div class="logos">
+        <img src="assets/checkout-business-insider.webp" alt="Business Insider">
+        <img src="assets/checkout-ny-times.webp" alt="The New York Times">
+        <img src="assets/checkout-womens-health.webp" alt="Women's Health">
+        <img src="assets/checkout-mens-health.webp" alt="Men's Health">
+        <img src="assets/checkout-shape.webp" alt="Shape">
+      </div>
+    </div>
+
+    <!-- success stories (illustrative; original copy) -->
+    <h2 class="sec-t">Member stories</h2>
+    <div class="story">
+      <img class="ba-img" src="assets/ba_1.webp" alt="">
+      <div class="body">
+        <div class="who"><span>Margaret, 43</span><span class="stars">★★★★★</span></div>
+        <p>"I can follow along from my armchair. After a few weeks I feel steadier moving around the house."</p>
+      </div>
+    </div>
+    <div class="story">
+      <img class="ba-img" src="assets/ba_2.webp" alt="">
+      <div class="body">
+        <div class="who"><span>Patricia, 62</span><span class="stars">★★★★★</span></div>
+        <p>"Short sessions I can actually keep up with. My posture and mood have both improved."</p>
+      </div>
+    </div>
+
+    <!-- reviews -->
+    <h2 class="sec-t">Customer reviews</h2>
+    <div class="rev">
+      <div class="top"><img src="assets/checkout_01.webp" alt=""><span class="n">Brenda</span><span class="stars">★★★★★</span></div>
+      <p>"I never write reviews, but this is easy to follow and I look forward to it. I feel more confident on my feet."</p>
+    </div>
+    <div class="rev">
+      <div class="top"><img src="assets/checkout_02.webp" alt=""><span class="n">Sandra</span><span class="stars">★★★★★</span></div>
+      <p>"No more stiff joints first thing in the morning. Gentle, but it really does something."</p>
+    </div>
+    <div class="rev">
+      <div class="top"><img src="assets/checkout_03.webp" alt=""><span class="n">Amelia</span><span class="stars">★★★★★</span></div>
+      <p>"Calmer, steadier, and my friends say I seem more energetic. Easy to fit into my day."</p>
+    </div>
+
+    <!-- results badges -->
+    <div class="badges">
+      <div class="b"><div class="ic">🎯</div><div class="l1">Perfect for</div><div class="l2">Ages 40+</div></div>
+      <div class="b"><div class="ic">🌿</div><div class="l1">Goal</div><div class="l2">Balance &amp; calm</div></div>
+    </div>
+
+    <!-- pricing (repeat) -->
+    <h2 class="sec-t">Get visible results in <span class="g">4 weeks</span></h2>
+    <div class="promo">
+      <span class="code">✓ Discount applied</span>
+      <span class="clk" id="clock3">05:00<small>MIN&nbsp;&nbsp;SEC</small></span>
+    </div>
+    <div class="plans-slot"></div>
+    <div class="twox"><span class="ic">💪</span><div>People using the plan for <b>12 weeks</b> achieve <b>double the results</b> as for 4 weeks<small>*Based on Tai Motion member results</small></div></div>
+    <p class="guarantee">🔒 Secure checkout · Cancel anytime in your account</p>
+    <div class="cta-bar" style="position:static;background:none;padding:0 0 8px">
+      <div class="cta-inner"><button class="btn" id="getPlan2">Get my plan</button></div>
+    </div>
+
+    <div class="mbg">
+      <h4>Cancel anytime</h4>
+      <p>You can cancel from your account at any time to stop future renewals. Your introductory price and renewal terms are shown above. Billing, automatic renewals and our refund terms are set out in our <a href="refund-policy.html" target="_blank" rel="noopener">Subscription &amp; Refund Policy</a> — please review before ordering.</p>
+    </div>
+  </main>
+
+  <p class="disclaimer">This is a general wellness and movement program. It is not medical advice and is not
+    intended to diagnose, treat, cure, or prevent any disease. Talk to a healthcare professional before starting
+    a new activity program, especially if you have a medical condition.</p>
+
+  <script>
+    const PLANS = [
+      { id: "1w",  name: "1-week plan",  intro: "5.19",  renew: "21.99", period: "7 days",   popShort: "week" },
+      { id: "4w",  name: "4-week plan",  intro: "9.99",  renew: "49.95", period: "4 weeks",  popShort: "4 weeks", popular: true },
+      { id: "12w", name: "12-week plan", intro: "19.99", renew: "84.95", period: "12 weeks", popShort: "12 weeks" },
+    ];
+    let session = {}; try { session = JSON.parse(localStorage.getItem("ctc_quiz_session")) || {}; } catch (e) {}
+    let selected = "4w";
+
+    if (session.name) document.getElementById("headline").textContent = session.name + ", your plan is ready";
+
+    // BMI snapshot
+    (function(){
+      const bmi = session.bmi;
+      if (bmi) {
+        document.getElementById("bmiVal").textContent = bmi;
+        const pct = Math.max(4, Math.min(96, ((bmi - 16) / (40 - 16)) * 100));
+        document.getElementById("bmiMk").style.left = pct + "%";
+        document.getElementById("bmiBub").style.left = pct + "%";
+        const idx = bmi < 18.5 ? 0 : bmi < 25 ? 1 : bmi < 30 ? 2 : 3;
+        const cat = ["Underweight", "Healthy", "Overweight", "Obese"][idx];
+        document.getElementById("bmiCat").textContent = cat;
+        const labels = document.querySelectorAll("#bmiItem .bmi-scale span");
+        if (labels[idx]) labels[idx].classList.add("on");
+      } else {
+        document.getElementById("bmiItem").style.display = "none";
+      }
+    })();
+
+    // Metabolic age: age-group lower bound + 2 (illustrative). Always shows "Slow".
+    (function(){
+      const band = String(session.age_band || "");
+      const nums = (band.match(/\d+/g) || []).map(Number);
+      const upper = nums.length ? Math.max.apply(null, nums) : 47;
+      const bmi = session.bmi || 0;
+      const bump = bmi >= 30 ? 12 : bmi >= 25 ? 8 : 4;
+      document.getElementById("metaVal").textContent = (upper + bump) + " years";
+    })();
+
+    function renderPlans() {
+      const html = PLANS.map(p => `
+        <div class="plan ${selected === p.id ? "sel" : ""}" data-id="${p.id}">
+          ${p.popular ? '<span class="popular">MOST POPULAR</span>' : ""}
+          <span class="radio"></span>
+          <span class="pinfo">
+            <span class="name">${p.name}</span>
+            <span class="renew">then $${p.renew} every ${p.period}</span>
+          </span>
+          <span class="today"><b>$${p.intro}</b><small>today</small></span>
+        </div>`).join("");
+      document.querySelectorAll(".plans-slot").forEach(slot => slot.innerHTML = html);
+      document.querySelectorAll(".plan").forEach(el => el.onclick = () => { selected = el.dataset.id; renderPlans(); updateRenew(); });
+    }
+    function updateRenew() {
+      const p = PLANS.find(x => x.id === selected);
+      document.getElementById("renewNote").innerHTML =
+        `You'll be charged <b>$${p.intro} today</b> for your first ${p.popShort}. ` +
+        `After that it renews at <b>$${p.renew} every ${p.period}</b> unless you cancel. Cancel anytime in your account.`;
+      updateCTA();
+    }
+    function updateCTA() {
+      const p = PLANS.find(x => x.id === selected);
+      document.querySelectorAll("#getPlan, #getPlan2").forEach(b => b.textContent = `Start for $${p.intro}`);
+      const top = document.querySelector(".co-top .btn-sm"); if (top) top.textContent = `Start for $${p.intro}`;
+    }
+    renderPlans(); updateRenew();
+
+    // countdown (both clocks)
+    let t = 300;
+    setInterval(() => { if (t > 0) t--; const m = String(Math.floor(t/60)).padStart(2,'0'), s = String(t%60).padStart(2,'0');
+      document.getElementById("clock").textContent = m + ":" + s;
+      document.getElementById("clock2").innerHTML = m + ":" + s + "<small>MIN&nbsp;&nbsp;SEC</small>";
+      var c3 = document.getElementById("clock3"); if (c3) c3.innerHTML = m + ":" + s + "<small>MIN&nbsp;&nbsp;SEC</small>"; }, 1000);
+
+    function go() {
+      session.selected_plan = selected; session.status = "checkout";
+      localStorage.setItem("ctc_quiz_session", JSON.stringify(session));
+      location.href = "pay.html";
+    }
+    document.getElementById("getPlan").onclick = go;
+    document.getElementById("getPlan2").onclick = go;
+
+    // Before/After bars — lightly randomized so the "promise" reads naturally.
+    // Energy & Steadiness go UP (low before → high after); Weight goes DOWN
+    // (large before → ~30% smaller after).
+    (function(){
+      const rnd = (a, b) => Math.round(a + Math.random() * (b - a));
+      const eB = rnd(24, 34), eA = rnd(86, 94);
+      // Steadiness: independent value, kept clearly different from Energy so the bars don't match.
+      let sB, sA;
+      do { sB = rnd(12, 30); } while (Math.abs(sB - eB) < 7);
+      do { sA = rnd(76, 90); } while (Math.abs(sA - eA) < 6);
+      const wB = rnd(86, 95), wA = Math.round(wB * 0.7);   // weight ~30% smaller after
+      const vals = { "energy-b": eB, "energy-a": eA, "steady-b": sB, "steady-a": sA, "weight-b": wB, "weight-a": wA };
+      requestAnimationFrame(() => Object.keys(vals).forEach(k => {
+        const el = document.querySelector('[data-w="' + k + '"] i'); if (el) el.style.width = vals[k] + "%";
+      }));
+    })();
+  </script>
+  <script src="assets/testbar.js?v=1"></script>
+</body>
+</html>
