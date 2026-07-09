@@ -485,7 +485,7 @@
       root.appendChild(box);
     }
     if (showConsent) {
-      const c = el("p", "consent");
+      const c = el("p", "consent gate-consent");
       c.innerHTML = 'By choosing your age and continuing you agree to our ' +
         '<a href="terms-of-services.html" target="_blank" rel="noopener">Terms of Service</a> | ' +
         '<a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>. Please review before continuing';
