@@ -499,7 +499,7 @@
   function ageGate() {
     gateScreen("Chair Tai Chi Workouts", "Select your age",
       [["40-49", "40-49"], ["50-59", "50-59"], ["60-69", "60-69"], ["70-80", "70-80"]],
-      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); }, "assets/1_age.webp", true, true);
+      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); }, "assets/1b_age.jpg", true, true);
     const sn = $("#stepno"); if (sn) sn.textContent = "#1 age";
   }
 
