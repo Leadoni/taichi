@@ -331,3 +331,6 @@ h1.q{font-family:var(--serif);font-size:25px;line-height:1.25;margin:8px 0 6px;f
 :root[data-theme="green"] .vip-line .ic{background:#244a30;color:#e6c15a}
 :root[data-theme="green"] .seats .s1{background:#dbe9d5;color:#264a30}
 :root[data-theme="green"] .seats .s2{background:#244a30}
+
+/* Green theme: no serif anywhere across the funnel */
+:root[data-theme="green"]{--serif:var(--sans)}

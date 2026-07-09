@@ -95,7 +95,7 @@ h1.q{font-family:var(--sans);font-size:23px;line-height:1.3;margin:6px 0 8px;fon
 .locked{pointer-events:none}
 
 /* decorative figure below options (tried_before) — sized down ~30% */
-.quiz-figure{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:74%;max-width:340px;margin:0;z-index:1;pointer-events:none}
+.quiz-figure{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:74%;max-width:340px;margin:0;z-index:-1;pointer-events:none}
 .quiz-figure img{width:100%;display:block;max-height:48vh;object-fit:contain}
 
 /* gate with figure beside options */
@@ -137,7 +137,7 @@ h1.q{font-family:var(--sans);font-size:23px;line-height:1.3;margin:6px 0 8px;fon
 .ld .opt .check{display:none}
 .ld-card{position:relative;border-radius:16px;box-shadow:0 8px 30px oklch(40% 0.03 55 / 0.12);overflow:hidden;margin-bottom:16px;background:var(--q-track)}
 .ld-card img{display:block;width:100%;height:auto;max-height:350px;object-fit:cover}
-.ld-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.55))}
+.ld-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 34%,rgba(0,0,0,.38) 62%,rgba(0,0,0,.82))}
 .ld-card .ld-label{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;color:#fff;font-family:var(--serif);font-weight:500;font-size:18px;text-shadow:0 1px 8px rgba(0,0,0,.6)}
 
 /* ── bordered info block ── */
@@ -156,7 +156,7 @@ h1.q{font-family:var(--sans);font-size:23px;line-height:1.3;margin:6px 0 8px;fon
 .unit-toggle button{border:none;background:none;padding:8px 18px;border-radius:9px;font-weight:500;color:var(--q-muted);cursor:pointer;font-size:15px;font-family:var(--sans)}
 .unit-toggle button.on{background:#fff;color:var(--q-ink);box-shadow:var(--shadow)}
 .field{display:flex;align-items:center;border-bottom:2px solid var(--q-ink);max-width:300px;margin:0 auto;gap:8px}
-.field input{flex:1;border:none;outline:none;font-family:var(--serif);font-size:34px;font-weight:500;padding:8px 0;text-align:center;background:transparent;width:100%;color:var(--q-ink)}
+.field input{flex:1;border:none;outline:none;font-family:var(--sans);font-size:34px;font-weight:700;padding:8px 0;text-align:center;background:transparent;width:100%;color:var(--q-ink)}
 .field .u{font-size:18px;font-weight:600;color:var(--q-muted)}
 .feedback{background:var(--q-soft-bg);border:1px solid var(--q-soft-border);border-radius:12px;padding:14px 16px;margin:18px auto 0;max-width:360px;text-align:center;font-size:14px;color:var(--q-ink)}
 .feedback b{color:var(--q-terracotta)}
@@ -180,7 +180,7 @@ h1.q{font-family:var(--sans);font-size:23px;line-height:1.3;margin:6px 0 8px;fon
 /* ── sticky CTA ── */
 
 /* goals summary — tinted "table" block + inline CTA under it (Digesti) */
-.goal-block{max-width:var(--maxw);margin:18px auto 0;background:var(--q-soft-bg);border:1px solid var(--q-soft-border);border-radius:18px;padding:14px 16px}
+.goal-block{max-width:var(--maxw);margin:18px auto 0;background:#ECECFB;border:1px solid #dcdcf5;border-radius:18px;padding:14px 16px}
 .goal-row{display:flex;align-items:center;gap:12px;padding:8px 2px}
 .goal-row .gr-ic{font-size:20px;flex:none;width:26px;text-align:center}
 .goal-row .gr-tx{font-size:15px;font-weight:500;color:var(--q-ink);line-height:1.4}
@@ -260,3 +260,111 @@ body.debug .topbar .stepno{display:inline-block}
    (Earlier flex approach collapsed .gate-2col widths — reverted.) */
 #step:has(> .gate-consent){padding-bottom:88px}
 .gate-consent{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:100%;max-width:400px;margin:0;padding:0 16px;z-index:5}
+
+.input-err{color:#d64550;text-align:center;font-size:13.5px;font-weight:700;margin:12px auto 0;max-width:300px;line-height:1.4}
+/* Green theme uses no serif anywhere (Digesti-style, DM Sans only) */
+:root[data-theme="green"]{--serif:var(--sans)}
+
+/* Green highlight for dynamic numbers (goal weight, etc.) — theme accent */
+.hl{color:var(--q-terracotta)}
+/* Dynamic projection chart card */
+.projchart{background:var(--q-card);border:1px solid var(--q-border);border-radius:16px;padding:14px 8px 10px;margin:10px auto 20px;max-width:var(--maxw);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.projchart svg{display:block;width:100%;height:auto}
+.projchart-cap{font-size:11.5px;color:var(--q-muted);margin-top:4px;padding-left:4px}
+
+/* First section = one continuous progress bar (segments merged); later sections stay 3-segment */
+.progress.single{gap:0}
+.progress.single .seg{border-radius:0}
+.progress.single .seg:first-child{border-top-left-radius:10px;border-bottom-left-radius:10px}
+.progress.single .seg:last-child{border-top-right-radius:10px;border-bottom-right-radius:10px}
+
+/* Projection chart staged reveal (~2.5s): weight -> walker -> line draws -> goal pops in */
+@keyframes pcIn{to{opacity:1}}
+@keyframes pcDraw{to{stroke-dashoffset:0}}
+.projchart .pc-now,.projchart .pc-nowlbl,.projchart .pc-walk,.projchart .pc-area,.projchart .pc-decrease,.projchart .pc-month,.projchart .pc-goal{opacity:0}
+.projchart .pc-now{animation:pcIn .3s ease .05s forwards}
+.projchart .pc-nowlbl{animation:pcIn .3s ease .1s forwards}
+.projchart .pc-walk{animation:pcIn .3s ease .3s forwards}
+.projchart .pc-area{animation:pcIn .9s ease .5s forwards}
+.projchart .pc-line{stroke-dasharray:1;stroke-dashoffset:1;animation:pcDraw 1s ease .5s forwards}
+.projchart .pc-month{animation:pcIn .3s ease 1.2s forwards}
+.projchart .pc-goal{animation:pcIn .35s ease 1.4s forwards}
+.projchart .pc-decrease{animation:pcIn .35s ease 1.65s forwards}
+@media (prefers-reduced-motion:reduce){
+  .projchart .pc-now,.projchart .pc-nowlbl,.projchart .pc-walk,.projchart .pc-area,.projchart .pc-decrease,.projchart .pc-month,.projchart .pc-goal{opacity:1;animation:none}
+  .projchart .pc-line{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+}
+
+/* MOBILE interstitials: hide the header, image full-bleed from the top, capped under half height (text is priority) */
+@media (max-width:640px){
+  body.scr-info .topbar{display:none}
+  body.scr-info #step{padding-top:0}
+  .info-photo:not(.full){
+    width:100vw; max-width:100vw;
+    margin:0 0 16px; margin-left:50%; transform:translateX(-50%);
+    aspect-ratio:auto; height:44vh; max-height:44vh;
+    border-radius:0 0 22px 22px;
+  }
+  .info-photo:not(.full) img{height:100%;object-fit:cover}
+}
+
+/* 3-segment progress bar: compact width, centered (closer to reference). Single bar (section 1) stays full. */
+.progress:not(.single){max-width:200px}
+
+/* Big prediction line (e.g., "77kg by August 9") — green number via .hl */
+.predict{font-size:23px;font-weight:800;line-height:1.2;letter-spacing:-.01em;color:var(--q-ink);margin:2px 0 8px}
+
+/* Cortisol/serotonin chart animation: cortisol title -> lines draw -> serotonin title at midpoint -> end bubble pulses */
+@keyframes scPulse{0%{transform:scale(1);opacity:.35}70%{opacity:0}100%{transform:scale(2.5);opacity:0}}
+.projchart .sc-axis,.projchart .sc-cort-title,.projchart .sc-sero-title,.projchart .sc-bubble{opacity:0}
+.projchart .sc-dot,.projchart .sc-dot-cross{opacity:0}
+.projchart .sc-dot-cross{animation:pcIn .3s ease 1.0s forwards}
+.projchart .sc-dot{animation:pcIn .35s ease 1.65s forwards}
+.projchart .sc-axis{animation:pcIn .35s ease .1s forwards}
+.projchart .sc-cort-title{animation:pcIn .35s ease .05s forwards}
+.projchart .sc-cort-line,.projchart .sc-sero-line{stroke-dasharray:1;stroke-dashoffset:1;animation:pcDraw 1.3s ease .35s forwards}
+.projchart .sc-sero-title{animation:pcIn .4s ease .95s forwards}
+.projchart .sc-bubble{animation:pcIn .4s ease 1.6s forwards}
+.projchart .sc-pulse{transform-box:fill-box;transform-origin:center;animation:scPulse 1.9s ease-out 1.75s infinite}
+@media (prefers-reduced-motion:reduce){
+  .projchart .sc-axis,.projchart .sc-cort-title,.projchart .sc-sero-title,.projchart .sc-bubble{opacity:1;animation:none}
+  .projchart .sc-cort-line,.projchart .sc-sero-line{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+  .projchart .sc-pulse{animation:none}
+  .projchart .sc-dot,.projchart .sc-dot-cross{opacity:1;animation:none}
+}
+
+/* Focus chart: lines draw -> pills + faces appear */
+.projchart .fc-axis,.projchart .fc-pill,.projchart .fc-face{opacity:0}
+.projchart .fc-axis{animation:pcIn .3s ease .05s forwards}
+.projchart .fc-line{stroke-dasharray:1;stroke-dashoffset:1;animation:pcDraw .85s ease .2s forwards}
+.projchart .fc-pill{animation:pcIn .35s ease .4s forwards}
+.projchart .fc-face{animation:pcIn .35s ease 1.1s forwards}
+@media (prefers-reduced-motion:reduce){
+  .projchart .fc-axis,.projchart .fc-pill,.projchart .fc-face{opacity:1;animation:none}
+  .projchart .fc-line{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+}
+
+/* Plan loader: trusted line + rotating testimonial card */
+.loader-trust{text-align:center;font-weight:800;font-size:15px;color:var(--q-ink);margin:28px 0 12px}
+.loader-testi{background:var(--q-card);border:1px solid var(--q-border);border-radius:16px;padding:18px;max-width:var(--maxw);margin:0 auto;box-shadow:0 2px 12px rgba(0,0,0,.05);text-align:center}
+.loader-testi.in{animation:qfade .34s cubic-bezier(.22,1,.36,1)}
+.lt-stars{color:#f5b301;font-size:15px;letter-spacing:2px;margin-bottom:8px}
+.lt-quote{margin:0 0 8px;color:var(--q-ink);line-height:1.5;font-size:15px}
+.lt-name{color:var(--q-muted);font-size:13px;font-weight:600}
+
+/* Email step: mail icon in field + "300K users" trust badge */
+.mailwrap{position:relative;max-width:380px;margin:30px auto 0}
+.mailwrap .mail-ic{position:absolute;left:15px;top:50%;transform:translateY(-50%);display:flex;pointer-events:none}
+.mail-input{padding-left:44px}
+.trust-badge{display:flex;align-items:center;justify-content:center;gap:8px;max-width:380px;margin:14px auto 0;background:#e9f6ee;color:#20643f;border:1px solid #cfe9d8;border-radius:12px;padding:12px 14px;font-weight:800;font-size:13px;letter-spacing:.03em;text-transform:uppercase}
+
+/* Goals screen: full-width CTA; sticky at the bottom on mobile so it stays visible */
+.goal-cta .btn{width:100%}
+@media (max-width:640px){
+  #step:has(.goal-cta){padding-bottom:100px}
+  .goal-cta{position:fixed;left:0;right:0;bottom:0;max-width:none;margin:0;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(to bottom,transparent,var(--q-bg) 42%);z-index:20}
+}
+
+/* Goals screen: hide the (now empty) topbar and tighten the space above the title */
+body:has(.goal-cta) .topbar{display:none}
+#step:has(.goal-cta){padding-top:10px}

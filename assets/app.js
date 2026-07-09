@@ -65,10 +65,14 @@
     const scr = F.screens[idx];
     const si = _secOf[idx] || 0;
     const within = _secLen[si] ? Math.min(1, (idx - _secStart[si] + 1) / _secLen[si]) : 0;
+    const single = si === 0;   // first section shows ONE continuous bar; later sections keep 3 segments
+    const prog0 = $("#progress"); if (prog0) prog0.classList.toggle("single", single);
     document.querySelectorAll("#progress .seg > i").forEach((bar, i) => {
-      bar.style.width = (i < si ? 100 : i === si ? Math.round(within * 100) : 0) + "%";
+      const w = single ? Math.max(0, Math.min(1, within * SECS.length - i)) * 100
+                       : (i < si ? 100 : i === si ? within * 100 : 0);
+      bar.style.width = Math.round(w) + "%";
     });
-    const sec = $("#section"); if (sec) { sec.textContent = SECS[si] || ""; sec.style.display = "block"; }
+    const sec = $("#section"); if (sec) { sec.textContent = (scr && scr.sectionLabel) || SECS[si] || ""; sec.style.display = "block"; }
     const qb = $(".qbrand"); if (qb) qb.style.display = "none";
     const pr = $("#progress"); if (pr) pr.style.display = "";
     const bk = $("#back"); if (bk) bk.style.display = "";
@@ -101,9 +105,11 @@
     document.body.classList.toggle("scr-info", scr.type === "info");   // dark treatment for interstitials
     // Interim screens (info / loader) are full-bleed like Digesti — no progress bar, section label or back.
     const _interim = scr.type === "info" || scr.type === "loader";
-    { const pr = $("#progress"); if (pr) pr.style.display = _interim ? "none" : "flex";
-      const sc = $("#section"); if (sc) sc.style.display = _interim ? "none" : "block";  // section label default is CSS none, so set block explicitly
-      const bk = $("#back"); if (bk) bk.style.display = _interim ? "none" : ""; }
+    const _noBar = _interim || scr.type === "email" || scr.type === "name" || scr.type === "goals";  // capture screens: no progress bar
+    { const pr = $("#progress"); if (pr) pr.style.display = _noBar ? "none" : "flex";
+      const sc = $("#section"); if (sc) sc.style.display = _noBar ? "none" : "block";  // section label default is CSS none, so set block explicitly
+      const bk = $("#back"); if (bk) bk.style.display = _interim ? "none" : "";
+      const qb = $(".qbrand"); if (qb) qb.style.display = (scr.type === "email" || scr.type === "name") ? "inline-flex" : "none"; }
     ({ single: rSingle, multi: rMulti, input: rInput, info: rInfo,
        loader: rLoader, email: rEmail, name: rName, goals: rGoals }[scr.type] || rInfo)(scr, root);
     window.scrollTo(0, 0);
@@ -131,6 +137,50 @@
     const weeks = Math.max(4, (loseKg || 4) * 2);
     const d = new Date(Date.now() + weeks * 7 * 86400000);
     return d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  }
+  // Month only (for the projection chart axis) — same dynamic estimate as projDate.
+  function projMonth(loseKg) {
+    const weeks = Math.max(4, (loseKg || 4) * 2);
+    const d = new Date(Date.now() + weeks * 7 * 86400000);
+    return d.toLocaleDateString("en-US", { month: "long" });
+  }
+  // Dynamic projection chart (SVG): start weight -> goal weight, "Now" + target month, all from state.
+  function projChartEl(cap) {
+    const now = Math.round(S.weight_kg || 92);
+    const goal = Math.round(S.goal_weight_kg || Math.round((S.weight_kg || 92) * 0.85));
+    const lose = Math.max(0, now - goal);
+    const month = projMonth(lose);
+    const green = document.documentElement.getAttribute("data-theme") === "green";
+    const c1 = green ? "#45b577" : "#bf7350";
+    const ink = green ? "#233e20" : "#2a2319";
+    const inkL = green ? "#3c5140" : "#4a3f34";
+    const muted = green ? "#7c8d79" : "#9a8f84";
+    const grid = green ? "#e6ece8" : "#efe7dd";
+    const box = el("div", "projchart");
+    box.innerHTML = `
+    <svg viewBox="18 0 306 200" width="100%" role="img" aria-label="Projected weight from ${now}kg to ${goal}kg by ${month}">
+      <defs><linearGradient id="pg" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${c1}" stop-opacity=".28"/><stop offset="1" stop-color="${c1}" stop-opacity="0"/></linearGradient></defs>
+      ${[35,140,245,310].map(x=>`<line x1="${x}" y1="30" x2="${x}" y2="168" stroke="${grid}" stroke-width="1"/>`).join("")}
+      <path class="pc-area" d="M35,52 C130,60 205,132 310,150 L310,168 L35,168 Z" fill="url(#pg)"/>
+      <path class="pc-line" pathLength="1" d="M35,52 C130,60 205,132 310,150" fill="none" stroke="${c1}" stroke-width="3.5" stroke-linecap="round"/>
+      <text class="pc-now" x="35" y="40" font-size="18" font-weight="800" fill="${ink}">${now}kg</text>
+      <g class="pc-walk" transform="translate(96,64)">
+        <circle r="12" fill="${c1}"/>
+        <circle cx="0" cy="-4.4" r="2.7" fill="#fff"/>
+        <path d="M0,-1.2 c-3.3,0 -3.7,4 -3.7,7.6 l7.4,0 c0,-3.6 -0.4,-7.6 -3.7,-7.6 z" fill="#fff"/>
+      </g>
+      <text class="pc-decrease" x="182" y="49" font-size="12.5" text-anchor="middle" fill="${muted}">Decrease risk (${lose}kg)</text>
+      <g class="pc-goal"><line x1="278" y1="124" x2="278" y2="140" stroke="${c1}" stroke-width="1.5"/>
+      <circle cx="278" cy="140" r="5.5" fill="${c1}"/>
+      <rect x="236" y="80" width="84" height="44" rx="9" fill="${c1}"/>
+      <text x="278" y="98" font-size="12" font-weight="700" text-anchor="middle" fill="#fff">Goal</text>
+      <text x="278" y="117" font-size="18" font-weight="800" text-anchor="middle" fill="#fff">${goal}kg</text></g>
+      <text class="pc-nowlbl" x="35" y="192" font-size="14" font-weight="700" fill="${inkL}">Now</text>
+      <text class="pc-month" x="310" y="192" font-size="14" font-weight="700" text-anchor="end" fill="${inkL}">${month}</text>
+    </svg>
+    <div class="projchart-cap">${cap || "*Looking at Tai Motion members like you"}</div>`;
+    return box;
   }
 
   function picsum(seed, w, h) { return `https://picsum.photos/seed/${encodeURIComponent("ctc-" + seed)}/${w}/${h}`; }
@@ -229,32 +279,48 @@
     inp.value = S.answers[scr.id] || "";
     field.appendChild(inp); field.appendChild(el("span", "u", unit));
     wrap.appendChild(field);
+    const err = el("div", "input-err"); err.style.display = "none"; wrap.appendChild(err);
     const fb = el("div"); wrap.appendChild(fb);
     root.appendChild(wrap);
 
-    function valid() { const v = parseFloat(inp.value); return v > 0; }
-    function commit() {
-      const v = parseFloat(inp.value); if (!v) return;
-      S.answers[scr.id] = inp.value;
-      if (scr.field === "height") S.height_cm = toCm(v, unit);
-      if (scr.field === "weight") S.weight_kg = toKg(v, unit);
-      if (scr.field === "goal_weight") S.goal_weight_kg = toKg(v, unit);
-      S.bmi = bmi(); save();
-      if (scr.computeBMI && S.bmi) {
-        fb.innerHTML = "";
-        fb.appendChild(el("div", "feedback", `Your BMI is <b>${S.bmi}</b> — ${bmiCategory(S.bmi)}. We'll use this to set a healthy, realistic pace.`));
+    function problem() {
+      const v = parseFloat(inp.value);
+      if (!(v > 0)) return "";
+      const cm = toCm(v, unit), kg = toKg(v, unit);
+      if (scr.field === "height" && (cm < 100 || cm > 220)) return "Check Your height value";
+      if (scr.field === "weight" && kg >= 160) return "Check Your weight value";
+      if (scr.field === "goal_weight") {
+        if (kg >= 160) return "Check Your weight value";
+        if (S.weight_kg && kg >= S.weight_kg) return "Your goal should be below your current weight";
       }
-      if (scr.note) {
-        fb.innerHTML = "";
-        const card = el("div", "info-block");
-        if (scr.noteTitle) card.appendChild(el("div", "ib-title", scr.noteTitle));
-        card.appendChild(el("div", "ib-body", scr.note));
-        fb.appendChild(card);
+      return "";
+    }
+    function valid() { return parseFloat(inp.value) > 0 && !problem(); }
+    function showErr() { const p = problem(); err.textContent = p; err.style.display = p ? "block" : "none"; }
+    function commit() {
+      const v = parseFloat(inp.value);
+      if (v > 0) {
+        S.answers[scr.id] = inp.value;
+        if (scr.field === "height") S.height_cm = toCm(v, unit);
+        if (scr.field === "weight") S.weight_kg = toKg(v, unit);
+        if (scr.field === "goal_weight") S.goal_weight_kg = toKg(v, unit);
+        S.bmi = bmi(); save();
+      }
+      fb.innerHTML = "";
+      if (valid()) {
+        if (scr.computeBMI && S.bmi)
+          fb.appendChild(el("div", "feedback", `Your BMI is <b>${S.bmi}</b> — ${bmiCategory(S.bmi)}. We'll use this to set a healthy, realistic pace.`));
+        if (scr.note) {
+          const card = el("div", "info-block");
+          if (scr.noteTitle) card.appendChild(el("div", "ib-title", scr.noteTitle));
+          card.appendChild(el("div", "ib-body", scr.note));
+          fb.appendChild(card);
+        }
       }
     }
-    const btn = inlineCta("Continue", () => { commit(); if (valid()) go(1); }, !valid());
-    inp.oninput = () => { commit(); btn.disabled = !valid(); };
-    inp.onkeydown = (e) => { if (e.key === "Enter" && valid()) { commit(); go(1); } };
+    const btn = inlineCta("Continue", () => { commit(); showErr(); if (valid()) go(1); }, !valid());
+    inp.oninput = () => { commit(); showErr(); btn.disabled = !valid(); };
+    inp.onkeydown = (e) => { if (e.key === "Enter") { commit(); showErr(); if (valid()) go(1); } };
     keepVisible(inp, btn);
     setTimeout(() => inp.focus(), 50);
   }
@@ -263,7 +329,12 @@
     const addTitle = () => { if (scr.title) root.appendChild(el("h1", "q", personalize(scr.title))); };
     if (scr.headerTop) addTitle();
     if (scr.lead) root.appendChild(richBody(scr.lead));
-    if (scr.chart) { root.appendChild(chartEl()); }
+    if (scr.predict) root.appendChild(el("div", "predict", personalize(scr.predict)));
+    if (scr.focusChart) { root.appendChild(focusChartEl()); }
+    else if (scr.stressChart) { root.appendChild(stressChartEl()); }
+    else if (scr.eligChart) { root.appendChild(eligChartEl()); }
+    else if (scr.projChart) { root.appendChild(projChartEl(scr.chartCap)); }
+    else if (scr.chart) { root.appendChild(chartEl()); }
     else if (scr.image) {
       const w = el("div", "info-photo" + (scr.full ? " full" : ""));
       const img = document.createElement("img"); img.src = scr.image; img.alt = ""; img.loading = "lazy";
@@ -291,6 +362,96 @@
       intro_focus: "🙂", intro_sleep: "😴", intro_nutrition: "🥗", intro_almost: "🎉", intro_sustainable: "🌱",
       intro_paced: "🎚️" };
     return m[scr.id] || "🌿";
+  }
+  // Results-over-time chart (Digesti-style, non-animated): 1wk -> 4wk -> 12wk, warm->green gradient, "First results" marker. No weights.
+  // Cortisol (blue, falling) vs Serotonin (orange, rising) crossover chart — animated.
+  // "No activity" (orange, worsens -> angry) vs "Tai Chi plan" (green, improves -> happy). Today -> After 2 weeks. Little animation.
+  function focusChartEl() {
+    const orange = "#E55B51", grn = "#3fae72";
+    const green = document.documentElement.getAttribute("data-theme") === "green";
+    const inkL = green ? "#3c5140" : "#4a3f34";
+    const smooth = (pts) => { let d = `M${pts[0][0]},${pts[0][1]}`; for (let i=0;i<pts.length-1;i++){ const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||pts[i+1]; const c1x=p1[0]+(p2[0]-p0[0])/6,c1y=p1[1]+(p2[1]-p0[1])/6,c2x=p2[0]-(p3[0]-p1[0])/6,c2y=p2[1]-(p3[1]-p1[1])/6; d+=` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0]},${p2[1]}`; } return d; };
+    const noPts = [[30,66],[88,90],[135,78],[188,108],[240,120],[312,156]];
+    const tcPts = [[30,150],[95,128],[165,108],[235,84],[312,62]];
+    const box = el("div", "projchart");
+    box.innerHTML = `
+    <svg viewBox="0 0 340 210" width="100%" role="img" aria-label="No activity worsens while the Tai Chi plan improves over two weeks">
+      <line class="fc-axis" x1="24" y1="182" x2="326" y2="182" stroke="${inkL}" stroke-width="1.2"/>
+      <path class="fc-line" pathLength="1" d="${smooth(noPts)}" fill="none" stroke="${orange}" stroke-width="3.5" stroke-linecap="round"/>
+      <path class="fc-line" pathLength="1" d="${smooth(tcPts)}" fill="none" stroke="${grn}" stroke-width="3.5" stroke-linecap="round"/>
+      <text class="fc-face" x="312" y="156" font-size="27" text-anchor="middle" dominant-baseline="central">😡</text>
+      <text class="fc-face" x="312" y="62" font-size="27" text-anchor="middle" dominant-baseline="central">🥳</text>
+      <g class="fc-pill"><rect x="68" y="72" width="88" height="24" rx="12" fill="${orange}"/><text x="112" y="88" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">No activity</text></g>
+      <g class="fc-pill"><rect x="64" y="114" width="96" height="24" rx="12" fill="${grn}"/><text x="112" y="130" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">Tai Chi plan</text></g>
+      <text class="fc-axis" x="26" y="200" font-size="12" font-weight="700" fill="${inkL}">Today</text>
+      <text class="fc-axis" x="324" y="200" font-size="12" font-weight="700" text-anchor="end" fill="${inkL}">After 2 weeks</text>
+    </svg>`;
+    return box;
+  }
+  function stressChartEl() {
+    const blue = "#4f74f0", orange = "#f0913a";
+    const green = document.documentElement.getAttribute("data-theme") === "green";
+    const inkL = green ? "#3c5140" : "#4a3f34";
+    const grid = green ? "#dbe3dd" : "#e7ddd0";
+    const xs = [28, 85, 142, 200, 257, 314];
+    const labs = ["0min","5min","10min","15min","20min","25min"];
+    const ticks = xs.map((x,i) => `<line x1="${x}" y1="46" x2="${x}" y2="172" stroke="${grid}" stroke-width="1" stroke-dasharray="3 3"/><text x="${x}" y="190" font-size="11" text-anchor="middle" fill="${inkL}">${labs[i]}</text>`).join("");
+    const cortPts = [[28,56],[85,72],[142,101],[200,124],[257,139],[314,147]];
+    const seroPts = [[28,147],[85,131],[142,101],[200,79],[257,64],[314,56]];
+    const smooth = (pts) => { let d = `M${pts[0][0]},${pts[0][1]}`; for (let i=0;i<pts.length-1;i++){ const p0=pts[i-1]||pts[i],p1=pts[i],p2=pts[i+1],p3=pts[i+2]||pts[i+1]; const c1x=p1[0]+(p2[0]-p0[0])/6,c1y=p1[1]+(p2[1]-p0[1])/6,c2x=p2[0]-(p3[0]-p1[0])/6,c2y=p2[1]-(p3[1]-p1[1])/6; d+=` C${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2[0]},${p2[1]}`; } return d; };
+    const cortPath = smooth(cortPts), seroPath = smooth(seroPts);
+    const dots = cortPts.filter((_,i)=>i!==2).map(([x,y]) => `<circle class="sc-dot" cx="${x}" cy="${y}" r="4" fill="#fff" stroke="${blue}" stroke-width="2.5"/>`).join("")
+      + seroPts.filter((_,i)=>i!==2).map(([x,y]) => `<circle class="sc-dot" cx="${x}" cy="${y}" r="4" fill="#fff" stroke="${orange}" stroke-width="2.5"/>`).join("");
+    const box = el("div", "projchart");
+    box.innerHTML = `
+    <svg viewBox="0 0 340 200" width="100%" role="img" aria-label="Cortisol falls and serotonin rises over 25 minutes of Chair Tai Chi">
+      <g class="sc-axis">
+        <line x1="22" y1="172" x2="326" y2="172" stroke="${inkL}" stroke-width="1.2"/>
+        ${ticks}
+      </g>
+      <path class="sc-cort-line" pathLength="1" d="${cortPath}" fill="none" stroke="${blue}" stroke-width="3.5" stroke-linecap="round"/>
+      <path class="sc-sero-line" pathLength="1" d="${seroPath}" fill="none" stroke="${orange}" stroke-width="3.5" stroke-linecap="round"/>
+      ${dots}
+      <circle class="sc-dot-cross" cx="142" cy="101" r="4.5" fill="#fff" stroke="#8a93a3" stroke-width="2.5"/>
+      <g class="sc-cort-title">
+        <text x="44" y="52" font-size="14" font-weight="800" fill="${blue}" transform="rotate(16 44 52)">Cortisol</text>
+      </g>
+      <g class="sc-sero-title">
+        <text x="36" y="132" font-size="14" font-weight="800" fill="${orange}" transform="rotate(-16 36 132)">Serotonin</text>
+      </g>
+      <g class="sc-bubble">
+        <circle class="sc-pulse" cx="314" cy="54" r="9" fill="${orange}" opacity=".28"/>
+        <circle cx="314" cy="54" r="6" fill="${orange}"/>
+      </g>
+    </svg>`;
+    return box;
+  }
+  function eligChartEl() {
+    const green = document.documentElement.getAttribute("data-theme") === "green";
+    const cA = "#ef955c";                       // early (warm)
+    const cB = green ? "#3fae72" : "#bf7350";   // later (brand)
+    const ink = green ? "#233e20" : "#2a2319";
+    const inkL = green ? "#3c5140" : "#4a3f34";
+    const grid = green ? "#cdd8d0" : "#e2d8cc";
+    const box = el("div", "projchart");
+    box.innerHTML = `
+    <svg viewBox="10 0 320 192" width="100%" role="img" aria-label="Expected results from 1 to 12 weeks">
+      <defs>
+        <linearGradient id="egl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${cA}"/><stop offset="1" stop-color="${cB}"/></linearGradient>
+        <linearGradient id="egf" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${cA}" stop-opacity=".30"/><stop offset="1" stop-color="${cB}" stop-opacity=".30"/></linearGradient>
+      </defs>
+      <line x1="68" y1="40" x2="68" y2="152" stroke="${grid}" stroke-width="1" stroke-dasharray="3 3"/>
+      <line x1="150" y1="40" x2="150" y2="152" stroke="${grid}" stroke-width="1" stroke-dasharray="3 3"/>
+      <path d="M24,56 C48,52 58,56 68,62 C120,80 220,128 316,140 L316,152 L24,152 Z" fill="url(#egf)"/>
+      <path d="M24,56 C48,52 58,56 68,62 C120,80 220,128 316,140" fill="none" stroke="url(#egl)" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="68" y1="42" x2="68" y2="58" stroke="${grid}" stroke-width="1"/>
+      <text x="74" y="34" font-size="12.5" font-weight="700" fill="${ink}">First results</text>
+      <circle cx="68" cy="62" r="5.5" fill="#fff" stroke="${cA}" stroke-width="3"/>
+      <text x="62" y="176" font-size="13" font-weight="700" text-anchor="middle" fill="${inkL}">1 week</text>
+      <text x="150" y="176" font-size="13" font-weight="700" text-anchor="middle" fill="${inkL}">4 weeks</text>
+      <text x="316" y="176" font-size="13" font-weight="700" text-anchor="end" fill="${inkL}">12 weeks</text>
+    </svg>`;
+    return box;
   }
   function chartEl() {
     const now = S.weight_kg || 78, goal = S.goal_weight_kg || Math.round((S.weight_kg || 78) * 0.85);
@@ -360,10 +521,25 @@
       list.appendChild(row);
     });
     root.appendChild(list);
+    // Rotating testimonials while the plan builds (stops when the loader finishes).
+    let testiRot = null;
+    root.appendChild(el("div", "loader-trust", "Trusted by over 163,432 clients"));
+    const tcard = el("div", "loader-testi"); root.appendChild(tcard);
+    const TESTI = [
+      { q: "So gentle I can do it from my armchair — and I already feel steadier on my feet.", n: "Patricia, 63" },
+      { q: "Ten minutes a day and my mornings aren't stiff anymore. I actually look forward to it.", n: "Margaret, 58" },
+      { q: "Calmer, more energy, and my posture has improved. My friends noticed first!", n: "Sandra, 67" },
+      { q: "I've tried everything — this is the only routine I've kept up. It just fits my day.", n: "Brenda, 71" },
+      { q: "Less stress and I'm sleeping better. Simple moves, real results.", n: "Diane, 55" },
+    ];
+    let ti = 0;
+    const showT = () => { const t = TESTI[ti % TESTI.length]; tcard.innerHTML = `<div class="lt-stars">★★★★★</div><p class="lt-quote">“${esc(t.q)}”</p><div class="lt-name">${esc(t.n)}</div>`; tcard.classList.remove("in"); void tcard.offsetWidth; tcard.classList.add("in"); };
+    showT();
+    testiRot = setInterval(() => { ti++; showT(); }, 1500);
     (scr.steps || []).forEach((s, i) => {
       let p = 0; const target = 100; const start = i * 500;
       setTimeout(() => { const t = setInterval(() => { p += 7; if (p >= target) { p = target; clearInterval(t);
-        if (i === scr.steps.length - 1) setTimeout(() => go(1), 500); }
+        if (i === scr.steps.length - 1) { if (testiRot) { clearInterval(testiRot); testiRot = null; } setTimeout(() => go(1), 500); } }
         $("#b" + i).style.width = p + "%"; $("#p" + i).textContent = p + "%"; }, 60); }, start);
     });
   }
@@ -377,21 +553,24 @@
   }
 
   function rEmail(scr, root) {
-    root.appendChild(el("div", "info-ill", "📋"));
     root.appendChild(el("h1", "q", scr.title));
-    root.appendChild(el("p", "sub", scr.sub));
-    const inp = el("input", "text-field"); inp.type = "email"; inp.placeholder = "you@example.com";
-    inp.value = S.email || ""; root.appendChild(inp);
-    const btn = inlineCta("See my plan", () => {
-      const v = inp.value.trim(); if (!/^\S+@\S+\.\S+$/.test(v)) { inp.focus(); inp.style.borderColor = "#ef6a6a"; return; }
-      S.email = v; S.status = "email_captured"; window.CTC.saveSession();
-      if (window.API) API.submitQuiz(S);   // save lead to Supabase (quiz_sessions)
-      go(1);
-    });
+    if (scr.sub) root.appendChild(el("p", "sub", scr.sub));
+    const wrap = el("div", "mailwrap");
+    wrap.innerHTML = '<span class="mail-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa4ad" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7.5l8.5 6 8.5-6"/></svg></span>';
+    const inp = el("input", "text-field mail-input"); inp.type = "email"; inp.placeholder = "Your email address"; inp.value = S.email || "";
+    wrap.appendChild(inp); root.appendChild(wrap);
+    root.appendChild(el("div", "trust-badge", "\u2B50 300K users have chosen us"));
+    const okEmail = (v) => /^\S+@\S+\.\S+$/.test((v || "").trim());
     root.appendChild(el("p", "consent",
-      'By continuing you agree to receive emails about your plan. You can unsubscribe anytime. See our ' +
-      '<a href="terms-of-services.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
+      "\uD83D\uDD12 We respect your privacy and process your data exclusively in accordance with our " +
       '<a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>.'));
+    const btn = inlineCta("Continue", () => {
+      const v = inp.value.trim(); if (!okEmail(v)) { inp.focus(); inp.style.borderColor = "#ef6a6a"; return; }
+      S.email = v; S.status = "email_captured"; window.CTC.saveSession();
+      if (window.API) API.submitQuiz(S);
+      go(1);
+    }, !okEmail(S.email));
+    inp.oninput = () => { btn.disabled = !okEmail(inp.value); inp.style.borderColor = ""; };
     keepVisible(inp, btn);
     setTimeout(() => inp.focus(), 50);
   }
@@ -409,7 +588,7 @@
     const pr = $("#progress"); if (pr) pr.style.display = "none";     // full-bleed like Digesti — no loader/topbar
     const sc = $("#section"); if (sc) sc.style.display = "none";
     const bk = $("#back"); if (bk) bk.style.display = "none";
-    root.appendChild(el("h1", "q", personalize(`${S.name ? S.name + ", reach" : "Reach"} your goal of {goal}kg by {projdate}`)));
+    root.appendChild(el("h1", "q", personalize(`${S.name ? S.name + ", reach" : "Reach"} your goal of <span class='hl'>{goal}kg</span> by {projdate}`)));
     root.appendChild(el("p", "sub", "And build a body you feel good living in"));
     root.appendChild(chartEl());
     const block = el("div", "goal-block");
@@ -499,7 +678,7 @@
   function ageGate() {
     gateScreen("Chair Tai Chi Workouts", "Select your age",
       [["40-49", "40-49"], ["50-59", "50-59"], ["60-69", "60-69"], ["70-80", "70-80"]],
-      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); }, "assets/1c_age.webp", true, true);
+      (val) => { S.age_band = val; S.index = 0; S.status = "in_progress"; save(); render(); }, "assets/1b_age.jpg", true, true);
     const sn = $("#stepno"); if (sn) sn.textContent = "#1 age";
   }
 

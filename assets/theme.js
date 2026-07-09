@@ -27,7 +27,7 @@
       writeCookie(theme);
       try { localStorage.setItem(COOKIE, theme); } catch (e) {}
     } else {
-      theme = readCookie() || (function () { try { return localStorage.getItem(COOKIE); } catch (e) { return null; } })() || "brown";
+      theme = readCookie() || (function () { try { return localStorage.getItem(COOKIE); } catch (e) { return null; } })() || "green";
     }
 
     window.TM_THEME = theme;
@@ -35,9 +35,9 @@
 
     // Append ?t=g to a URL when green is active (used for cross-origin app links).
     window.TM_URL = function (url) {
-      if (theme !== "green" || !url) return url;
+      if (theme !== "brown" || !url) return url;
       if (/[?&]t=/.test(url)) return url;
-      return url + (url.indexOf("?") > -1 ? "&" : "?") + "t=g";
+      return url + (url.indexOf("?") > -1 ? "&" : "?") + "t=b";
     };
 
     var onReady = function () {

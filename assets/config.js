@@ -14,7 +14,7 @@ window.FUNNEL = {
   brand: "Chair Tai Chi",
   screens: [
     // ===================== My profile =====================
-    { id: "tried_before", type: "single", section: "My profile", figure: "assets/2b_tried.webp",
+    { id: "tried_before", type: "single", section: "My profile", figure: "assets/2c_tried.webp",
       q: "Have you tried Chair Tai Chi before?",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }] },
 
@@ -65,16 +65,16 @@ window.FUNNEL = {
       noteTitle: "Realistic goal!",
       note: "A gentle, gradual target is easier to reach and to keep. Small, steady change is the kind that lasts." },
 
-    { id: "intro_smallchange", type: "loader", per: 3000, image: "assets/bodies_2b.jpg",
+    { id: "intro_smallchange", type: "info", image: "assets/bodies_2b.jpg",
       title: "Losing just 5% of your weight can improve your health",
       body: "Even a small, steady change can lower your risk of many common health conditions — and Chair Tai Chi makes it easy to start.\n\nSource: American Heart Association (AHA)." },
 
-    { id: "projection_1", type: "info", image: "assets/13.webp", headerTop: true,
-      title: "We predict you'll hit {goal}kg by {projdate}",
+    { id: "projection_1", type: "info", projChart: true, headerTop: true,
+      title: "We predict you'll hit <span class='hl'>{goal}kg</span> by {projdate}",
       blockTitle: "You only have to lose {lose} kg",
       blockBody: "That's about {pct}% of your body weight. According to the American Heart Association, reaching this can lower your risk of diabetes, high blood pressure and other health conditions." },
 
-    { id: "intro_plan", type: "info", personalize: true, image: "assets/14.webp",
+    { id: "intro_plan", type: "info", personalize: true, image: "assets/14b.webp",
       title: "A goal without a plan is just a wish",
       body: "{genderPlural} in their {decade} may need an approach **tailored to their unique needs**.\n\nTell us a little more about you so we can build a Chair Tai Chi Workout Plan that's right for you!" },
 
@@ -109,7 +109,7 @@ window.FUNNEL = {
       title: "Chair Tai Chi: as effective as it is gentle",
       body: 'Slow, mindful movement makes a real difference. Chair Tai Chi helps you **feel healthier, build steady strength, and support your balance and mobility** — with none of the strain of high-impact workouts.\n\nSource: "Walking for Exercise", Harvard Nutrition Source' },
 
-    { id: "relate_breath", type: "single", section: "Activity", layout: "ld", cardImg: "assets/19_stairs.webp",
+    { id: "relate_breath", type: "single", section: "Activity", layout: "ld", cardImg: "assets/20_stairs.jpg",
       q: "Do you relate to the following statement?",
       statement: "I'm out of breath after walking up one flight of stairs",
       options: [{ value: "no", label: "No", emoji: "🚫" }, { value: "yes", label: "Yes", emoji: "✅" }] },
@@ -124,10 +124,10 @@ window.FUNNEL = {
       statement: "I'm not sure how to choose workouts that are suitable for me",
       options: [{ value: "no", label: "No", emoji: "🚫" }, { value: "yes", label: "Yes", emoji: "✅" }] },
 
-    { id: "intro_eligible", type: "info", chart: true, headerTop: true,
+    { id: "intro_eligible", type: "info", eligChart: true, headerTop: true,
       title: "Great news, you're eligible!",
       lead: "Looks like you're a perfect fit for Chair Tai Chi — time to crush your goals.",
-      blockTitle: "Based on data from members like you",
+      blockTitle: "Based on Tai Motion's historical data for women in their {decade}",
       blockBody: "Start seeing results in just one week and keep losing weight steadily on the path to your **{goal} kg** goal!" },
 
     { id: "pain_points", type: "multi", section: "Activity", layout: "cards",
@@ -137,7 +137,7 @@ window.FUNNEL = {
         { value: "hips", label: "Tight hips", img: "assets/23_hips.webp" }],
       noneValue: "none", noneLabel: "None of the above", noneImg: "assets/23_none.webp" },
 
-    { id: "intro_lowimpact", type: "info", image: "assets/24.webp",
+    { id: "intro_lowimpact", type: "info", image: "assets/25b.jpg",
       title: "Chair Tai Chi eases strain on knees and back",
       body: "Chair Tai Chi is a low-impact, moderate-intensity exercise. It minimises stress on joints such as the hips, knees, and ankles.\n\nThis makes it safer than high-impact workouts — an **excellent choice if you're prone to aches or joint pain.**" },
 
@@ -146,7 +146,7 @@ window.FUNNEL = {
       options: [{ value: "home", label: "Home", emoji: "🏠" }, { value: "outside", label: "Outside", emoji: "🌳" },
         { value: "gym", label: "Gym", emoji: "🏋️" }, { value: "any", label: "No preference", emoji: "🤷" }] },
 
-    { id: "intro_home", type: "info", image: "assets/26.webp",
+    { id: "intro_home", type: "info", image: "assets/27b.jpg",
       title: "Discover the benefits of at-home fitness",
       body: "Chair Tai Chi turns your home into a calming space for practice. All you need is a sturdy chair.\n\nIt builds **strength, balance and focus**, so you can move freely — even on quieter days." },
 
@@ -175,9 +175,11 @@ window.FUNNEL = {
       q: "Like or dislike?", statement: "Core strength",
       options: [{ value: "dislike", label: "Dislike", emoji: "👎" }, { value: "neutral", label: "Neutral", emoji: "😐" }, { value: "like", label: "Like", emoji: "👍" }] },
 
-    { id: "projection_2", type: "info", chart: true, headerTop: true,
+    { id: "projection_2", type: "info", projChart: true, headerTop: true,
       title: "You'll achieve your dream body even sooner than expected!",
-      lead: "We predict you'll be **{goal}kg by {projdate}**.",
+      lead: "We predict you'll be..",
+      predict: "<span class='hl'>{goal}kg</span> by {projdate}",
+      chartCap: "*Based on Tai Motion members with a similar goal",
       body: "Next, tell us more about your lifestyle so we can help you hit your goal even more effectively." },
 
     // ===================== Lifestyle =====================
@@ -187,7 +189,7 @@ window.FUNNEL = {
         { value: "some", label: "I have some ups and downs", emoji: "😐" },
         { value: "steady", label: "I feel mostly steady", emoji: "😌" }] },
 
-    { id: "intro_stress", type: "info", image: "assets/35.webp", full: true, headerTop: true,
+    { id: "intro_stress", type: "info", stressChart: true, headerTop: true,
       title: "Reduce stress and cut anxiety by 42% just by doing Chair Tai Chi",
       body: "Just 20 minutes of Chair Tai Chi can lower cortisol and boost serotonin, improving **mood, focus, and emotional resilience.**\n\nSource: British Journal of Sports Medicine" },
 
@@ -204,7 +206,7 @@ window.FUNNEL = {
         { value: "mixed", label: "Up and down—it depends on the day", emoji: "🟡" },
         { value: "steady", label: "Steady—I usually feel okay", emoji: "🟢" }] },
 
-    { id: "intro_focus", type: "info", image: "assets/38.webp", full: true, headerTop: true,
+    { id: "intro_focus", type: "info", focusChart: true, headerTop: true,
       title: "Feel calmer and more focused in just 2 weeks",
       body: "Chair Tai Chi boosts brain circulation and improves energy balance — helping you feel **sharper, more motivated, and emotionally steady.**\n\nSource: Harvard Health Publishing" },
 
@@ -225,9 +227,9 @@ window.FUNNEL = {
 
     { id: "diet", type: "multi", section: "Lifestyle",
       q: "Are you currently following a specific dietary pattern?", sub: "Choose all that apply",
-      options: [{ value: "no", label: "No" }, { value: "lowcarb", label: "Low-carb" }, { value: "veg", label: "Vegetarian" },
-        { value: "plant", label: "Fully plant-based" }, { value: "pesc", label: "Pescatarian" }, { value: "lactose", label: "Lactose-free" },
-        { value: "gluten", label: "Gluten-free" }, { value: "keto", label: "Keto" }, { value: "other", label: "Other" }] },
+      options: [{ value: "no", label: "No", emoji: "🚫" }, { value: "lowcarb", label: "Low-carb", emoji: "🥗" }, { value: "veg", label: "Vegetarian", emoji: "🥦" },
+        { value: "plant", label: "Fully plant-based", emoji: "🌱" }, { value: "pesc", label: "Pescatarian", emoji: "🍤" }, { value: "lactose", label: "Lactose-free", emoji: "🥛" },
+        { value: "gluten", label: "Gluten-free", emoji: "🥖" }, { value: "keto", label: "Keto", emoji: "🥑" }, { value: "other", label: "Other", emoji: "🍽️" }] },
 
     { id: "produce", type: "single", section: "Lifestyle",
       q: "How's your fruit and vegetable intake?", sub: "Generally, how many fruit and veggies do you eat a day?",
@@ -257,21 +259,21 @@ window.FUNNEL = {
       q: "Do you wear a smartwatch or fitness tracker?", sub: "Like: Apple Watch, Fitbit, Samsung Galaxy, etc.",
       options: [{ value: "yes", label: "Yes", emoji: "✔️" }, { value: "no", label: "No", emoji: "✖️" }] },
 
-    { id: "intro_brain", type: "info", image: "assets/47c.jpg",
-      title: "Look after your brain, not just your body",
-      body: "Regular gentle movement supports healthy brain circulation and sharper memory as we age.\n\nA short daily routine is one of the simplest ways to **care for your mind** for the years ahead." },
+    { id: "intro_brain", type: "info", image: "assets/49c.jpg",
+      title: "Chair Tai Chi may reduce Alzheimer's risk by up to 51%",
+      body: "Regular Chair Tai Chi workouts keep your brain healthy by boosting circulation, sharpening memory, and protecting against cognitive decline \u2013 all crucial for **women over 40.**\n\nSource: Harvard Health Publishing" },
 
     // ===================== Health & Safety =====================
-    { id: "medications", type: "single", section: "Lifestyle",
+    { id: "medications", type: "single", section: "Lifestyle", sectionLabel: "Health & Safety",
       q: "Are you taking any medications?", sub: "Rest assured this information is for your safety.",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }] },
 
-    { id: "mobility", type: "single", section: "Lifestyle",
+    { id: "mobility", type: "single", section: "Lifestyle", sectionLabel: "Health & Safety",
       q: "Do you have any physical or mobility restrictions we should know about?",
       sub: "Rest assured this information is for your safety.",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "Prefer not to answer" }] },
 
-    { id: "intro_safe", type: "info", image: "assets/bg_1.jpg",
+    { id: "intro_safe", type: "info", image: "assets/52b.jpg",
       title: "Prioritizing your health and safety",
       body: "Always adapt movements to suit your body.\n\nWe recommend checking with your doctor or physical therapist before starting a new activity that may affect your physical wellbeing or overall health." },
 
@@ -288,19 +290,19 @@ window.FUNNEL = {
     // ===================== Plan generation (mid-funnel loader) =====================
     { id: "loader", type: "loader", title: "Just a moment...", sub: "Getting things ready for you", per: 1600,
       cards: [
-        { img: "assets/55_1b.jpg", text: "Created by women and for women!" },
-        { img: "assets/55_2b.jpg", text: "We focus on understanding your body, not dieting" },
-        { img: "assets/55_3b.jpg", text: "Our approach to weight loss is based on changing behavioral patterns" },
-        { img: "assets/55_4b.jpg", text: "You'll gain control over emotional eating patterns (for good)" },
-        { img: "assets/55_5b.jpg", text: "Just follow your personalized action plan to reach your goal" },
-        { img: "assets/55_6b.jpg", text: "It only takes 5 minutes a day" },
-        { img: "assets/55_7b.jpg", text: "If you mess up, that's okay too!" },
-        { img: "assets/55_8b.jpg", text: "No one is perfect, and we all fall off the wagon" },
-        { img: "assets/55_9b.jpg", text: "We'll help you get back on track" },
+        { img: "assets/55_1d.jpg", text: "Created by women and for women!" },
+        { img: "assets/55_2d.jpg", text: "We focus on understanding your body, not dieting" },
+        { img: "assets/55_3d.jpg", text: "Our approach to weight loss is based on changing behavioral patterns" },
+        { img: "assets/55_4d.jpg", text: "You'll gain control over emotional eating patterns (for good)" },
+        { img: "assets/55_5d.jpg", text: "Just follow your personalized action plan to reach your goal" },
+        { img: "assets/55_6d.jpg", text: "It only takes 5 minutes a day" },
+        { img: "assets/55_7d.jpg", text: "If you mess up, that's okay too!" },
+        { img: "assets/55_8d.jpg", text: "No one is perfect, and we all fall off the wagon" },
+        { img: "assets/55_9d.jpg", text: "We'll help you get back on track" },
       ] },
 
-    { id: "intro_goodhands", type: "info", image: "assets/seniors_02.jpg",
-      title: "You're in good hands",
+    { id: "intro_goodhands", type: "info", image: "assets/56b.jpg",
+      title: "You're in good hands. Join 1.8M happy women already getting results",
       body: "Let us take care of you while you take care of yourself. We're here for you all along the way." },
 
     { id: "intro_almost", type: "info", image: "assets/57c.jpg",
@@ -308,26 +310,26 @@ window.FUNNEL = {
       body: "You're moments away from discovering a personalized path to looking and feeling your best.\n\nLet's finish up by exploring what motivates you!" },
 
     // ===================== Almost there =====================
-    { id: "main_reason", type: "multi", section: "Lifestyle",
+    { id: "main_reason", type: "multi", section: "Lifestyle", sectionLabel: "Almost there",
       q: "What's your main reason for wanting to get in shape?", sub: "Choose all that apply",
       options: [{ value: "confident", label: "Feel more confident in my body" },
         { value: "energetic", label: "Feel healthier and more energetic" },
         { value: "look", label: "Change how I look" }, { value: "clothes", label: "Fit in my clothes better" },
         { value: "other", label: "Other" }] },
 
-    { id: "motivates", type: "multi", section: "Lifestyle",
+    { id: "motivates", type: "multi", section: "Lifestyle", sectionLabel: "Almost there",
       q: "What motivates you to exercise?", sub: "Choose all that apply",
       options: [{ value: "health", label: "Improving health" }, { value: "immune", label: "Boosting immune system" },
         { value: "look", label: "Looking better" }, { value: "strength", label: "Building strength and endurance" },
         { value: "mood", label: "Managing stress / improving mood" },
         { value: "example", label: "Setting a positive example for others" }, { value: "other", label: "Other" }] },
 
-    { id: "motivation_level", type: "single", section: "Lifestyle",
+    { id: "motivation_level", type: "single", section: "Lifestyle", sectionLabel: "Almost there",
       q: "Right now, how motivated are you to reach your happy weight?",
       options: [{ value: "ready", label: "I'm 100% ready" }, { value: "hopeful", label: "I'm pretty hopeful about it" },
         { value: "unsure", label: "I'm a bit unsure" }, { value: "easy", label: "I'm kinda taking it easy" }] },
 
-    { id: "obstacles", type: "multi", section: "Lifestyle",
+    { id: "obstacles", type: "multi", section: "Lifestyle", sectionLabel: "Almost there",
       q: "What made it hard for you to stay motivated to exercise in the past?", sub: "Choose all that apply",
       options: [{ value: "results", label: "Didn't see noticeable results" },
         { value: "regain", label: "I'd lose weight, but gain it back" },
@@ -341,7 +343,7 @@ window.FUNNEL = {
       title: "Why do people give up on their weight-loss efforts?",
       body: "That's exactly why our program focuses on small, sustainable changes to your lifestyle — so you can **transform how you feel and enjoy thriving health, for life.**" },
 
-    { id: "explore", type: "multi", section: "Lifestyle",
+    { id: "explore", type: "multi", section: "Lifestyle", sectionLabel: "Almost there",
       q: "While we're customizing your journey, what else do you want to explore?",
       sub: "Our holistic approach goes beyond weight loss to improve your well-being, mood, and health.",
       options: [{ value: "energy", label: "Upping my energy levels" }, { value: "habits", label: "Cultivating healthy behaviors" },
@@ -349,7 +351,7 @@ window.FUNNEL = {
         { value: "flex", label: "Improving flexibility" }, { value: "posture", label: "Getting better posture" },
         { value: "endurance", label: "Improving endurance" }, { value: "immune", label: "Boosting my immune system" }] },
 
-    { id: "pace", type: "single", section: "Lifestyle",
+    { id: "pace", type: "single", section: "Lifestyle", sectionLabel: "Almost there",
       q: "Your Chair Tai Chi plan is ready! How quickly do you want to get in shape?",
       options: [{ value: "fast", label: "As quickly as possible" }, { value: "slow", label: "Slow and steady does it" },
         { value: "between", label: "Somewhere between the two" }] },
@@ -358,11 +360,11 @@ window.FUNNEL = {
       title: "Perfect — we adjusted your plan to match your pace!",
       body: "And it doesn't stop here — we'll keep adapting your personal plan as your body and activity level change throughout your journey." },
 
-    { id: "intro_focus20", type: "info", image: "assets/seniors_03.jpg",
+    { id: "intro_focus20", type: "info", image: "assets/66b.jpg",
       title: "Just 20 minutes of Chair Tai Chi boosts focus and brainpower",
       body: "It increases blood flow to your brain and helps **sharpen memory, improve focus, and support clearer thinking.**" },
 
-    { id: "daypart", type: "single", section: "Lifestyle",
+    { id: "daypart", type: "single", section: "Lifestyle", sectionLabel: "Almost there",
       q: "When do you feel most “on” — morning or night?",
       options: [{ value: "morning", label: "Morning" }, { value: "night", label: "Night" }, { value: "depends", label: "It depends" }] },
 
@@ -370,8 +372,8 @@ window.FUNNEL = {
     { id: "loader_plan", type: "loader", title: "Creating your personalized action plan…",
       steps: ["Analyzing Body Parameters", "Activity Preferences", "Health & Safety", "Generating Your Action Plan"] },
 
-    { id: "email", type: "email", title: "Your action plan is ready",
-      sub: "Enter your email to get your personal Chair Tai Chi plan." },
+    { id: "email", type: "email",
+      title: "Enter your email to get your personal <span class='hl'>Chair Tai Chi Plan!</span>" },
 
     { id: "name", type: "name", title: "What's your name?" },
 
