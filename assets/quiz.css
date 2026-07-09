@@ -256,6 +256,7 @@ body.debug .topbar .stepno{display:inline-block}
   .inline-cta{margin-top:16px}
 }
 
-/* Age gate: drop the Terms/Privacy consent to a footer-like position at the bottom */
-#step:has(> .gate-consent){min-height:calc(100dvh - 64px);display:flex;flex-direction:column;padding-bottom:20px}
-#step:has(> .gate-consent) > .gate-consent{margin-top:auto;margin-bottom:0;padding-top:22px}
+/* Age gate: consent pinned to the bottom (footer) WITHOUT altering the buttons/image layout.
+   (Earlier flex approach collapsed .gate-2col widths — reverted.) */
+#step:has(> .gate-consent){padding-bottom:88px}
+.gate-consent{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:100%;max-width:400px;margin:0;padding:0 16px;z-index:5}
