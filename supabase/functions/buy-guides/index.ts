@@ -65,9 +65,10 @@ Deno.serve(async (req) => {
     const customerId = urow?.stripe_customer_id as string | undefined;
     if (!customerId) return json({ status: 'error', error: 'no billing account on file' }, 400);
 
-    // TEST MODE: members whose initial charge was <= $1 (test promo) pay $1 for upsells too.
+    // TEST MODE: members whose initial charge was small (test promo — now the $2 test price; the
+    // cheapest real plan is $5.19) pay $1 for in-app guides too. Threshold <= 2 covers the $2 test price.
     const initial = (pays || []).find((p) => p.kind === 'initial');
-    const isTest = initial != null && Number(initial.amount) <= 1;
+    const isTest = initial != null && Number(initial.amount) <= 2;
     const amount = isTest ? 100 : cfg.amount;
     const meta: Record<string, string> = { user_id: user.id, upsell_id: cfg.grant };
     if (isTest) meta.test = '1';

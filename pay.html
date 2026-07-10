@@ -11,6 +11,11 @@
 <link rel="stylesheet" href="assets/style.css?v=15">
 <!-- Stripe.js must load live from Stripe's domain (no SRI — Stripe self-updates it). -->
 <script src="https://js.stripe.com/v3/"></script>
+<style>
+  .pay-loader{display:flex;flex-direction:column;align-items:center;gap:12px;justify-content:center;padding:34px 0;color:var(--muted,#6b7280);font-size:1rem;text-align:center}
+  .pay-loader .spin{width:30px;height:30px;border:3px solid rgba(0,0,0,.14);border-top-color:var(--accent,#3aa76a);border-radius:50%;animation:payspin .8s linear infinite}
+  @keyframes payspin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
   <header class="topbar"><span class="brand" style="margin:0 auto"><img class="logo" src="assets/logo2.webp" alt="">Tai&nbsp;Motion</span></header>
@@ -26,6 +31,7 @@
       <div class="order-row tot"><span>Total today</span><span id="total">$0.00</span></div>
 
       <p class="sub" style="margin:10px 0 4px">Billing email: <b id="emailShow"></b></p>
+      <div id="payLoader" class="pay-loader"><span class="spin"></span><span>Preparing your secure card form…</span></div>
       <div id="payment-element" style="margin-top:10px"></div>
       <p class="fineprint" id="payMsg" style="color:#c0392b;min-height:1.2em"></p>
     </div>
@@ -33,7 +39,7 @@
     <div class="cta-bar" style="position:static;background:none">
       <div class="cta-inner"><button class="btn" id="pay" disabled>Pay &amp; continue</button></div>
     </div>
-    <p class="fineprint" id="renew"></p>
+    <p class="fineprint" id="renew" hidden></p>
   </main>
 
   <script src="assets/api.js?v=5"></script>
@@ -53,22 +59,23 @@
     document.getElementById("planPrice").textContent = FLOW.money(plan.intro);
     document.getElementById("total").textContent = FLOW.money(plan.intro);
     document.getElementById("emailShow").textContent = s.email || "(missing — please restart)";
-    document.getElementById("renew").textContent =
-      `Introductory ${plan.name} at ${FLOW.money(plan.intro)} today. Renews at ${FLOW.money(plan.renew)} every ${plan.weeks} week(s) unless cancelled. Cancel anytime in your account.`;
+    // Renewal fine print intentionally hidden on this step (terms already shown on the checkout step).
 
+    const payLoader = document.getElementById("payLoader");
     let stripe, elements;
     // Optional promo via URL param, e.g. /pay?promo=TMTEST50 — no visible field.
     const promoCode = new URLSearchParams(location.search).get("promo") || localStorage.getItem("ctc_promo") || "";
     async function initSub(code) {
       payBtn.disabled = true; msg.textContent = "";
       document.getElementById("payment-element").innerHTML = "";
-      if (!s.email || !s.id) { msg.textContent = "Missing your details — please restart the quiz."; return; }
+      payLoader.style.display = "flex";               // show spinner while the sub is created + card form mounts
+      if (!s.email || !s.id) { payLoader.style.display = "none"; msg.textContent = "Missing your details — please restart the quiz."; return; }
       try {
         await API.submitQuiz(s);                       // ensure the quiz row carries the email server-side
         const r = await API.createSubscription({ plan_id: planId, quiz_session_id: s.id, promo_code: code || undefined });
         if (r && r.error === "already subscribed") {
           msg.textContent = "You already have an active plan. Redirecting to the app…";
-          setTimeout(() => location.href = "https://app.taimotion.com/", 1500); return;
+          setTimeout(() => location.href = "https://app.taimotion.com/", 1500); return;   // keep loader (navigating)
         }
         if (r && r.error === "invalid promo code") { return initSub(""); }   // bad ?promo -> normal pricing
         if (r && r.activated) {                       // first invoice needed no card charge -> sub already active
@@ -76,16 +83,17 @@
           s.paid = true; s.status = "paid";
           s.order = [{ id:"base_plan", label: plan.name, amount: plan.intro, recurring:true }];
           FLOW.save(s);
-          location.href = "upsell1.html"; return;     // webhook provisions access during the upsell steps
+          location.href = "upsell1.html"; return;     // keep loader (navigating); webhook provisions access
         }
-        if (!r || !r.clientSecret) { msg.textContent = "Could not start checkout. Please refresh and retry."; return; }
+        if (!r || !r.clientSecret) { payLoader.style.display = "none"; msg.textContent = "Could not start checkout. Please refresh and retry."; return; }
         s.subscriptionId = r.subscriptionId; s.checkoutToken = r.checkoutToken; FLOW.save(s);
         if (typeof r.amount === "number") document.getElementById("total").textContent = FLOW.money(r.amount / 100);
         stripe = window.stripeClient();
         elements = stripe.elements({ clientSecret: r.clientSecret, appearance: { theme: "flat" } });
-        elements.create("payment").mount("#payment-element");
-        payBtn.disabled = false;
-      } catch (e) { msg.textContent = "Could not start checkout. Please refresh and retry."; }
+        const paymentEl = elements.create("payment");
+        paymentEl.on("ready", () => { payLoader.style.display = "none"; payBtn.disabled = false; });  // hide spinner only when the card fields are actually rendered
+        paymentEl.mount("#payment-element");
+      } catch (e) { payLoader.style.display = "none"; msg.textContent = "Could not start checkout. Please refresh and retry."; }
     }
     initSub(promoCode);
 

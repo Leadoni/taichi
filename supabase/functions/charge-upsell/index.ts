@@ -28,25 +28,35 @@ Deno.serve(async (req) => {
     if (!subscriptionId || !checkoutToken) return json({ error: 'missing checkout auth' }, 400);
 
     // authorize: token must match the base subscription's metadata
-    const base = await stripe.subscriptions.retrieve(subscriptionId, { expand: ['discounts'] });
+    const base = await stripe.subscriptions.retrieve(subscriptionId, { expand: ['default_payment_method'] });
     if (base.metadata?.checkout_token !== checkoutToken) return json({ error: 'bad token' }, 403);
     // Capability token is only valid briefly after checkout (bounds token-exfil misuse).
     if (Date.now() / 1000 - base.created > 1800) return json({ error: 'checkout expired' }, 403);
     const customerId = base.customer as string;
     const userId = base.metadata?.user_id as string;
 
-    const cust = await stripe.customers.retrieve(customerId) as Stripe.Customer;
-    const pm = cust.invoice_settings?.default_payment_method as string | undefined;
+    // The card is saved at the SUBSCRIPTION level (create-subscription uses
+    // save_default_payment_method:'on_subscription'), which does NOT populate
+    // customer.invoice_settings.default_payment_method. Read it from the subscription first, then
+    // fall back to the customer default / any card on file. (The old invoice_settings-only lookup
+    // made EVERY upsell fail with "no saved payment method" — test and prod alike.)
+    let pm: string | undefined =
+      (typeof base.default_payment_method === 'string')
+        ? base.default_payment_method
+        : (base.default_payment_method as Stripe.PaymentMethod | null)?.id;
+    if (!pm) {
+      const cust = await stripe.customers.retrieve(customerId) as Stripe.Customer;
+      pm = cust.invoice_settings?.default_payment_method as string | undefined;
+    }
+    if (!pm) {
+      const list = await stripe.paymentMethods.list({ customer: customerId, type: 'card', limit: 1 });
+      pm = list.data[0]?.id;
+    }
     if (!pm) return json({ error: 'no saved payment method' }, 400);
 
-    // TEST MODE: if the base plan used the test coupon, charge every upsell a flat $1 (exercises
-    // the off-session charge cheaply). Real customers (no test coupon) pay full price.
-    const TEST_COUPON = 'YrTxIPDR';
-    const isTest = ((base.discounts || []) as Array<Stripe.Discount | string>).some((d) => {
-      const c = (typeof d === 'string') ? undefined : (d as Stripe.Discount).coupon;
-      const id = typeof c === 'string' ? c : c?.id;
-      return id === TEST_COUPON;
-    });
+    // TEST MODE: the base plan carries metadata.test='1' when created via the TMTEST50 test link.
+    // Charge every upsell a flat $1 then (exercises the off-session charge cheaply); real customers pay full price.
+    const isTest = base.metadata?.test === '1';
     if (isTest) {
       const pi = await stripe.paymentIntents.create({
         amount: 100, currency: 'usd', customer: customerId,
