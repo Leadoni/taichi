@@ -118,7 +118,17 @@ Deno.serve(async (req) => {
       expand: ['latest_invoice.payment_intent'],
       metadata: { user_id: userId, plan_id, checkout_token: checkoutToken, test: isTest ? '1' : '' },
     });
-    const pi = (sub.latest_invoice as Stripe.Invoice).payment_intent as Stripe.PaymentIntent;
+    const inv = sub.latest_invoice as Stripe.Invoice;
+    const pi = inv.payment_intent as Stripe.PaymentIntent | null;
+    // If the first invoice has nothing to collect now (amount_due 0 — e.g. fully covered by an intro
+    // discount or the customer's credit balance, or the small test price that netted to balance),
+    // Stripe creates NO PaymentIntent and activates the subscription immediately. Reading
+    // pi.client_secret here would throw -> 500 -> "Could not start checkout" on the pay page, WHILE the
+    // sub is silently active and nothing was charged. Detect that and tell the pay page to skip the
+    // card form and go straight through (the member is already provisioned).
+    if (!pi || !pi.client_secret) {
+      return json({ activated: true, subscriptionId: sub.id, checkoutToken, amount: (inv.amount_due ?? 0) });
+    }
     return json({ clientSecret: pi.client_secret, subscriptionId: sub.id, checkoutToken, amount: pi.amount });
   } catch (e) {
     return json({ error: String((e as Error)?.message || e) }, 500);

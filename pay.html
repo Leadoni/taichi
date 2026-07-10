@@ -71,6 +71,13 @@
           setTimeout(() => location.href = "https://app.taimotion.com/", 1500); return;
         }
         if (r && r.error === "invalid promo code") { return initSub(""); }   // bad ?promo -> normal pricing
+        if (r && r.activated) {                       // first invoice needed no card charge -> sub already active
+          s.subscriptionId = r.subscriptionId; s.checkoutToken = r.checkoutToken;
+          s.paid = true; s.status = "paid";
+          s.order = [{ id:"base_plan", label: plan.name, amount: plan.intro, recurring:true }];
+          FLOW.save(s);
+          location.href = "upsell1.html"; return;     // webhook provisions access during the upsell steps
+        }
         if (!r || !r.clientSecret) { msg.textContent = "Could not start checkout. Please refresh and retry."; return; }
         s.subscriptionId = r.subscriptionId; s.checkoutToken = r.checkoutToken; FLOW.save(s);
         if (typeof r.amount === "number") document.getElementById("total").textContent = FLOW.money(r.amount / 100);
