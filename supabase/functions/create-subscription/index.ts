@@ -1,5 +1,6 @@
 import Stripe from 'npm:stripe@17';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { buildFbc } from '../_shared/meta-capi.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 const cors = {
@@ -36,7 +37,7 @@ async function resolveUser(db: ReturnType<typeof createClient>, email: string): 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   try {
-    const { plan_id, quiz_session_id, promo_code } = await req.json();
+    const { plan_id, quiz_session_id, promo_code, fbclid, fbclid_t } = await req.json();
     const plan = PLANS[plan_id];
     if (!plan) return json({ error: 'unknown plan' }, 400);
     if (!quiz_session_id) return json({ error: 'missing quiz_session_id' }, 400);
@@ -110,6 +111,12 @@ Deno.serve(async (req) => {
       }
     } catch (_) { /* best-effort; fall through to normal creation */ }
 
+    // Meta CAPI identity — captured here because the webhook (Stripe-called) can't see the visitor.
+    const clientIp = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || '';
+    const clientUa = (req.headers.get('user-agent') || '').slice(0, 500);
+    const eventSourceUrl = req.headers.get('origin') || 'https://taimotion.com/';
+    const fbc = buildFbc(fbclid, fbclid_t);
+
     const checkoutToken = crypto.randomUUID();
     const sub = await stripe.subscriptions.create({
       customer: customerId,
@@ -118,7 +125,13 @@ Deno.serve(async (req) => {
       payment_behavior: 'default_incomplete',
       payment_settings: { save_default_payment_method: 'on_subscription', payment_method_types: ['card'] },
       expand: ['latest_invoice.payment_intent'],
-      metadata: { user_id: userId, plan_id, checkout_token: checkoutToken, test: isTest ? '1' : '' },
+      metadata: {
+        user_id: userId, plan_id, checkout_token: checkoutToken, test: isTest ? '1' : '',
+        ...(fbc ? { fbc } : {}),
+        ...(clientIp ? { client_ip: clientIp } : {}),
+        ...(clientUa ? { client_ua: clientUa } : {}),
+        event_source_url: eventSourceUrl,
+      },
     });
     const inv = sub.latest_invoice as Stripe.Invoice;
     const pi = inv.payment_intent as Stripe.PaymentIntent | null;

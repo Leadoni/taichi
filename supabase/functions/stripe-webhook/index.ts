@@ -1,5 +1,6 @@
 import Stripe from 'npm:stripe@17';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { sendPurchase } from '../_shared/meta-capi.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 const WHSEC = Deno.env.get('STRIPE_WEBHOOK_SECRET')!;
@@ -91,6 +92,17 @@ Deno.serve(async (req) => {
         const amt = ((inv.amount_paid ?? 0) / 100).toFixed(2);
         const tag = (inv.amount_paid ?? 0) <= 100 ? ' _(test)_' : '';
         await notify(`:moneybag: *${kind === 'initial' ? 'New subscription' : 'Renewal'}* — ${email} — $${amt} ${inv.currency.toUpperCase()}${tag}`);
+        // CAPI Purchase — only the acquisition invoice (subscription_create), not renewals.
+        if (kind === 'initial') {
+          let meta: Record<string, string> = {};
+          if (subId) {
+            try { meta = ((await stripe.subscriptions.retrieve(subId)).metadata || {}) as Record<string, string>; } catch (_) { /* best-effort; CAPI never breaks the webhook */ }
+          }
+          await sendPurchase({
+            eventId: inv.id, email, value: (inv.amount_paid ?? 0) / 100, currency: inv.currency,
+            fbc: meta.fbc, clientIp: meta.client_ip, clientUserAgent: meta.client_ua, eventSourceUrl: meta.event_source_url,
+          });
+        }
         break;
       }
       case 'customer.subscription.created':
@@ -117,6 +129,13 @@ Deno.serve(async (req) => {
           const amt = ((pi.amount_received ?? 0) / 100).toFixed(2);
           const tag = pi.metadata.test === '1' ? ' _(test)_' : '';
           await notify(`:heavy_plus_sign: *Upsell:* ${pi.metadata.upsell_id} — ${email} — $${amt} ${pi.currency.toUpperCase()}${tag}`);
+          // CAPI Purchase for the upsell — skip internal test charges.
+          if (pi.metadata.test !== '1') {
+            await sendPurchase({
+              eventId: pi.id, email, value: (pi.amount_received ?? 0) / 100, currency: pi.currency,
+              fbc: pi.metadata.fbc, clientIp: pi.metadata.client_ip, clientUserAgent: pi.metadata.client_ua, eventSourceUrl: pi.metadata.event_source_url,
+            });
+          }
         }
         break;
       }

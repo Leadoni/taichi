@@ -34,6 +34,16 @@ Deno.serve(async (req) => {
     if (Date.now() / 1000 - base.created > 1800) return json({ error: 'checkout expired' }, 403);
     const customerId = base.customer as string;
     const userId = base.metadata?.user_id as string;
+    // Carry the Meta CAPI identity forward from the base checkout onto the upsell charge.
+    const baseMeta = base.metadata || {};
+    const upClientIp = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || '';
+    const upClientUa = (req.headers.get('user-agent') || '').slice(0, 500);
+    const fbMeta: Record<string, string> = {
+      event_source_url: baseMeta.event_source_url || 'https://taimotion.com/',
+      ...(baseMeta.fbc ? { fbc: baseMeta.fbc } : {}),
+      ...(upClientIp ? { client_ip: upClientIp } : {}),
+      ...(upClientUa ? { client_ua: upClientUa } : {}),
+    };
 
     // The card is saved at the SUBSCRIPTION level (create-subscription uses
     // save_default_payment_method:'on_subscription'), which does NOT populate
@@ -72,7 +82,7 @@ Deno.serve(async (req) => {
       const pi = await stripe.paymentIntents.create({
         amount: offer.amount, currency: 'usd', customer: customerId,
         payment_method: pm, off_session: true, confirm: true,
-        metadata: { user_id: userId, upsell_id },
+        metadata: { user_id: userId, upsell_id, ...fbMeta },
       });
       if (pi.status === 'succeeded') return json({ status: 'accepted' });
       if (pi.status === 'requires_action') return json({ status: 'requires_action', clientSecret: pi.client_secret });
@@ -83,7 +93,7 @@ Deno.serve(async (req) => {
         customer: customerId, items: [{ price: offer.price }],
         default_payment_method: pm, off_session: true,
         expand: ['latest_invoice.payment_intent'],
-        metadata: { user_id: userId, upsell_id },
+        metadata: { user_id: userId, upsell_id, ...fbMeta },
       });
       if (sub.status === 'active' || sub.status === 'trialing') return json({ status: 'accepted' });
       const pi = (sub.latest_invoice as Stripe.Invoice)?.payment_intent as Stripe.PaymentIntent | null;

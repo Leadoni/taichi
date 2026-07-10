@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <script src="assets/theme.js?v=3"></script>
+<script src="assets/track.js?v=2"></script>
 <title>Chair Tai Chi — Secure checkout</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,7 +73,8 @@
       if (!s.email || !s.id) { payLoader.style.display = "none"; msg.textContent = "Missing your details — please restart the quiz."; return; }
       try {
         await API.submitQuiz(s);                       // ensure the quiz row carries the email server-side
-        const r = await API.createSubscription({ plan_id: planId, quiz_session_id: s.id, promo_code: code || undefined });
+        let fb = {}; try { fb = JSON.parse(localStorage.getItem("ctc_fbc")) || {}; } catch (e) {}   // Meta ad-click id (captured site-wide by track.js)
+        const r = await API.createSubscription({ plan_id: planId, quiz_session_id: s.id, promo_code: code || undefined, fbclid: fb.fbclid, fbclid_t: fb.fbclid_t });
         if (r && r.error === "already subscribed") {
           msg.textContent = "You already have an active plan. Redirecting to the app…";
           setTimeout(() => location.href = "https://app.taimotion.com/", 1500); return;   // keep loader (navigating)
