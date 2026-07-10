@@ -13,9 +13,11 @@ const PLANS: Record<string, { price: string; coupon: string }> = {
   '4w':  { price: 'price_1TqChS3x0B891G8VAnNFfhdA', coupon: 'RKIibGD8' }, // $9.99 -> $49.95/4wk
   '12w': { price: 'price_1TqChT3x0B891G8V0FNT81If', coupon: '3sUP0i8K' }, // $19.99 -> $84.95/12wk
 };
-// TEST onboarding: TMTEST50 subscribes to a $0.50/week price with NO coupon -> $0.50 first AND every renewal.
+// TEST onboarding: TMTEST50 subscribes to a $2.00/week price with NO coupon -> $2.00 first AND every renewal.
+// (Was $0.50 = Stripe's exact USD minimum, which could net to the customer balance and activate the
+// sub with no PaymentIntent/charge. $2.00 is safely above the minimum so a real card charge always happens.)
 const TEST_PROMO = 'TMTEST50';
-const TEST_PRICE = 'price_1TrJ8c3x0B891G8VROVSAOc0';
+const TEST_PRICE = 'price_1TrZZ53x0B891G8VBXmnt6vP';
 const json = (b: unknown, s = 200) =>
   new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
 
