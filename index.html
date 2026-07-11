@@ -171,13 +171,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     /* hero → stacked photo card + copy on cream (mobile) */
     .hero{background:none}
     .hero::before{display:none}
-    .hero-in{display:grid;grid-template-columns:1fr;gap:26px;padding:34px 24px 30px;min-height:0}
-    .hero-copy{max-width:none}
+    .hero-in{display:grid;grid-template-columns:1fr;gap:22px;padding:0 0 30px;min-height:0}
+    .hero-copy{max-width:none;padding:0 24px}
     .hero-copy .eyebrow{color:var(--c-amber)}
     .hero h1{font-size:40px;color:var(--ink);text-shadow:none}
     .hero h1 em{color:var(--c-terra)}
     .hero .lead{color:var(--ink-soft);text-shadow:none}
     .hero-photo{display:block;order:-1;max-width:none;margin:0}
+    .hero-photo img{border-radius:0;box-shadow:none;aspect-ratio:5/4}
   }
   @media (max-width:720px){
     .hero-cta{display:none}   /* sticky CTA covers this on mobile */
