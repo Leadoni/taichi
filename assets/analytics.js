@@ -33,9 +33,11 @@
   function send(row) {
     try {
       var body = JSON.stringify({ events: [row] });
-      // log-event is deployed --no-verify-jwt, so no apikey header is required (works with sendBeacon).
-      if (navigator.sendBeacon) navigator.sendBeacon(URL + "/functions/v1/log-event", new Blob([body], { type: "application/json" }));
-      else fetch(URL + "/functions/v1/log-event", { method: "POST", headers: { "Content-Type": "application/json" }, body: body, keepalive: true });
+      var url = URL + "/functions/v1/log-event";
+      // Use text/plain so the request is CORS-"simple" (no preflight) — sendBeacon can't do a
+      // preflight, and the function's req.json() parses the body regardless of content-type.
+      if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: "text/plain" }))) return;
+      fetch(url, { method: "POST", headers: { "Content-Type": "text/plain" }, body: body, keepalive: true, mode: "cors" });
     } catch (e) {}
   }
   function track(event, props) {
