@@ -109,7 +109,7 @@ window.FUNNEL = {
       title: "Chair Tai Chi: as effective as it is gentle",
       body: 'Slow, mindful movement makes a real difference. Chair Tai Chi helps you **feel healthier, build steady strength, and support your balance and mobility** — with none of the strain of high-impact workouts.\n\nSource: "Walking for Exercise", Harvard Nutrition Source' },
 
-    { id: "relate_breath", type: "single", section: "Activity", layout: "ld", cardImg: "assets/20_stairs.jpg",
+    { id: "relate_breath", type: "single", section: "Activity", layout: "ld", cardImg: "assets/20_stairs.jpg?v=2",
       q: "Do you relate to the following statement?",
       statement: "I'm out of breath after walking up one flight of stairs",
       options: [{ value: "no", label: "No", emoji: "🚫" }, { value: "yes", label: "Yes", emoji: "✅" }] },
