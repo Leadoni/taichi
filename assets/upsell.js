@@ -11,6 +11,7 @@ window.UPSELL = (function () {
         try { await window.stripeClient().handleNextAction({ clientSecret: r.clientSecret }); } catch (e) { /* leave as pending */ }
       }
       const accepted = !!(r && (r.status === "accepted" || r.status === "requires_action"));
+      try { if (window.TM) TM.track("upsell_accept", { id: upsellId, amount: displayItem && displayItem.amount, ok: accepted }); } catch (e) {}
       FLOW.addItem(Object.assign({ accepted }, displayItem));
     } catch (e) { /* soft-fail: don't trap the user in the funnel */ }
     location.href = nextUrl;

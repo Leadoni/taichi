@@ -102,6 +102,7 @@
     setProgress();
     const scr = F.screens[S.index];
     if (!scr) { window.location.href = "checkout.html"; return; }
+    try { if (window.TM) { if (!window._qStarted) { window._qStarted = 1; TM.track("quiz_start", {}); } TM.track("quiz_step", { i: S.index, id: scr.id || scr.key || scr.q || null, type: scr.type || null, section: scr.section || null }); } } catch (e) {}
     document.body.classList.toggle("scr-info", scr.type === "info");   // dark treatment for interstitials
     // Interim screens (info / loader) are full-bleed like Digesti — no progress bar, section label or back.
     const _interim = scr.type === "info" || scr.type === "loader";

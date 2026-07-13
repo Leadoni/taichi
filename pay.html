@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <script src="assets/theme.js?v=3"></script>
 <script src="assets/track.js?v=3"></script>
+<script src="assets/analytics.js?v=1"></script>
 <title>Chair Tai Chi — Secure checkout</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,6 +71,7 @@
       payBtn.disabled = true; msg.textContent = "";
       document.getElementById("payment-element").innerHTML = "";
       payLoader.style.display = "flex";               // show spinner while the sub is created + card form mounts
+      window._payT0 = Date.now(); try { if (window.TM) TM.track("pay_view", { plan: planId }); } catch (e) {}
       if (!s.email || !s.id) { payLoader.style.display = "none"; msg.textContent = "Missing your details — please restart the quiz."; return; }
       try {
         await API.submitQuiz(s);                       // ensure the quiz row carries the email server-side
@@ -85,25 +87,28 @@
           s.paid = true; s.status = "paid";
           s.order = [{ id:"base_plan", label: plan.name, amount: plan.intro, recurring:true }];
           FLOW.save(s);
+          try { if (window.TM) TM.track("pay_succeeded", { plan: planId, mode: "activated_no_charge" }); } catch (e) {}
           location.href = "upsell1.html"; return;     // keep loader (navigating); webhook provisions access
         }
-        if (!r || !r.clientSecret) { payLoader.style.display = "none"; msg.textContent = "Could not start checkout. Please refresh and retry."; return; }
+        if (!r || !r.clientSecret) { payLoader.style.display = "none"; try { if (window.TM) TM.track("pay_form_error", { reason: "no_client_secret" }); } catch (e) {} msg.textContent = "Could not start checkout. Please refresh and retry."; return; }
         s.subscriptionId = r.subscriptionId; s.checkoutToken = r.checkoutToken; FLOW.save(s);
         if (typeof r.amount === "number") document.getElementById("total").textContent = FLOW.money(r.amount / 100);
         stripe = window.stripeClient();
         elements = stripe.elements({ clientSecret: r.clientSecret, appearance: { theme: "flat" } });
         const paymentEl = elements.create("payment");
-        paymentEl.on("ready", () => { payLoader.style.display = "none"; payBtn.disabled = false; });  // hide spinner only when the card fields are actually rendered
+        paymentEl.on("ready", () => { payLoader.style.display = "none"; payBtn.disabled = false; try { if (window.TM) TM.track("pay_form_loaded", { ms: Date.now() - (window._payT0 || Date.now()) }); } catch (e) {} });  // hide spinner only when the card fields are actually rendered
         paymentEl.mount("#payment-element");
-      } catch (e) { payLoader.style.display = "none"; msg.textContent = "Could not start checkout. Please refresh and retry."; }
+      } catch (e) { payLoader.style.display = "none"; try { if (window.TM) TM.track("pay_form_error", { reason: "exception" }); } catch (er) {} msg.textContent = "Could not start checkout. Please refresh and retry."; }
     }
     initSub(promoCode);
 
     payBtn.onclick = async () => {
       if (!stripe || !elements) return;
       payBtn.disabled = true; msg.textContent = "";
+      try { if (window.TM) TM.track("pay_submitted", { plan: planId }); } catch (e) {}
       const { error } = await stripe.confirmPayment({ elements, redirect: "if_required", confirmParams: { return_url: location.origin + "/thankyou.html" } });
-      if (error) { msg.textContent = error.message || "Payment failed. Please check your card and retry."; payBtn.disabled = false; return; }
+      if (error) { try { if (window.TM) TM.track("pay_failed", { message: (error.message || "").slice(0, 120), code: error.code || null, decline: error.decline_code || null }); } catch (e) {} msg.textContent = error.message || "Payment failed. Please check your card and retry."; payBtn.disabled = false; return; }
+      try { if (window.TM) TM.track("pay_succeeded", { plan: planId }); } catch (e) {}
       const s2 = FLOW.get(); s2.paid = true; s2.status = "paid";
       s2.order = [{ id:"base_plan", label: plan.name, amount: plan.intro, recurring:true }];
       FLOW.save(s2);
