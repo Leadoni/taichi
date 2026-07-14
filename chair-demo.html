@@ -22,9 +22,14 @@
   .head p{font-size:16px;color:var(--ink)}
   .vid{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(40,60,40,.06)}
   .vid video{display:block;width:100%;height:auto;background:#000}
-  .vlabel{padding:12px 16px}
+  .vlabel{padding:13px 16px 16px}
+  .vlabel .top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px}
   .vlabel .n{font-weight:600;color:var(--head);font-size:16px}
-  .vlabel .s{font-size:13px;color:var(--muted);margin-top:1px}
+  .diff{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 9px;border-radius:20px;white-space:nowrap}
+  .diff.beginner{background:#e6f4ec;color:#2f9d61}
+  .diff.intermediate{background:#fdf3e0;color:#c17d16}
+  .diff.advanced{background:#fbecec;color:#c0433a}
+  .vlabel .d{font-size:13.5px;color:var(--muted);line-height:1.55}
   .cta{text-align:center;margin-top:26px}
   .cta p{font-size:16px;color:var(--ink);margin-bottom:12px}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#3aa76a,#45b577);color:#fff;font-family:'DM Sans',sans-serif;font-size:18px;font-weight:600;padding:16px 30px;border:none;border-radius:14px;text-decoration:none;box-shadow:0 8px 24px rgba(69,181,119,.32);transition:filter .2s,transform .15s;width:100%;max-width:360px}
@@ -43,19 +48,24 @@
     </div>
 
     <div class="vid"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/1_4.mp4"></video>
-      <div class="vlabel"><div class="n">Seated revolved chair pose</div><div class="s">Calm Chair Flex</div></div></div>
+      <div class="vlabel"><div class="top"><span class="n">Seated revolved chair pose</span><span class="diff beginner">Beginner</span></div>
+        <div class="d">Sit tall with your feet flat. Inhale and extend your arms overhead, palms facing each other. As you exhale, bring your hands to heart center, then twist your torso to the left, hooking your right elbow outside your left thigh. Keep your spine long and chest open, deepening the twist with each exhale.</div></div></div>
 
     <div class="vid"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/4_05.mp4"></video>
-      <div class="vlabel"><div class="n">Seated chair pose</div><div class="s">Gentle Core Rise</div></div></div>
+      <div class="vlabel"><div class="top"><span class="n">Seated chair pose</span><span class="diff beginner">Beginner</span></div>
+        <div class="d">Sit tall with your feet flat, together or hip-width apart. Inhale and extend your arms overhead, shoulders relaxed. As you exhale, lean slightly forward from the hips, engaging your core and pressing your feet into the floor as if you're about to stand. Keep your spine long and chest open, and hold for a few breaths.</div></div></div>
 
     <div class="vid"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/6_09.mp4"></video>
-      <div class="vlabel"><div class="n">Seated side bend</div><div class="s">Gentle Flex Flow</div></div></div>
+      <div class="vlabel"><div class="top"><span class="n">Seated side bend</span><span class="diff intermediate">Intermediate</span></div>
+        <div class="d">Sit comfortably with your feet flat on the floor. Inhale deeply and lift your right arm overhead. Exhale slowly and reach over to the left, feeling a gentle stretch along the right side of your body. Hold the position and keep breathing deeply.</div></div></div>
 
     <div class="vid"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/5_08.mp4"></video>
-      <div class="vlabel"><div class="n">Chair-supported reverse lunge</div><div class="s">Balanced Chair Boost</div></div></div>
+      <div class="vlabel"><div class="top"><span class="n">Chair-supported reverse lunge</span><span class="diff beginner">Beginner</span></div>
+        <div class="d">Stand with your feet hip-width apart and your hands resting on the back of the chair for support. Step one foot back and lower into a gentle lunge, keeping your front knee aligned over your ankle and your back knee hovering just above the floor. Push through your front heel to return, and repeat.</div></div></div>
 
     <div class="vid"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/7_08.mp4"></video>
-      <div class="vlabel"><div class="n">Chair-supported quad stretch</div><div class="s">Daybreak Warmup</div></div></div>
+      <div class="vlabel"><div class="top"><span class="n">Chair-supported quad stretch</span><span class="diff advanced">Advanced</span></div>
+        <div class="d">Stand next to the chair with one hand resting on the back for support. Bend your knee and bring your heel towards your glutes. Reach back to gently hold your ankle, drawing it a little closer while keeping your knees together. Engage your core, stand tall, and hold — feeling a stretch through the front of your thigh.</div></div></div>
 
     <div class="cta">
       <p>This is just 5 of <b>100+ guided videos</b> — plus meals, lessons and trackers, built around you.</p>
