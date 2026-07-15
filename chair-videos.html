@@ -8,7 +8,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   :root{--bg:#f6f9f6;--card:#fff;--ink:#233e20;--head:#0f281b;--muted:#7c8d79;--line:#dee7e2;--accent:#45b577;--accent-dark:#2f9d61;--tint:#eef6f1}
   html,body{background:var(--bg);color:var(--ink);font-family:'DM Sans',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
-  .doc{max-width:720px;margin:0 auto;padding:26px 18px 60px}
+  .doc{max-width:720px;margin:0 auto;padding:22px 18px 60px}
   .topbar{position:sticky;top:0;z-index:50;background:rgba(246,249,246,.92);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--line)}
   .tb-in{max-width:720px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
   .tb-logo{display:flex;align-items:center;gap:8px;font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:var(--head);text-decoration:none}
@@ -18,30 +18,37 @@
   .tb-login:hover{background:var(--tint)}
   .tb-signup{font-size:14px;font-weight:700;color:#fff;background:linear-gradient(135deg,#3aa76a,#45b577);text-decoration:none;padding:10px 18px;border-radius:11px;box-shadow:0 4px 14px rgba(69,181,119,.28)}
   .tb-signup:hover{filter:brightness(1.05)}
-  @media(max-width:420px){.tb-login{padding:8px 12px} .tb-signup{padding:9px 14px}}
-  .cover{background:linear-gradient(160deg,#2f9d61,#45b577);color:#fff;border-radius:20px;text-align:center;padding:46px 30px 40px;margin-bottom:12px}
+  @media(max-width:420px){.tb-login{padding:8px 12px}.tb-signup{padding:9px 14px}}
+  .cover{background:linear-gradient(160deg,#2f9d61,#45b577);color:#fff;border-radius:20px;text-align:center;padding:44px 30px 38px;margin-bottom:22px}
   .cover .kicker{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;opacity:.9;margin-bottom:14px}
   .cover h1{font-family:'Playfair Display',serif;font-weight:600;font-size:38px;line-height:1.08;margin-bottom:12px}
   .cover h1 em{font-style:italic}
   .cover .sub{font-size:17px;opacity:.95;max-width:460px;margin:0 auto}
-  .group{display:flex;align-items:center;gap:14px;margin:30px 4px 4px}
-  .gline{flex:1;height:1px;background:var(--line)}
-  .glabel{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 14px;border-radius:20px}
-  .glabel.beginner{background:#e6f4ec;color:#2f9d61} .glabel.intermediate{background:#fdf3e0;color:#c17d16} .glabel.advanced{background:#fbecec;color:#c0433a}
-  .gblurb{text-align:center;color:var(--muted);font-size:14.5px;margin:2px 0 14px}
-  .ex{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 22px 26px;margin-bottom:18px;box-shadow:0 1px 3px rgba(40,60,40,.05)}
-  .exhead{display:flex;align-items:center;gap:13px;margin-bottom:15px}
-  .exnum{font-family:'Playfair Display',serif;font-size:27px;font-weight:600;color:var(--accent-dark);min-width:40px}
-  .extitle{flex:1} .extitle h2{font-family:'Playfair Display',serif;font-weight:600;font-size:21px;color:var(--head);line-height:1.15}
-  .exfocus{font-size:12.5px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+  /* carousel */
+  .carousel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px 20px 22px;box-shadow:0 1px 3px rgba(40,60,40,.05)}
+  .car-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .car-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:var(--accent-dark);min-width:38px}
+  .car-tt{flex:1}.car-tt h2{font-family:'Playfair Display',serif;font-weight:600;font-size:21px;color:var(--head);line-height:1.12}
+  .car-focus{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
   .badge{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:5px 11px;border-radius:20px;white-space:nowrap}
-  .badge.beginner{background:#e6f4ec;color:#2f9d61} .badge.intermediate{background:#fdf3e0;color:#c17d16} .badge.advanced{background:#fbecec;color:#c0433a}
-  .vidwrap{border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#000;margin-bottom:16px}
+  .badge.beginner{background:#e6f4ec;color:#2f9d61}.badge.intermediate{background:#fdf3e0;color:#c17d16}.badge.advanced{background:#fbecec;color:#c0433a}
+  .stage{position:relative;display:flex;align-items:center;gap:10px}
+  .arrow{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--accent-dark);font-size:22px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(40,60,40,.08);transition:filter .15s,transform .1s;user-select:none}
+  .arrow:hover{filter:brightness(.98);transform:scale(1.04)}
+  .arrow:active{transform:scale(.96)}
+  .arrow[disabled]{opacity:.3;cursor:default;box-shadow:none}
+  .vidwrap{flex:1;min-width:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#000}
   .vidwrap video{display:block;width:100%;height:auto}
+  .dots{display:flex;justify-content:center;gap:7px;margin:14px 0 4px;flex-wrap:wrap}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .15s,transform .15s}
+  .dot.on{background:var(--accent);transform:scale(1.25)}
+  .counter{text-align:center;font-size:13px;color:var(--muted);font-weight:600;margin-bottom:14px}
   .steps{list-style:none;counter-reset:st;display:grid;gap:10px}
   .steps li{position:relative;padding-left:36px;font-size:15.5px;color:#31402e;counter-increment:st;line-height:1.5}
   .steps li::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
-  .showcase{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 24px 30px;margin-top:30px;box-shadow:0 1px 3px rgba(40,60,40,.05)}
+  @media(max-width:520px){.arrow{width:38px;height:38px;font-size:19px}.stage{gap:6px}.cover h1{font-size:30px}}
+  /* showcase */
+  .showcase{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px 24px 30px;margin-top:26px;box-shadow:0 1px 3px rgba(40,60,40,.05)}
   .showcase h2{font-family:'Playfair Display',serif;font-weight:600;font-size:26px;color:var(--head);text-align:center;margin-bottom:6px}
   .sc-intro{text-align:center;color:var(--muted);font-size:15px;margin-bottom:18px}
   .sc-img{border-radius:14px;overflow:hidden;border:1px solid var(--line);margin-bottom:20px}
@@ -49,13 +56,12 @@
   .sc-ph{aspect-ratio:16/10;background:var(--tint);display:flex;align-items:center;justify-content:center;color:#9bb0a0;font-size:14px;font-weight:500}
   .sc-list{list-style:none;display:grid;gap:13px}
   .sc-list li{position:relative;padding-left:28px;font-size:15px;color:#31402e;line-height:1.5}
-  .sc-list li::before{content:'✓';position:absolute;left:0;top:0;color:var(--accent-dark);font-weight:800}
+  .sc-list li::before{content:'\2713';position:absolute;left:0;top:0;color:var(--accent-dark);font-weight:800}
   .sc-list b{color:var(--head)}
   .cta{text-align:center;background:linear-gradient(160deg,#2f9d61,#45b577);color:#fff;border-radius:20px;padding:40px 30px;margin-top:26px}
   .cta h2{font-family:'Playfair Display',serif;font-size:27px;font-weight:600;margin-bottom:10px}
   .cta p{font-size:16px;opacity:.96;max-width:440px;margin:0 auto 22px}
   .cta a{display:inline-block;background:#fff;color:var(--accent-dark);font-weight:700;font-size:16px;padding:14px 30px;border-radius:14px;text-decoration:none}
-  @media(max-width:520px){.cover h1{font-size:30px} .ex{padding:18px 16px 22px}}
 </style></head>
 <body>
 <header class="topbar"><div class="tb-in">
@@ -69,92 +75,29 @@
   <section class="cover">
     <div class="kicker">Tai Motion · Free Follow-Along</div>
     <h1>10 Chair Tai&nbsp;Chi <em>Exercises</em></h1>
-    <div class="sub">Gentle guided videos you can do from a chair — for balance, mobility &amp; calm. Just press play and follow along.</div>
+    <div class="sub">Gentle guided videos you can do from a chair. Press play, follow along, then tap the arrow for the next one.</div>
   </section>
 
-  <div class="group"><span class="gline"></span><span class="glabel beginner">Beginner</span><span class="gline"></span></div>
-  <p class="gblurb">Gentle starting points — find your posture and breath.</p>
-  
-    <section class="ex">
-      <div class="exhead"><div class="exnum">01</div>
-        <div class="extitle"><h2>Seated chest openers</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge beginner">Beginner</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/2_03.mp4"></video></div>
-      <ol class="steps"><li>Sit comfortably in a chair with your feet flat on the floor.</li><li>Inhale deeply and extend your arms out to the sides at shoulder height, opening your chest. Hold this position and take deep breaths, feeling the stretch across your chest and shoulders.</li></ol>
-    </section>
-    <section class="ex">
-      <div class="exhead"><div class="exnum">02</div>
-        <div class="extitle"><h2>Seated bicep curls</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge beginner">Beginner</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/2_02.mp4"></video></div>
-      <ol class="steps"><li>Sit tall on a chair with your feet flat on the ground hip-width apart.</li><li>Make fists with your hands by your sides, palms facing each other.</li><li>Curl your forearms towards your shoulders, engaging your biceps. If using weights, hold them in each hand.</li><li>Lower your arms back to your sides with control and repeat.</li></ol>
-    </section>
-    <section class="ex">
-      <div class="exhead"><div class="exnum">03</div>
-        <div class="extitle"><h2>Seated revolved chair pose</h2><div class="exfocus">2 min · follow along</div></div>
-        <span class="badge beginner">Beginner</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/1_4.mp4"></video></div>
-      <ol class="steps"><li>Sit tall on a chair with your feet flat on the ground together or hip-width apart.</li><li>Inhale, extend your arms overhead with your palms facing each other.</li><li>As you exhale, bring your hands together at heart center, then twist your torso to the left, hooking your right elbow outside your left thigh. Keep your spine long and your chest open as you press your palms together, deepening the twist with each exhale. Hold the pose, maintaining core and leg strength.</li></ol>
-    </section>
-  <div class="group"><span class="gline"></span><span class="glabel intermediate">Intermediate</span><span class="gline"></span></div>
-  <p class="gblurb">A little more movement, balance and reach.</p>
-  
-    <section class="ex">
-      <div class="exhead"><div class="exnum">04</div>
-        <div class="extitle"><h2>Seated side bend (right)</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge intermediate">Intermediate</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/6_09.mp4"></video></div>
-      <ol class="steps"><li>Sit comfortably in a chair with your feet flat on the floor.</li><li>Inhale deeply and lift your right arm overhead.</li><li>Exhale slowly and reach to the left side, feeling a stretch along the right side of your body. Hold this position and take deep breaths.</li></ol>
-    </section>
-    <section class="ex">
-      <div class="exhead"><div class="exnum">05</div>
-        <div class="extitle"><h2>Seated pigeon pose (left)</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge intermediate">Intermediate</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/6_05.mp4"></video></div>
-      <ol class="steps"><li>Sit comfortably in a chair with your feet flat on the floor and your hands resting on your thighs.</li><li>Inhale deeply, lengthening your spine and engaging your core.</li><li>Cross your left ankle over your right knee, flexing your left foot. Hold for a gentle stretch in your left hip and thigh, adjusting your knee position as needed.</li></ol>
-    </section>
-    <section class="ex">
-      <div class="exhead"><div class="exnum">06</div>
-        <div class="extitle"><h2>Seated knee to elbows</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge intermediate">Intermediate</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/4_04.mp4"></video></div>
-      <ol class="steps"><li>Sit on the edge of a sturdy chair with your feet flat on the floor.</li><li>Place your hands behind your head, elbows out to the sides.</li><li>Inhale deeply and exhale as you crunch your left elbow towards your right knee, engaging your oblique muscles.</li><li>Come back to the starting position and repeat, alternating sides each time.</li></ol>
-    </section>
-    <section class="ex">
-      <div class="exhead"><div class="exnum">07</div>
-        <div class="extitle"><h2>Seated arm circles (backward)</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge intermediate">Intermediate</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/2_06.mp4"></video></div>
-      <ol class="steps"><li>Sit tall on a chair with your feet flat on the ground, hip-width apart.</li><li>Extend your arms out to the sides at shoulder height, palms facing down.</li><li>Begin making circles with your arms going in a backward direction. Keep your core engaged and your spine tall throughout the movement.</li></ol>
-    </section>
-  <div class="group"><span class="gline"></span><span class="glabel advanced">Advanced</span><span class="gline"></span></div>
-  <p class="gblurb">Stronger work for legs, core and spine.</p>
-  
-    <section class="ex">
-      <div class="exhead"><div class="exnum">08</div>
-        <div class="extitle"><h2>Chair squats</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge advanced">Advanced</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/5_09.mp4"></video></div>
-      <ol class="steps"><li>Stand with your feet hip-width apart in front of a chair.</li><li>Bend your knees and lower your hips down until your hips reach the chair without completely sitting down.</li><li>Push through your heels to return to the standing position and repeat, maintaining a good position throughout with your shoulders rolled back and your core engaged.</li></ol>
-    </section>
-    <section class="ex">
-      <div class="exhead"><div class="exnum">09</div>
-        <div class="extitle"><h2>Seated cat cow</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge advanced">Advanced</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/9_02.mp4"></video></div>
-      <ol class="steps"><li>Sit comfortably in a chair with your feet flat on the floor.</li><li>Inhale deeply, arch your lower back and lift your chest into cow pose.</li><li>Exhale slowly, round your spine from your lower back to your shoulders, tucking your chin in for cat pose.</li><li>Flow smoothly between these poses, syncing your movements with your breath.</li></ol>
-    </section>
-    <section class="ex">
-      <div class="exhead"><div class="exnum">10</div>
-        <div class="extitle"><h2>Chair supported quad stretch (right)</h2><div class="exfocus">1 min · follow along</div></div>
-        <span class="badge advanced">Advanced</span></div>
-      <div class="vidwrap"><video controls playsinline preload="metadata" src="https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/7_08.mp4"></video></div>
-      <ol class="steps"><li>Stand next to a chair with your left hand resting on the back for support.</li><li>Bend your right knee and bring your right heel towards your glutes.</li><li>Reach back with your right hand to grasp your right ankle, gently pulling it closer while keeping your knees close together. Engage your core and maintain a straight posture. Hold, feeling a stretch in your right quad.</li></ol>
-    </section>
+  <section class="carousel">
+    <div class="car-top">
+      <div class="car-num" id="cNum">01</div>
+      <div class="car-tt"><h2 id="cName">—</h2><div class="car-focus" id="cFocus"></div></div>
+      <span class="badge" id="cBadge">Beginner</span>
+    </div>
+    <div class="stage">
+      <button class="arrow" id="prev" aria-label="Previous">&#8249;</button>
+      <div class="vidwrap"><video id="cVid" controls playsinline preload="metadata"></video></div>
+      <button class="arrow" id="next" aria-label="Next">&#8250;</button>
+    </div>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="cCount"></div>
+    <ol class="steps" id="cSteps"></ol>
+  </section>
+
   <section class="showcase">
     <h2>TaiMotion showcase</h2>
     <p class="sc-intro">One gentle app, everything built around you:</p>
-    <div class="sc-img"><div class="sc-ph">📷 Showcase image coming soon</div></div>
+    <div class="sc-img"><img src="https://taimotion.com/assets/showcase_app.webp" alt="TaiMotion app" onerror="this.remove();var p=document.getElementById('scph');if(p)p.style.display='flex'"><div class="sc-ph" id="scph" style="display:none">📷 Showcase image coming soon</div></div>
     <ul class="sc-list">
       <li><b>Personalized meal plan</b> — a weekly plan with a smart groceries list you can swap, tick off and shop from, while you keep an easy eye on your calories on your weight-loss journey.</li>
       <li><b>Walking &amp; Chair Tai Chi</b> — over <b>100 follow-along videos</b>, seated or standing, always at your own pace.</li>
@@ -166,6 +109,31 @@
 
   <section class="cta"><h2>Want your full personalized plan?</h2>
     <p>This is a taste of Tai Motion — 100+ guided chair Tai Chi videos, gentle meals and daily lessons, built around you.</p>
-    <a href="https://taimotion.com/quiz.html?start=1&utm_source=chair-videos&utm_medium=free-guide&utm_campaign=chair-video-guide">Take the free 2-minute quiz →</a>
+    <a href="https://taimotion.com/quiz.html?start=1&utm_source=chair-videos&utm_medium=free-guide&utm_campaign=chair-video-guide&utm_content=footer-cta">Take the free 2-minute quiz →</a>
   </section>
-</div></body></html>
+</div>
+<script>
+var ITEMS=[{"t": "Seated chest openers", "lvl": "Beginner", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/2_03.mp4", "steps": ["Sit comfortably in a chair with your feet flat on the floor.", "Inhale deeply and extend your arms out to the sides at shoulder height, opening your chest. Hold this position and take deep breaths, feeling the stretch across your chest and shoulders."]}, {"t": "Seated bicep curls", "lvl": "Beginner", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/2_02.mp4", "steps": ["Sit tall on a chair with your feet flat on the ground hip-width apart.", "Make fists with your hands by your sides, palms facing each other.", "Curl your forearms towards your shoulders, engaging your biceps. If using weights, hold them in each hand.", "Lower your arms back to your sides with control and repeat."]}, {"t": "Seated revolved chair pose", "lvl": "Beginner", "min": 2, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/1_4.mp4", "steps": ["Sit tall on a chair with your feet flat on the ground together or hip-width apart.", "Inhale, extend your arms overhead with your palms facing each other.", "As you exhale, bring your hands together at heart center, then twist your torso to the left, hooking your right elbow outside your left thigh. Keep your spine long and your chest open as you press your palms together, deepening the twist with each exhale. Hold the pose, maintaining core and leg strength."]}, {"t": "Seated side bend (right)", "lvl": "Intermediate", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/6_09.mp4", "steps": ["Sit comfortably in a chair with your feet flat on the floor.", "Inhale deeply and lift your right arm overhead.", "Exhale slowly and reach to the left side, feeling a stretch along the right side of your body. Hold this position and take deep breaths."]}, {"t": "Seated pigeon pose (left)", "lvl": "Intermediate", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/6_05.mp4", "steps": ["Sit comfortably in a chair with your feet flat on the floor and your hands resting on your thighs.", "Inhale deeply, lengthening your spine and engaging your core.", "Cross your left ankle over your right knee, flexing your left foot. Hold for a gentle stretch in your left hip and thigh, adjusting your knee position as needed."]}, {"t": "Seated knee to elbows", "lvl": "Intermediate", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/4_04.mp4", "steps": ["Sit on the edge of a sturdy chair with your feet flat on the floor.", "Place your hands behind your head, elbows out to the sides.", "Inhale deeply and exhale as you crunch your left elbow towards your right knee, engaging your oblique muscles.", "Come back to the starting position and repeat, alternating sides each time."]}, {"t": "Seated arm circles (backward)", "lvl": "Intermediate", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/2_06.mp4", "steps": ["Sit tall on a chair with your feet flat on the ground, hip-width apart.", "Extend your arms out to the sides at shoulder height, palms facing down.", "Begin making circles with your arms going in a backward direction. Keep your core engaged and your spine tall throughout the movement."]}, {"t": "Chair squats", "lvl": "Advanced", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/5_09.mp4", "steps": ["Stand with your feet hip-width apart in front of a chair.", "Bend your knees and lower your hips down until your hips reach the chair without completely sitting down.", "Push through your heels to return to the standing position and repeat, maintaining a good position throughout with your shoulders rolled back and your core engaged."]}, {"t": "Seated cat cow", "lvl": "Advanced", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/9_02.mp4", "steps": ["Sit comfortably in a chair with your feet flat on the floor.", "Inhale deeply, arch your lower back and lift your chest into cow pose.", "Exhale slowly, round your spine from your lower back to your shoulders, tucking your chin in for cat pose.", "Flow smoothly between these poses, syncing your movements with your breath."]}, {"t": "Chair supported quad stretch (right)", "lvl": "Advanced", "min": 1, "video": "https://pixtozeghxwiidpnloih.supabase.co/storage/v1/object/public/videos/taichichair/7_08.mp4", "steps": ["Stand next to a chair with your left hand resting on the back for support.", "Bend your right knee and bring your right heel towards your glutes.", "Reach back with your right hand to grasp your right ankle, gently pulling it closer while keeping your knees close together. Engage your core and maintain a straight posture. Hold, feeling a stretch in your right quad."]}];
+var i=0, V=document.getElementById('cVid');
+function render(){
+  var it=ITEMS[i];
+  document.getElementById('cNum').textContent=(i+1<10?'0':'')+(i+1);
+  document.getElementById('cName').textContent=it.t;
+  document.getElementById('cFocus').textContent=it.min+' min · follow along';
+  var b=document.getElementById('cBadge'); b.textContent=it.lvl; b.className='badge '+it.lvl.toLowerCase();
+  document.getElementById('cCount').textContent=(i+1)+' / '+ITEMS.length;
+  V.pause(); V.setAttribute('src', it.video); V.load();
+  document.getElementById('cSteps').innerHTML=it.steps.map(function(s){return '<li>'+s+'</li>'}).join('');
+  document.getElementById('prev').disabled=(i===0);
+  document.getElementById('next').disabled=(i===ITEMS.length-1);
+  var dd=document.getElementById('dots').children;
+  for(var k=0;k<dd.length;k++) dd[k].className='dot'+(k===i?' on':'');
+}
+function go(n){ if(n<0||n>=ITEMS.length) return; i=n; render(); document.querySelector('.carousel').scrollIntoView({behavior:'smooth',block:'start'}); }
+var dots=document.getElementById('dots');
+ITEMS.forEach(function(_,k){ var d=document.createElement('span'); d.className='dot'; d.onclick=function(){go(k)}; dots.appendChild(d); });
+document.getElementById('prev').onclick=function(){go(i-1)};
+document.getElementById('next').onclick=function(){go(i+1)};
+render();
+</script>
+</body></html>
