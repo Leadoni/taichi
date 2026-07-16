@@ -9,3 +9,28 @@
   X-Frame-Options: SAMEORIGIN
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Keep guide PDFs and the internal/demo pages out of search engines
+# (the public marketing pages — home, quiz — stay indexable).
+/assets/*.pdf
+  X-Robots-Tag: noindex, nofollow
+/chair-guide
+  X-Robots-Tag: noindex, nofollow
+/chair-guide.html
+  X-Robots-Tag: noindex, nofollow
+/chair-videos
+  X-Robots-Tag: noindex, nofollow
+/chair-videos.html
+  X-Robots-Tag: noindex, nofollow
+/chair-demo
+  X-Robots-Tag: noindex, nofollow
+/chair-demo.html
+  X-Robots-Tag: noindex, nofollow
+/free-walking-guide
+  X-Robots-Tag: noindex, nofollow
+/free-walking-guide.html
+  X-Robots-Tag: noindex, nofollow
+/walking-guide
+  X-Robots-Tag: noindex, nofollow
+/walking-guide.html
+  X-Robots-Tag: noindex, nofollow
