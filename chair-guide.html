@@ -10,9 +10,9 @@
   .doc{max-width:820px;margin:0 auto;padding:26px 18px 40px}
   .page{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px;margin-bottom:22px;box-shadow:0 1px 3px rgba(40,60,40,.05)}
   /* fused title page */
-  .titlepage{padding:0;overflow:hidden}
+  .titlepage{padding:0;overflow:hidden;display:flex;flex-direction:column}
   .cover{border:none;padding:0;text-align:left;position:relative;overflow:hidden;border-radius:0;aspect-ratio:1376/768;display:flex;align-items:center;background:#e7f0dd}
-  .cover .heroimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+  .cover .heroimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:right center;z-index:0}
   .cover::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(231,240,221,.97) 18%,rgba(231,240,221,.6) 44%,rgba(231,240,221,0) 62%)}
   .cover-text{position:relative;z-index:2;padding:0 6% 0 8%;max-width:66%}
   .cover .kicker{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-dark);margin-bottom:12px}
@@ -21,10 +21,10 @@
   .cover .sub{font-size:17px;color:var(--ink)}
   .brandrow{display:flex;align-items:center;justify-content:flex-start;gap:9px;margin-top:20px;font-family:'Playfair Display',serif;font-size:21px;font-weight:600;color:var(--head)}
   .brandrow img{height:24px}
-  .safety{padding:26px 34px 30px}
-  .safety h3{font-family:'Playfair Display',serif;font-size:23px;color:var(--head);margin-bottom:14px}
-  .safety ul{list-style:none;display:grid;gap:12px}
-  .safety li{position:relative;padding-left:28px;font-size:16px;color:#3c5140}
+  .safety{padding:34px 44px;flex:1;display:flex;flex-direction:column;justify-content:center}
+  .safety h3{font-family:'Playfair Display',serif;font-size:27px;color:var(--head);margin-bottom:22px}
+  .safety ul{list-style:none;display:grid;gap:18px}
+  .safety li{position:relative;padding-left:30px;font-size:18px;color:#3c5140}
   .safety li::before{content:'\2713';position:absolute;left:0;color:var(--accent-dark);font-weight:700}
   /* exercises */
   .ex{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 32px 32px;margin-bottom:22px;box-shadow:0 1px 3px rgba(40,60,40,.05);position:relative}
@@ -46,13 +46,13 @@
   .showcase{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 30px 32px;margin-bottom:22px;box-shadow:0 1px 3px rgba(40,60,40,.05)}
   .showcase h2{font-family:'Playfair Display',serif;font-weight:600;font-size:28px;color:var(--head);text-align:center;margin-bottom:6px}
   .sc-intro{text-align:center;color:var(--muted);font-size:15px;margin-bottom:18px}
-  .sc-img{border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:0 auto 20px;max-width:330px}
+  .sc-img{border-radius:14px;overflow:hidden;border:1px solid var(--line);margin:0 auto 18px;max-width:250px}
   .sc-img img{width:100%;display:block}
-  .sc-list{list-style:none;display:grid;gap:13px}
+  .sc-list{list-style:none;display:grid;gap:11px}
   .sc-list li{position:relative;padding-left:28px;font-size:15.5px;color:#31402e;line-height:1.5}
   .sc-list li::before{content:'\2713';position:absolute;left:0;top:0;color:var(--accent-dark);font-weight:800}
   .sc-list b{color:var(--head)}
-  .cta{text-align:center;background:linear-gradient(160deg,#2f9d61,#45b577);color:#fff;border-radius:20px;padding:44px 30px}
+  .cta{text-align:center;background:linear-gradient(160deg,#2f9d61,#45b577);color:#fff;border-radius:20px;padding:34px 30px;margin-top:20px}
   .cta h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;margin-bottom:10px}
   .cta p{font-size:16px;opacity:.96;max-width:460px;margin:0 auto 22px}
   .cta a{display:inline-block;background:#fff;color:var(--accent-dark);font-weight:700;font-size:16px;padding:14px 30px;border-radius:14px;text-decoration:none}
@@ -61,8 +61,8 @@
     html,body{background:#fff}
     .doc{max-width:none;padding:0;margin:0}
     .page,.ex{page-break-after:always;break-inside:avoid;box-shadow:none;margin-bottom:0}
-    .titlepage{page-break-after:always}
-    .showcase{page-break-before:always;break-inside:avoid;box-shadow:none;margin-bottom:0}
+    .titlepage{page-break-after:always;min-height:277mm}
+    .showcase{page-break-before:always;break-inside:avoid;break-after:avoid;box-shadow:none;margin-bottom:0}
     .cta{break-inside:avoid}
   }
 </style></head>
