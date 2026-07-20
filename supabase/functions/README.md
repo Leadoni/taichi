@@ -24,8 +24,8 @@ route), `_shared/slack-verify.ts` (pure HMAC verification, clock injected) and
 
 Alerts: 💰 new subscription / 🔁 renewal (paid > $0) · ❌ cancel scheduled (the
 moment `cancel_at_period_end` flips true, via `previous_attributes`) · 🪦
-subscription ended · ⚠️ payment failed (amount + attempt) · ➕ upsell purchased ·
-📧 new lead (anonymous) · 👤 account created.
+subscription ended · ⚠️ payment failed (amount + attempt) · 💸 refund (full or
+partial) · ➕ upsell purchased · 📧 new lead (anonymous) · 👤 account created.
 
 `/stats` metric rules: subscriber stats exclude upsell subs (`metadata.upsell_id`),
 internal test subs (`metadata.test='1'`), 100%-off-coupon subs, and (for "new")
@@ -42,7 +42,7 @@ Tests: `cd supabase/functions && deno test --allow-env _shared/`
    `https://pixtozeghxwiidpnloih.supabase.co/functions/v1/slack-stats`.
 3. Basic Information → **Signing Secret** → `supabase secrets set SLACK_SIGNING_SECRET=… --project-ref pixtozeghxwiidpnloih` (unset ⇒ `/stats` returns 503; alerts unaffected).
 4. Install the app to the workspace, run `/stats`. `operation_timeout` ⇒ the ack/response_url path regressed; `dispatch_failed` ⇒ wrong URL or missing secret.
-5. **Stripe dashboard → the live webhook endpoint → add `invoice.payment_failed`** to its enabled events (the ⚠️ alert never fires without it).
+5. **Stripe dashboard → the live webhook endpoint → add `invoice.payment_failed` and `charge.refunded`** to its enabled events (the ⚠️ and 💸 alerts never fire without them).
 
 ## Config lives in code (safe) vs secrets (never here)
 - **In code:** the `PLANS` / `UPSELLS` maps (Stripe **price/coupon** ids — not secret). The browser only sends a plan/upsell *id*; amounts are resolved server-side.

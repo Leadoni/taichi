@@ -41,6 +41,12 @@ export function fmtPaymentFailed(email: string, amountDueCents: number, currency
   return `:warning: *Payment failed* — ${email} — ${usd(amountDueCents, currency)} — attempt ${attemptCount}`;
 }
 
+// amountRefunded is the charge's running total, so partial refunds read '$5.00 of $21.99'.
+export function fmtRefund(email: string, amountRefundedCents: number, chargeCents: number, currency: string): string {
+  const partial = amountRefundedCents < chargeCents ? ` of ${usd(chargeCents, currency)}` : '';
+  return `:money_with_wings: *Refund* — ${email} — ${usd(amountRefundedCents, currency)}${partial}`;
+}
+
 // Anonymous by design: a lead is not a customer yet; no email/name in Slack.
 export function fmtNewLead(funnel: string | null | undefined, abVariant?: string | null): string {
   const parts = [funnel || 'quiz', abVariant ? `variant ${abVariant}` : null].filter(Boolean);

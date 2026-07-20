@@ -1,7 +1,7 @@
 import Stripe from 'npm:stripe@17';
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { sendPurchase } from '../_shared/meta-capi.ts';
-import { fmtCancelScheduled, fmtPaymentFailed, fmtSubscriptionEnded, fmtSubscriptionPaid, fmtUpsellPaid, notifySlack } from '../_shared/slack.ts';
+import { fmtCancelScheduled, fmtPaymentFailed, fmtRefund, fmtSubscriptionEnded, fmtSubscriptionPaid, fmtUpsellPaid, notifySlack } from '../_shared/slack.ts';
 
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY')!, { apiVersion: '2024-06-20' });
 const WHSEC = Deno.env.get('STRIPE_WEBHOOK_SECRET')!;
@@ -117,6 +117,15 @@ Deno.serve(async (req) => {
           const email = await emailForUser(db, await userForCustomer(db, sub.customer as string));
           await notifySlack(fmtSubscriptionEnded(email, sub.metadata?.plan_id, sub.metadata?.upsell_id));
         }
+        break;
+      }
+      case 'charge.refunded': {
+        // Fires on every refund (full and partial); alert-only, /stats reads
+        // refund totals live from Stripe.
+        const ch = event.data.object as Stripe.Charge;
+        const email = ch.billing_details?.email || ch.receipt_email ||
+          await emailForUser(db, await userForCustomer(db, ch.customer as string));
+        await notifySlack(fmtRefund(email, ch.amount_refunded ?? 0, ch.amount ?? 0, ch.currency));
         break;
       }
       case 'invoice.payment_failed': {
