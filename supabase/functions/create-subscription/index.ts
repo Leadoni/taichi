@@ -54,9 +54,15 @@ Deno.serve(async (req) => {
     const clean = quiz.email.trim().toLowerCase();
 
     const { id: userId, created: newAccount } = await resolveUser(db, clean);
-    // Account creation is complete at this point — alert now (best-effort;
-    // notifySlack swallows errors and never delays checkout).
-    if (newAccount) await notifySlack(fmtAccountCreated(clean));
+    // Account creation is complete at this point — alert now (best-effort; notifySlack swallows
+    // errors). waitUntil keeps the isolate alive past the response, so the Slack round trip
+    // never sits on the checkout's critical path.
+    if (newAccount) {
+      const ping = notifySlack(fmtAccountCreated(clean));
+      try {
+        (globalThis as { EdgeRuntime?: { waitUntil(p: Promise<unknown>): void } }).EdgeRuntime?.waitUntil(ping);
+      } catch (_) { /* local dev: promise floats; notifySlack swallows all errors */ }
+    }
 
     // Never start a fresh checkout for an account that already has access.
     const { data: urow } = await db.from('users')
@@ -79,8 +85,10 @@ Deno.serve(async (req) => {
     if (!urow?.age_band && quiz.age_band) updates.age_band = quiz.age_band;
     if (urow?.height_cm == null && quiz.height_cm != null) updates.height_cm = quiz.height_cm;
     if (urow?.target_weight_kg == null && quiz.goal_weight_kg != null) updates.target_weight_kg = quiz.goal_weight_kg;
-    await db.from('users').update(updates).eq('id', userId); // service role -> past billing guard
-    await db.from('quiz_sessions').update({ user_id: userId, selected_plan: plan_id }).eq('id', quiz_session_id);
+    await Promise.all([                                       // independent tables — write concurrently
+      db.from('users').update(updates).eq('id', userId),      // service role -> past billing guard
+      db.from('quiz_sessions').update({ user_id: userId, selected_plan: plan_id }).eq('id', quiz_session_id),
+    ]);
 
     // Price + discount. Default = plan's regular price + its one-time intro coupon.
     // TEST promo routes to the $0.50/week test price with NO coupon -> $0.50 first and every renewal.
@@ -97,23 +105,24 @@ Deno.serve(async (req) => {
       discounts = [{ coupon: c.id }];
     }
 
-    // Guard against duplicate subscriptions: a reload/back of the pay page (or a promo retry)
-    // calls this again and would spawn another sub. Cancel any prior UNPAID (incomplete) subs
-    // for this customer first, so at most one live checkout exists.
-    try {
-      const stale = await stripe.subscriptions.list({ customer: customerId, status: 'incomplete', limit: 100 });
-      for (const old of stale.data) { try { await stripe.subscriptions.cancel(old.id); } catch (_) { /* ignore */ } }
-    } catch (_) { /* best-effort cleanup */ }
-
-    // Root-cause dedup: if the customer already has a LIVE (active/trialing) base subscription, do not
-    // create a second one — a page reload or a test-mode re-pay must never double-subscribe/double-bill.
-    // The pay page handles this { error: 'already subscribed' } signal by sending the member to the app.
-    try {
-      const live = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 });
-      if (live.data.some((s) => (s.status === 'active' || s.status === 'trialing') && !s.metadata?.upsell_id)) {
-        return json({ error: 'already subscribed' });
-      }
-    } catch (_) { /* best-effort; fall through to normal creation */ }
+    // Duplicate-subscription guards — needed only for PRE-EXISTING customers. A customer object
+    // created moments ago in this request cannot have any subscriptions, and every first-time
+    // buyer takes that path, so skipping the sweep here removes two Stripe round trips from the
+    // common checkout. One status:'all' list now serves both guards:
+    //  1) Root-cause dedup: an already LIVE (active/trialing) base sub means a reload/test re-pay
+    //     — never double-subscribe/double-bill; the pay page routes 'already subscribed' to the app.
+    //  2) Stale-checkout cleanup: cancel prior UNPAID (incomplete) subs so at most one live
+    //     checkout exists per customer (reload/back/promo retry would otherwise stack them).
+    if (urow?.stripe_customer_id) {
+      try {
+        const subs = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 });
+        if (subs.data.some((s) => (s.status === 'active' || s.status === 'trialing') && !s.metadata?.upsell_id)) {
+          return json({ error: 'already subscribed' });
+        }
+        await Promise.all(subs.data.filter((s) => s.status === 'incomplete')
+          .map((s) => stripe.subscriptions.cancel(s.id).catch(() => { /* ignore */ })));
+      } catch (_) { /* best-effort; fall through to normal creation */ }
+    }
 
     // Meta CAPI identity — captured here because the webhook (Stripe-called) can't see the visitor.
     const clientIp = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || '';
