@@ -4,8 +4,11 @@ The public-facing acquisition funnel for **Chair Tai Chi**. A quiz-based flow th
 qualifies a visitor, captures their details, sells a subscription plan, presents
 upsells, and hands them off to the members' app at `app.taimotion.com`.
 
-Static site, no framework, no build step. Deployed via **GitHub Pages** from the
-repo root (`CNAME` → `taimotion.com`).
+Static site, no framework, no build step. Deployed via **Cloudflare Pages** from
+the repo root (auto-deploys on push to `main`; `_headers`/`_redirects` are the
+Cloudflare Pages config; clean URLs — `/pay.html` 308-redirects to `/pay`, so
+curl checks need `-L`). The `CNAME` file is a leftover from the old GitHub Pages
+setup.
 
 ## Page flow
 
@@ -74,8 +77,9 @@ python3 -m http.server 8000
 ```
 
 Append `?t=g` to any URL to preview the green palette. Bump the `?v=NN` on a
-changed asset's `<script>`/`<link>` tag to bust the GitHub Pages cache.
+changed asset's `<script>`/`<link>` tag to bust the CDN cache.
 
 ## Deploy
 
-Push to `main`. GitHub Pages serves the repo root at `taimotion.com` (per `CNAME`).
+Push to `main`. Cloudflare Pages builds and serves the repo root at
+`taimotion.com` automatically (usually live within a couple of minutes).
