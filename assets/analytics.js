@@ -6,7 +6,7 @@
 (function () {
   var URL = "https://pixtozeghxwiidpnloih.supabase.co";
   var POSTHOG_KEY = "phc_zP7yVawcZX3iQ3qRfhbvxHxz87wnDnizc66yax7bT83i"; // PostHog project API key (public, client-side)
-  var POSTHOG_HOST = "https://us.i.posthog.com"; // Monokodas org, US cloud ("Tai Motion" project 525048) — no reverse proxy yet
+  var POSTHOG_HOST = "https://t.taimotion.com"; // managed reverse proxy → Monokodas org, US cloud ("Tai Motion" project 525048)
   var POSTHOG_UI = "https://us.posthog.com";     // so replay/links point back to PostHog US
   var META_PIXEL_ID = "1040446045164282"; // Meta Pixel ID (public, client-side) — same pixel as the CAPI META_PIXEL_ID secret
   // TM event → Meta standard event. Purchase is deliberately absent: it is sent server-side
