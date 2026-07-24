@@ -625,9 +625,13 @@
     const pr = $("#progress"); if (pr) pr.style.display = "none";     // full-bleed like Digesti — no loader/topbar
     const sc = $("#section"); if (sc) sc.style.display = "none";
     const bk = $("#back"); if (bk) bk.style.display = "none";
-    root.appendChild(el("h1", "q", personalize(`${S.name ? S.name + ", reach" : "Reach"} your goal of <span class='hl'>{goal}kg</span> by {projdate}`)));
+    // Variant C has no weight data — {goal}kg/{projdate} and the weight chart would fabricate numbers.
+    const hasWeight = !!(S.weight_kg && S.goal_weight_kg);
+    root.appendChild(el("h1", "q", personalize(hasWeight
+      ? `${S.name ? S.name + ", reach" : "Reach"} your goal of <span class='hl'>{goal}kg</span> by {projdate}`
+      : `${S.name ? S.name + ", your" : "Your"} personalized plan is ready`)));
     root.appendChild(el("p", "sub", "And build a body you feel good living in"));
-    root.appendChild(chartEl());
+    if (hasWeight) root.appendChild(chartEl());
     const block = el("div", "goal-block");
     [["\uD83C\uDFCB\uFE0F", "Slim down and tone up with gentle but effective workouts"],
      ["\uD83E\uDE91", "Gentle seated workouts — no equipment needed"],
