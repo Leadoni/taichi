@@ -379,4 +379,31 @@ window.FUNNEL = {
 
     { id: "goals", type: "goals" },
   ],
+
+  // ---- A/B/C quiz-length test (2026-07). Page sets window.QUIZ_VARIANT; app.js filters. ----
+  // b: cut the whole third progress segment (Lifestyle + Health & Safety + Almost there +
+  //    the untagged interim screens inside that span). c: additionally cut the body-metrics
+  //    inputs and both weight-projection screens (their charts fabricate numbers without data).
+  abTestName: "quiz_length_2026_07",
+  variants: {
+    b: {
+      secs: ["My profile", "Activity"],
+      cut: ["tension", "intro_stress", "water", "mood", "intro_focus", "rested", "sleep_improve",
+        "intro_sleep", "diet", "produce", "intro_nutrition", "cravings", "habits", "tracker",
+        "intro_brain", "medications", "mobility", "intro_safe", "menopause", "intro_menopause_weight",
+        "loader", "intro_goodhands", "intro_almost", "main_reason", "motivates", "motivation_level",
+        "obstacles", "intro_sustainable", "explore", "pace", "intro_paced", "intro_focus20", "daypart"],
+      copy: { projection_2: { body: "Now let's create your personalized plan." } },
+    },
+    c: {
+      secs: ["My profile", "Activity"],
+      cut: ["tension", "intro_stress", "water", "mood", "intro_focus", "rested", "sleep_improve",
+        "intro_sleep", "diet", "produce", "intro_nutrition", "cravings", "habits", "tracker",
+        "intro_brain", "medications", "mobility", "intro_safe", "menopause", "intro_menopause_weight",
+        "loader", "intro_goodhands", "intro_almost", "main_reason", "motivates", "motivation_level",
+        "obstacles", "intro_sustainable", "explore", "pace", "intro_paced", "intro_focus20", "daypart",
+        "height", "weight", "goal_weight", "projection_1", "projection_2"],
+      copy: { intro_eligible: { blockBody: "Start seeing results in just one week and keep making steady progress toward your goal!" } },
+    },
+  },
 };
